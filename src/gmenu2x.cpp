@@ -1171,205 +1171,91 @@ void GMenu2X::main() {
 // #endif
 
 
-
-			if (f200) {
-				btnContextMenu->paint();
-			}
-			if ((tickNow-tickBattery) >= 3000) {
-				tickBattery = tickNow;
-				battlevel = getBatteryLevel();
-				if (battlevel > 5) {
-					batteryIcon = "imgs/battery/ac.png";
-				} else {
-					ss.clear();
-					ss << battlevel;
-					ss >> batteryIcon;
-					batteryIcon = "imgs/battery/"+batteryIcon+".png";
-				}
-			}
-			sc.skinRes(batteryIcon)->blit( s, 22, skinConfInt["sectionBarHeight"]+2 );
-
-			ss.clear();
-			ss << backlightLevel/20;
-			ss >> backlightIcon;
-			backlightIcon = "imgs/brightness/"+backlightIcon+".png";
-
-			if (backlightLevel/20 > 4 || sc.skinRes(backlightIcon)==NULL) 
-				backlightIcon = "imgs/brightness.png";
-
-			sc.skinRes(backlightIcon)->blit( s, 2, skinConfInt["sectionBarHeight"]+22);
-
-
-    // switch(battlevel){
-    // case 0:
-    //   battMsgWidth = font->getTextWidth("00%") + 5; 
-    //   s->write(font, "10%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // case 1:
-    //   battMsgWidth = font->getTextWidth("00%") + 5; 
-    //   s->write(bottombarfont, "30%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // case 2:
-    //   battMsgWidth = font->getTextWidth("00%") + 5; 
-    //   s->write(bottombarfont, "45%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // case 3:
-    //   battMsgWidth = font->getTextWidth("00%") + 5; 
-    //   s->write(bottombarfont, "65%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // case 4:
-    //   battMsgWidth = font->getTextWidth("00%") + 5; 
-    //   s->write(bottombarfont, "80%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // case 5:
-    //   battMsgWidth = font->getTextWidth("000%") + 5; 
-    //   s->write(bottombarfont, "100%", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // default:
-    //   battMsgWidth = font->getTextWidth("AC") + 5; 
-    //   s->write(bottombarfont, "AC", resX-battMsgWidth, bottomBarTextY, HAlignLeft, VAlignMiddle);
-    //   break;
-    // }
-
-
-				// s->flip();
-
-
-			if((suspend == 0) && ((tickNow - tickMMC) >= 1000)){
-				tickMMC = tickNow;
-				curMMCStatus = getMMCStatus();
-				if (preMMCStatus != curMMCStatus) {
-					if (curMMCStatus == MMC_REMOVE) {
-						system("/usr/bin/umount_ext_sd.sh");
-						printf("%s, umount external sd from /mnt/ext_sd\n", __func__);
-					}
-					else if(curMMCStatus == MMC_INSERT) {
-						system("/usr/bin/mount_ext_sd.sh");
-						printf("%s, mount external sd on /mnt/ext_sd\n", __func__);
-					}
-					else {
-						printf("%s, unexpected mmc status !\n", __func__);
-					}
-					preMMCStatus = curMMCStatus;
-				}
-			}
-
-			if (preMMCStatus == MMC_INSERT) {
-				// backlightOffset = resX-((19 * 4) + battMsgWidth);
-				sc.skinRes("imgs/sd1.png")->blit(s, 22, skinConfInt["sectionBarHeight"]+22);
-			}
-			// s->box(22, skinConfInt["sectionBarHeight"]+22,16,16, 255,0,0);
-
-
-			// else{
-			// 	backlightOffset = resX-((19 * 3) + battMsgWidth);
-			// }
-			// sprintf(backlightMsg, "Lv%d", backlightLevel/20);
-			// sc.skinRes("imgs/brightness.png")->blit(s, backlightOffset-30, bottomBarIconY);
-			// s->write(bottombarfont, backlightMsg, backlightOffset-10, bottomBarTextY, HAlignLeft, VAlignMiddle);
-
-			if((suspend == 0) && ((tickNow - tickUSB) >= 1000)){
-				tickUSB = tickNow;
-				curUDCStatus = getUDCStatus();
-				if (preUDCStatus != curUDCStatus) {
-					if (curUDCStatus == UDC_REMOVE) {
-						if (needUSBUmount) {
-							system("/usr/bin/usb_disconn_int_sd.sh");
-							printf("%s, disconnect usbdisk for internal sd\n", __func__);
-							if (curMMCStatus == MMC_INSERT) {
-								system("/usr/bin/usb_disconn_ext_sd.sh");
-								printf("%s, disconnect usbdisk for external sd\n", __func__);
-							}
-							needUSBUmount = 0;
-						}
-					}
-					else if(curUDCStatus == UDC_CONNECT) {
-						MessageBox mb(this, tr["Which action do you want ?"], "icons/usb.png");
-						mb.setButton(CONFIRM, tr["USBDISK"]);
-						mb.setButton(CANCEL,  tr["Charge only"]);
-						if (mb.exec() == CONFIRM) {
-							needUSBUmount = 1;
-							system("/usr/bin/usb_conn_int_sd.sh");
-							printf("%s, connect usbdisk for internal sd\n", __func__);
-							if (curMMCStatus == MMC_INSERT) {
-								system("/usr/bin/usb_conn_ext_sd.sh");
-								printf("%s, connect usbdisk for external sd\n", __func__);
-							}
-						}
-					}
-					else {
-						printf("%s, unexpected usb status !\n", __func__);
-					}
-					preUDCStatus = curUDCStatus;
-				}
-			}
-
-
-			s->flip();
-
-		//touchscreen
-			if (f200) {
-				ts.poll();
-				btnContextMenu->handleTS();
-				re.x = 0; re.y = 0; re.h = skinConfInt["sectionBarHeight"]; re.w = resX;
-				if (ts.pressed() && ts.inRect(re)) {
-					re.w = resX - skinConfInt["sectionBarWidth"];
-					for (i=menu->firstDispSection(); !ts.handled() && i<menu->getSections().size() && i<menu->firstDispSection()+linkColumns; i++) {
-						sectionsCoordX = halfX - (constrain((uint)menu->getSections().size(), 0 , linkColumns) * (resX - skinConfInt["sectionBarWidth"])) / 2;
-						re.x = (i-menu->firstDispSection())*re.w+sectionsCoordX;
-
-						if (ts.inRect(re)) {
-							menu->setSectionIndex(i);
-							ts.setHandled();
-						}
-					}
-				}
-
-				i=menu->firstDispRow()*linkColumns;
-				while ( i<(menu->firstDispRow()*linkColumns)+linksPerPage && i<menu->sectionLinks()->size()) {
-					if (menu->sectionLinks()->at(i)->isPressed())
-						menu->setLinkIndex(i);
-					if (menu->sectionLinks()->at(i)->handleTS())
-						i = menu->sectionLinks()->size();
-					i++;
-				}
-			}
-
-			inputAction = input.update(0);
+// #if defined(TARGET_GP2X)
+// 			if (f200) {
+// 				btnContextMenu->paint();
+// 			}
+// #endif
 
 			if (inputAction == 0) {
-				usleep(50000);
-				if(input.isActive(POWER)){
-					poweroffTick+= 1;
-				}
-				else{
-					if(poweroffTick > 5){
-						poweroffTick = 0;
-						suspendTick = 500;
-					}
-				}
+				// ERROR("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
 
-				if(suspendTick <= 300){
-					suspendTick+= 1;
-				}
-				else{
-					if(suspend == 0){
-						suspend = 1;
-						setSuspend(1, 1);
-						poweroffTick = 0;
+				usleep(50000);
+				
+				if(input.isActive(POWER)) {
+					if (tickPowerOff >= 5) { //5 * 500ms
+						poweroff();
+						tickPowerOff = 0;
 					}
+				} else if (tickPowerOff >= 2 || tickNow - tickSuspend >= confInt["suspend"] * 1000) {
+						if(!suspendActive) {
+							s->box(10, 80, 300, 62, skinConfColors[COLOR_MESSAGE_BOX_BG]);
+							s->rectangle( 12, 82, 296, 58, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
+							s->write( font, tr["Suspend ..."], 125, 100 );
+							s->flip();
+							SDL_Delay(1000);
+							suspendActive = setSuspend(true);
+							tickPowerOff = 0;
+						}
+				} else {
+					tickPowerOff = 0;
 				}
 				continue;
 			}
-			if(suspend){
-				if (input[POWER]){
-					suspend = 0;
-					setSuspend(0, 0);
-					suspendTick = 0;
-					poweroffTick = 0;
-				}
-				continue;
+
+			if ( input[CONFIRM] && menu->selLink() != NULL ) {
+				setVolume(confInt["globalVolume"]);
+				menu->selLink()->run();
 			}
+			else if ( input[SETTINGS] ) options();
+			else if ( input[MENU]     ) contextMenu();
+			// LINK NAVIGATION
+			else if ( input[LEFT ]  ) menu->linkLeft();
+			else if ( input[RIGHT]  ) menu->linkRight();
+			else if ( input[UP   ]  ) menu->linkUp();
+			else if ( input[DOWN ]  ) menu->linkDown();
+			// SECTION
+			else if ( input[SECTION_PREV] ) menu->decSectionIndex();
+			else if ( input[SECTION_NEXT] ) menu->incSectionIndex();
+			// BACKLIGHT
+			else if ( input[BACKLIGHT] ) setBacklight(confInt["backlight"], true);
+			// POWER || SUSPEND
+			else if ( input[POWER] ) { tickPowerOff++; }
+
+			// VOLUME SCALE MODIFIER
+			else if ( fwType=="open2x" && input[CANCEL] ) {
+				volumeMode = constrain(volumeMode-1, -VOLUME_MODE_MUTE-1, VOLUME_MODE_NORMAL);
+				if(volumeMode < VOLUME_MODE_MUTE)
+					volumeMode = VOLUME_MODE_NORMAL;
+				switch(volumeMode) {
+					case VOLUME_MODE_MUTE:   setVolumeScaler(VOLUME_SCALER_MUTE); break;
+					case VOLUME_MODE_PHONES: setVolumeScaler(volumeScalerPhones); break;
+					case VOLUME_MODE_NORMAL: setVolumeScaler(volumeScalerNormal); break;
+				}
+				setVolume(confInt["globalVolume"]);
+			}
+
+			// SELLINKAPP SELECTED
+			else if (menu->selLinkApp()!=NULL) {
+				if ( input[MANUAL] ) menu->selLinkApp()->showManual();
+			// 	else if ( input.isActive(MODIFIER) ) {
+			// 		// VOLUME
+			// 		if ( input[VOLDOWN] && !input.isActive(VOLUP) )
+			// 			menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()-1,0,100) );
+			// 		if ( input[VOLUP] && !input.isActive(VOLDOWN) )
+			// 			menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()+1,0,100) );
+			// 		if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setVolume(-1);
+			// 	} else {
+			// 		// CLOCK
+			// 		if ( input[VOLDOWN] && !input.isActive(VOLUP) )
+			// 			menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()-10,50,confInt["maxClock"]) );
+			// 		if ( input[VOLUP] && !input.isActive(VOLDOWN) )
+			// 			menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()+10,50,confInt["maxClock"]) );
+			// 		if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setClock(DEFAULT_CPU_CLK);
+			// 	}
+			}
+
+
 			// On Screen Help
 			// else if (input[MODIFIER]) {
 			// 	s->box(10,50,300,162, skinConfColors[COLOR_MESSAGE_BOX_BG]);
@@ -1393,116 +1279,26 @@ void GMenu2X::main() {
 			// }
 
 
-#if !defined(TARGET_RETROGAME)
-			backlightLevel = 1;
-#endif
 
+			else if ( input.isActive(MODIFIER) ) {
+				int vol = getVolume();
 
-			if(backlightLevel) {
-				if ( input[CONFIRM] && menu->selLink()!=NULL ) {
-					setVolume(confInt["globalVolume"]);
-					menu->selLink()->run();
-				}
-				else if ( input[SETTINGS]  ) options();
-				else if ( input[MENU] ) contextMenu();
-			// VOLUME SCALE MODIFIER
-				else if ( fwType=="open2x" && input[CANCEL] ) {
-					volumeMode = constrain(volumeMode-1, -VOLUME_MODE_MUTE-1, VOLUME_MODE_NORMAL);
-					if(volumeMode < VOLUME_MODE_MUTE)
-						volumeMode = VOLUME_MODE_NORMAL;
-					switch(volumeMode) {
-						case VOLUME_MODE_MUTE:   setVolumeScaler(VOLUME_SCALER_MUTE); break;
-						case VOLUME_MODE_PHONES: setVolumeScaler(volumeScalerPhones); break;
-						case VOLUME_MODE_NORMAL: setVolumeScaler(volumeScalerNormal); break;
-					}
-					setVolume(confInt["globalVolume"]);
-				}
-			// LINK NAVIGATION
-				else if ( input[LEFT ]  ) menu->linkLeft();
-				else if ( input[RIGHT]  ) menu->linkRight();
-				else if ( input[UP   ]  ) menu->linkUp();
-				else if ( input[DOWN ]  ) menu->linkDown();
-			// SELLINKAPP SELECTED
-			/*else if (menu->selLinkApp()!=NULL) {
-				if ( input[MANUAL] ) menu->selLinkApp()->showManual();
-				else if ( input.isActive(MODIFIER) ) {
-					// VOLUME
-					if ( input[VOLDOWN] && !input.isActive(VOLUP) )
-						menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()-1,0,100) );
-					if ( input[VOLUP] && !input.isActive(VOLDOWN) )
-						menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()+1,0,100) );
-					if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setVolume(-1);
-				} else {
-					// CLOCK
-					if ( input[VOLDOWN] && !input.isActive(VOLUP) )
-						menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()-10,50,confInt["maxClock"]) );
-					if ( input[VOLUP] && !input.isActive(VOLDOWN) )
-						menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()+10,50,confInt["maxClock"]) );
-					if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setClock(DEFAULT_CPU_CLK);
-				}
-			}*/
-				else if ( input.isActive(MODIFIER) ) {
-				// if (input.isActive(SECTION_PREV) && input.isActive(SECTION_NEXT)) {
-				// 	DEBUG("Saving screenshot");
-				// 	saveScreenshot();
-				//}
-					int vol = getVolume();
-
-					if (vol) {
-						vol = 0;
-						volumeMode = VOLUME_MODE_MUTE;
-					}
-					else{
-						vol = 100;
-						volumeMode = VOLUME_MODE_NORMAL;
-					}
-					confInt["globalVolume"] = vol;
-					setVolume(vol);
-					writeConfig();
-				} else {
-				// SECTIONS
-					if ( input[SECTION_PREV] ) {
-						menu->decSectionIndex();
-						offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
-					} else if ( input[SECTION_NEXT] ) {
-						menu->incSectionIndex();
-						offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
-					}
-				}
-			}
-			if (input[POWER]) {
-				if(poweroffTick <= 30){
-					poweroffTick+= 1;
+				if (vol) {
+					vol = 0;
+					volumeMode = VOLUME_MODE_MUTE;
 				}
 				else{
-					s->box(10, 80, 300, 62, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-					s->rectangle( 12, 82, 296, 58, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
-					s->write( font, tr["Poweroff ..."], 125, 100 );
-					s->flip();
-					s->flip();
-					SDL_Delay(1000);
-					setSuspend(1, 0);
-					SDL_Delay(1500);
-					system("poweroff");
+					vol = 100;
+					volumeMode = VOLUME_MODE_NORMAL;
 				}
-			}
-			else{
-				poweroffTick = 0;
-				suspendTick = 0;
-			}
-
-			if ( input[BACKLIGHT]) {
-				char buf[64];
-				int val = getBacklight() + 20;
-				if(val > 100){
-					val = 20;
-				}
-				backlightLevel = val;
-				confInt["backlight"] = val;
-				sprintf(buf, "echo %d > /proc/jz/lcd_backlight", val);
-				system(buf);
+				confInt["globalVolume"] = vol;
+				setVolume(vol);
 				writeConfig();
 			}
+
+			// tickSuspend = tickPowerOff = SDL_GetTicks();
+			tickSuspend = SDL_GetTicks();
+			// tickPowerOff = 0;
 		}
 		
 		exitMainThread = 1;
@@ -1939,6 +1735,7 @@ void GMenu2X::main() {
 				s->write( font, voices[i].text, box.x+12, box.y+h2+3+h*i, HAlignLeft, VAlignMiddle );
 			s->flip();
 
+#if defined(TARGET_GP2X)
 		//touchscreen
 			if (f200) {
 				ts.poll();
@@ -1967,7 +1764,7 @@ void GMenu2X::main() {
 				}
 			}
 		}
-
+#endif
 		input.update();
 		if ( input[MENU]    ) close = true;
 		if ( input[UP]      ) sel = max(0, sel-1);
