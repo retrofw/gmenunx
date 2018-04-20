@@ -1308,7 +1308,7 @@ void GMenu2X::main() {
 	}
 
 	void GMenu2X::explorer() {
-		FileDialog fd(this,tr["Select an application"],".gpu,.gpe,.sh,", "", tr["File Dialog"]);
+		FileDialog fd(this,tr["Select an application"],".gpu,.gpe,.sh,", "", tr["Explorer"]);
 		if (fd.exec()) {
 			if (confInt["saveSelection"] && (confInt["section"]!=menu->selSectionIndex() || confInt["link"]!=menu->selLinkIndex()))
 				writeConfig();
