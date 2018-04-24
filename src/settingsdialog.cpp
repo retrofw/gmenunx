@@ -22,6 +22,7 @@
 #include <SDL_gfxPrimitives.h>
 
 #include "settingsdialog.h"
+#include "messagebox.h"
 
 using namespace std;
 
@@ -111,7 +112,33 @@ bool SettingsDialog::exec() {
 		voices[sel]->handleTS();
 
 		inputMgr.update();
-		if      ( inputMgr[SETTINGS] ) action = SD_ACTION_CLOSE;
+// COMMON ACTIONS
+		if ( inputMgr.isActive(MODIFIER) ) {
+			if (inputMgr.isActive(SECTION_NEXT)) {
+				if (!gmenu2x->saveScreenshot()) { continue; }
+				MessageBox mb(gmenu2x, gmenu2x->tr["Screenshot Saved"]);
+				mb.setAutoHide(1000);
+				mb.exec();
+				continue;
+			} else if (inputMgr.isActive(SECTION_PREV)) {
+				int vol = gmenu2x->getVolume();
+				if (vol) {
+					vol = 0;
+					gmenu2x->volumeMode = VOLUME_MODE_MUTE;
+				} else {
+					vol = 100;
+					gmenu2x->volumeMode = VOLUME_MODE_NORMAL;
+				}
+				gmenu2x->confInt["globalVolume"] = vol;
+				gmenu2x->setVolume(vol);
+				gmenu2x->writeConfig();
+				continue;
+			}
+		}
+		// BACKLIGHT
+		else if ( inputMgr[BACKLIGHT] ) gmenu2x->setBacklight(gmenu2x->confInt["backlight"], true);
+// END OF COMMON ACTIONS
+		else if ( inputMgr[SETTINGS] ) action = SD_ACTION_CLOSE;
 		else if ( inputMgr[UP      ] ) action = SD_ACTION_UP;
 		else if ( inputMgr[DOWN    ] ) action = SD_ACTION_DOWN;
 		voices[sel]->manageInput();
