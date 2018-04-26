@@ -301,7 +301,7 @@ void InputManager::setWakeUpInterval(int ms) {
 	if (wakeUpTimer != NULL)
 		SDL_RemoveTimer(wakeUpTimer);
 
-#if defined(TARGET_RETROGAME)
+#if defined(TARGET_RS97)
   ms = 0;
 #endif
 	if (ms > 0)
