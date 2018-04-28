@@ -582,6 +582,7 @@ void GMenu2X::batteryLogger() {
 	initBG();
 
 	setBacklight(100);
+	setClock(528);
 
 	bool close = false;
 
