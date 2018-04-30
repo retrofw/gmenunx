@@ -120,6 +120,7 @@ int main(int /*argc*/, char * /*argv*/[]) {
 	signal(SIGSEGV,&quit_all);
 	signal(SIGTERM,&quit_all);
 
+
 	app = new GMenu2X();
 	DEBUG("Starting main()");
 	app->main();
@@ -230,7 +231,7 @@ GMenu2X::GMenu2X() {
 	volumeScalerNormal = VOLUME_SCALER_NORMAL;
 	volumeScalerPhones = VOLUME_SCALER_PHONES;
 
-backlightStep = 10;
+	backlightStep = 10;
 
 	o2x_usb_net_on_boot = false;
 	o2x_usb_net_ip = "";
@@ -497,10 +498,10 @@ void GMenu2X::about() {
 	temp = tr["Build date: "] + __DATE__ + "\n";
 	temp += tr["Uptime: "] + hms + "\n";
 	temp += tr["Battery: "] + ((battlevel < 0 || battlevel > 10000) ? tr["Charging"] : batt) + "\n";
-	temp += tr["Storage:"];
-	temp += "\n    " + tr["Root: "] + getDiskFree("/");
-	temp += "\n    " + tr["Internal: "] + getDiskFree("/mnt/int_sd");
-	temp += "\n    " + tr["External: "] + getDiskFree("/mnt/ext_sd");
+	// temp += tr["Storage:"];
+	// temp += "\n    " + tr["Root: "] + getDiskFree("/");
+	// temp += "\n    " + tr["Internal: "] + getDiskFree("/mnt/int_sd");
+	// temp += "\n    " + tr["External: "] + getDiskFree("/mnt/ext_sd");
 	temp += "\n----\n";
 
 #if defined(TARGET_CAANOO)
@@ -601,13 +602,22 @@ void GMenu2X::batteryLogger() {
 	bg->box(rect, skinConfColors[COLOR_LIST_BG]);
 
 	bg->blit(s,0,0);
+
+	// bg->box(2,2,8,8, strtorgba(skinConfStr["color1"]));
+	// bg->box(12,2,8,8, strtorgba(skinConfStr["color2"]));
+	// bg->box(22,2,8,8, strtorgba(skinConfStr["color3"]));
+	// bg->box(32,2,8,8, strtorgba(skinConfStr["color4"]));
+	// bg->box(42,2,8,8, strtorgba(skinConfStr["color5"]));
+	// bg->box(52,2,8,8, strtorgba(skinConfStr["color6"]));
+	// bg->box(62,2,8,8, strtorgba(skinConfStr["color7"]));
+
 	bg->flip();
 
 	MessageBox mb(this, tr["Welcome to the Battery Logger.\nMake sure the battery is fully charged.\nAfter pressing OK, leave the device ON until\nthe battery has been fully discharged.\nThe log will be saved in 'battery.csv'."]);
 	mb.exec();
 
 	uint firstRow = 0, rowsPerPage = rect.h/font->getHeight();
-
+		// s->setClipRect(rect);
 	while (!close) {
 		tickNow = SDL_GetTicks();
 		if ((tickNow - tickBatteryLogger) >= 60000) {
@@ -628,8 +638,6 @@ void GMenu2X::batteryLogger() {
 
 		bg->blit(s,0,0);
 
-		s->setClipRect(rect);
-
 		for (uint i=firstRow; i<firstRow+rowsPerPage && i<log.size(); i++) {
 			int rowY, j = log.size() - i - 1;
 			if (log.at(j)=="----") { //draw a line
@@ -642,7 +650,6 @@ void GMenu2X::batteryLogger() {
 			}
 		}
 
-		s->clearClipRect();
 		drawScrollBar(rowsPerPage, log.size(), firstRow, rect.y, rect.h);
 
 		s->flip();
@@ -697,6 +704,7 @@ void GMenu2X::batteryLogger() {
 		}
 	}
 
+		// s->clearClipRect();
 	setBacklight(confInt["backlight"]);
 }
 
@@ -1015,6 +1023,9 @@ void* mainThread(void* param) {
 
 int GMenu2X::setBacklight(int val, bool popup) {
 	char buf[64];
+	unsigned long tickStart = 0;
+	int backlightIcon;
+
 
 	if(val < 0) val = 100;
 	else if(val > 100) val = backlightStep;
@@ -1038,13 +1049,13 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			sc.skinRes("imgs/brightness.png")
 		};
 		while (!close) {
-			unsigned long tickStart = SDL_GetTicks();
+			tickStart = SDL_GetTicks();
 	
 			s->box(window, 255,255,255,255);
 			s->box(window, skinConfColors[COLOR_MESSAGE_BOX_BG]);
 			s->rectangle(window, skinConfColors[COLOR_MESSAGE_BOX_BORDER]);
 
-			int backlightIcon = val/20;
+			backlightIcon = val/20;
 
 			if (backlightIcon > 4 || iconBrightness[backlightIcon]==NULL)
 				backlightIcon = 5;
