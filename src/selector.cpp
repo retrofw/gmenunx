@@ -32,7 +32,7 @@
 #include "linkapp.h"
 #include "selector.h"
 #include "filelister.h"
-#include "debug.h"
+// #include "debug.h"
 
 using namespace std;
 
@@ -207,22 +207,22 @@ int Selector::exec(int startSelection) {
 			// selTick = SDL_GetTicks();
 		} else if ( gmenu2x->input[PAGEDOWN] || gmenu2x->input[RIGHT] ) {
 			if (selected + numRows >= fl.size())
-				selected = fl.size()-1;
+				selected = fl.size() - 1;
 			else
 				selected += numRows;
 			// selTick = SDL_GetTicks();
 		} else if ( gmenu2x->input[CANCEL] ) {
 			if (link->getSelectorBrowser()) {
-				string::size_type p = dir.rfind("/", dir.size()-2);
-				if (p==string::npos || dir.compare(0,CARD_ROOT_LEN,CARD_ROOT)!=0 || p<4) {
+				string::size_type p = dir.rfind("/", dir.size() - 2);
+				if (p == string::npos || dir.compare(0, CARD_ROOT_LEN, CARD_ROOT) != 0 || p < 4) {
 					close = true;
 					result = false;
 				} else {
-					dir = dir.substr(0,p+1);
-					INFO("%s", dir.c_str());
+					dir = dir.substr(0, p + 1);
+					// INFO("%s", dir.c_str());
 					selected = 0;
 					firstElement = 0;
-					prepare(&fl,&screens,&titles);
+					prepare(&fl, &screens, &titles);
 				}
 			} else {
 				close = true;
@@ -233,10 +233,10 @@ int Selector::exec(int startSelection) {
 				file = fl[selected];
 				close = true;
 			} else {
-				dir = real_path(dir+fl[selected]);//+"/";
+				dir = real_path(dir + "/" + fl[selected]);//+"/";
 				selected = 0;
 				firstElement = 0;
-				prepare(&fl,&screens,&titles);
+				prepare(&fl, &screens, &titles);
 			}
 		}
 	}
@@ -264,8 +264,8 @@ void Selector::prepare(FileLister *fl, vector<string> *screens, vector<string> *
 		titles->at(i) = getAlias(noext);
 
 		if (screendir != "") {
-			if (screendir[0]=='.') realdir = real_path(fl->getPath() + "/" + screendir); // + "/"; // allow "." as "current directory", therefore, relative paths
-			else realdir = real_path(screendir);
+			if (screendir[0]=='.') realdir = real_path(fl->getPath() + "/" + screendir) + "/"; // allow "." as "current directory", therefore, relative paths
+			else realdir = real_path(screendir) + "/";
 			// INFO("Searching for screen '%s%s.png'", realdir.c_str(), noext.c_str());
 			if (fileExists(realdir+noext+".jpg"))
 				screens->at(i) = realdir+noext+".jpg";
