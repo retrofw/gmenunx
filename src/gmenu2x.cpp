@@ -2049,13 +2049,12 @@ void GMenu2X::addLink() {
 }
 
 void GMenu2X::editLink() {
-	if (menu->selLinkApp()==NULL) return;
+	if (menu->selLinkApp() == NULL) return;
 
 	vector<string> pathV;
-	split(pathV,menu->selLinkApp()->getFile(),"/");
+	split(pathV, menu->selLinkApp()->getFile(), "/");
 	string oldSection = "";
-	if (pathV.size()>1)
-		oldSection = pathV[pathV.size()-2];
+	if (pathV.size() > 1) oldSection = pathV[pathV.size()-2];
 	string newSection = oldSection;
 
 	string linkTitle = menu->selLinkApp()->getTitle();
