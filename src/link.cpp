@@ -58,7 +58,10 @@ bool Link::paintHover() {
 }
 
 void Link::updateSurfaces() {
-	iconSurface = gmenu2x->sc[getIconPath()];
+	if (gmenu2x->sc.skinRes(getIconPath())==NULL) 
+		iconSurface = gmenu2x->sc[getIconPath()];
+	else
+		iconSurface = gmenu2x->sc["skin:icons/generic.png"];
 }
 
 const string &Link::getTitle() {

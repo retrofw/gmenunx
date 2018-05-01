@@ -1207,7 +1207,6 @@ void GMenu2X::main() {
 
 			if (i == (uint)menu->selLinkIndex())
 				menu->sectionLinks()->at(i)->paintHover();
-
 			menu->sectionLinks()->at(i)->paint();
 		}
 
