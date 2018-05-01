@@ -42,7 +42,7 @@ private:
 	// string sgamma;
 	//G
 	int igamma;
-	string exec, params, workdir, manual, selectordir, selectorfilter, selectorscreens;
+	string exec, params, workdir, manual, selectordir, selectorfilter, selectorscreens, backdrop;
 	bool selectorbrowser, useRamTimings, useGinge;
 	void drawRun();
 
@@ -102,6 +102,9 @@ public:
 	bool targetExists();
 
 	const string &getFile() { return file; }
+	const string &getBackdrop() { return backdrop; }
+	void setBackdrop(const string selectedFile="");
+
 	void renameFile(const string &name);
 	bool &needsWrapperRef() { return wrapper; }
 	bool &runsInBackgroundRef() { return dontleave; }
