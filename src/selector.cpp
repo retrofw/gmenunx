@@ -74,13 +74,13 @@ int Selector::exec(int startSelection) {
 		rect = gmenu2x->listRect; //{0, gmenu2x->skinConfInt["topBarHeight"], gmenu2x->resX, gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"] - gmenu2x->skinConfInt["topBarHeight"]};
 	} else {
 		gmenu2x->bg->box(0, 0, gmenu2x->skinConfInt["selectorX"], gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"], gmenu2x->skinConfColors[COLOR_TOP_BAR_BG]);
-		gmenu2x->bg->setClipRect(0, 0, gmenu2x->skinConfInt["selectorX"]-4, gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"]);
-		rect = {gmenu2x->skinConfInt["selectorX"], 0, gmenu2x->resX - gmenu2x->skinConfInt["selectorX"], gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"]};
+		gmenu2x->bg->setClipRect(0, 0, gmenu2x->skinConfInt["selectorX"] - 4, gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"]);
+		rect = (SDL_Rect){gmenu2x->skinConfInt["selectorX"], 0, gmenu2x->resX - gmenu2x->skinConfInt["selectorX"], gmenu2x->resY - gmenu2x->skinConfInt["bottomBarHeight"]};
 	}
 
 	// dc: adjust rowHeight with font
-	uint rowHeight = gmenu2x->font->getHeight()+1; // gp2x=15+1 / pandora=19+1
-	uint numRows = rect.h/rowHeight - 1;
+	uint rowHeight = gmenu2x->font->getHeight() + 1; // gp2x=15+1 / pandora=19+1
+	uint numRows = rect.h / rowHeight - 1;
 
 	drawTitleIcon(link->getIconPath(), true, gmenu2x->bg);
 	writeTitle(link->getTitle(), gmenu2x->bg);
