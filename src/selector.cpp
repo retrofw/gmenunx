@@ -256,21 +256,25 @@ void Selector::prepare(FileLister *fl, vector<string> *screens, vector<string> *
 
 	string noext, realdir;
 	string::size_type pos;
-	for (uint i=0; i<fl->getFiles().size(); i++) {
+	for (uint i = 0; i < fl->getFiles().size(); i++) {
 		noext = fl->getFiles()[i];
 		pos = noext.rfind(".");
-		if (pos!=string::npos && pos>0)
+		if (pos != string::npos && pos>0)
 			noext = noext.substr(0, pos);
 		titles->at(i) = getAlias(noext);
 
 		if (screendir != "") {
-			if (screendir[0]=='.') realdir = real_path(fl->getPath() + "/" + screendir) + "/"; // allow "." as "current directory", therefore, relative paths
+			if (screendir[0] == '.') realdir = real_path(fl->getPath() + "/" + screendir) + "/"; // allow "." as "current directory", therefore, relative paths
 			else realdir = real_path(screendir) + "/";
 			// INFO("Searching for screen '%s%s.png'", realdir.c_str(), noext.c_str());
-			if (fileExists(realdir+noext+".jpg"))
-				screens->at(i) = realdir+noext+".jpg";
-			else if (fileExists(realdir+noext+".png"))
-				screens->at(i) = realdir+noext+".png";
+			if (fileExists(realdir + noext + ".jpg"))
+				screens->at(i) = realdir + noext + ".jpg";
+			else if (fileExists(realdir + noext + ".png"))
+				screens->at(i) = realdir + noext + ".png";
+			else if (fileExists(real_path(fl->getPath() + "/" + noext + ".png")))
+				screens->at(i) = real_path(fl->getPath() + "/" + noext + ".png");
+			else if (fileExists(real_path(fl->getPath() + "/" + noext + ".jpg")))
+				screens->at(i) = real_path(fl->getPath() + "/" + noext + ".jpg");
 			else
 				screens->at(i) = "";
 		}
