@@ -137,19 +137,14 @@ private:
 	*/
 	void explorer();
 
-	bool inet, //!< Represents the configuration of the basic network services. @see readCommonIni @see usbnet @see samba @see web
-		usbnet,
-		samba,
-		web;
-	string ip, defaultgw, lastSelectorDir;
+	string lastSelectorDir;
 	int lastSelectorElement;
 	void readConfig();
-	void readConfigOpen2x();
-	void readTmp();
-	void readCommonIni();
-	// void writeCommonIni();
 
-	void initServices();
+
+
+	void readTmp();
+
 	void initFont();
 	void initMenu();
 
@@ -157,19 +152,27 @@ private:
 
 	unsigned int memdev;
 #ifdef TARGET_RS97
-  volatile unsigned long *memregs;
+	volatile unsigned long *memregs;
 #else
 	volatile unsigned short *memregs;
 #endif
 
 #ifdef TARGET_GP2X
+	string ip, defaultgw;
+	
+	bool inet, //!< Represents the configuration of the basic network services. @see readCommonIni @see usbnet @see samba @see web
+		usbnet,
+		samba,
+		web;
 	volatile unsigned short *MEM_REG;
 	int cx25874; //tv-out
-#endif
 	void gp2x_tvout_on(bool pal);
 	void gp2x_tvout_off();
-	void gp2x_init();
+	void readCommonIni();
+	void initServices();
+#endif
 	void gp2x_deinit();
+	void gp2x_init();
 	void toggleTvOut();
 
 public:
@@ -209,16 +212,7 @@ public:
 	string fwType, fwVersion;
 	//gp2x type
 	bool f200;
-
-	// Open2x settings ---------------------------------------------------------
-	bool o2x_usb_net_on_boot, o2x_ftp_on_boot, o2x_telnet_on_boot, o2x_gp2xjoy_on_boot, o2x_usb_host_on_boot, o2x_usb_hid_on_boot, o2x_usb_storage_on_boot;
-	string o2x_usb_net_ip;
-	int volumeMode, savedVolumeMode;		//	just use the const int scale values at top of source
-
-	//  Volume scaling values to store from config files
-	int volumeScalerPhones;
-	int volumeScalerNormal;
-	//--------------------------------------------------------------------------
+	int volumeMode;
 
 	SurfaceCollection sc;
 	Translator tr;
@@ -228,7 +222,6 @@ public:
 	//Status functions
 	void main();
 	void options();
-	void settingsOpen2x();
 	void restart();
 	void poweroff();
 	// void toggleSpeaker();
@@ -236,9 +229,30 @@ public:
 	void formatSd();
 	// void reboot();
 	void skinMenu();
+
+#if defined(TARGET_GP2X)
+	void writeConfigOpen2x();
+	void readConfigOpen2x();
+	void settingsOpen2x();
+	// Open2x settings ---------------------------------------------------------
+	bool o2x_usb_net_on_boot, o2x_ftp_on_boot, o2x_telnet_on_boot, o2x_gp2xjoy_on_boot, o2x_usb_host_on_boot, o2x_usb_hid_on_boot, o2x_usb_storage_on_boot;
+	string o2x_usb_net_ip;
+	int savedVolumeMode;		//	just use the const int scale values at top of source
+
+	//  Volume scaling values to store from config files
+	int volumeScalerPhones;
+	int volumeScalerNormal;
+	//--------------------------------------------------------------------------
 	void activateSdUsb();
 	void activateNandUsb();
 	void activateRootUsb();
+	void applyRamTimings();
+	void applyDefaultTimings();
+	void setGamma(int gamma);
+	void setVolumeScaler(int scaler);
+	int getVolumeScaler();
+#endif
+
 	void about();
 	void viewLog();
 	void batteryLogger();
@@ -246,22 +260,15 @@ public:
 	void changeWallpaper();
 	bool saveScreenshot();
 
-	void applyRamTimings();
-	void applyDefaultTimings();
-
 	void setClock(unsigned mhz);
-	void setGamma(int gamma);
 
 	void setVolume(int vol);
 	int getVolume();
-	void setVolumeScaler(int scaler);
-	int getVolumeScaler();
 
 	void setInputSpeed();
 	int setBacklight(int val, bool popup = false);
 
 	void writeConfig();
-	void writeConfigOpen2x();
 	void writeSkinConfig();
 	void writeTmp(int selelem=-1, const string &selectordir="");
 
@@ -285,7 +292,7 @@ public:
 	// void drawSectionBar(Surface *s=NULL);
 	void drawTopBar(Surface *s=NULL);
 	void drawBottomBar(Surface *s=NULL);
-	void redrawBottomBar();
+	// void redrawBottomBar();
 
 	Menu* menu;
 };

@@ -38,10 +38,8 @@ private:
 	// string svolume;
 	// string sclock, svolume;
 	int iclock, ivolume;
-	//G
-	// string sgamma;
-	//G
-	int igamma;
+
+
 	string exec, params, workdir, manual, selectordir, selectorfilter, selectorscreens, backdrop;
 	bool selectorbrowser, useRamTimings, useGinge;
 	void drawRun();
@@ -89,11 +87,18 @@ public:
 	// const string &volumeStr();
 	void setVolume(int vol);
 
+#if defined(TARGET_GP2X)
+	//G
+	// string sgamma;
+	//G
+	int igamma;
+
 //G
 	int gamma();
 	// const string &gammaStr();
 	void setGamma(int gamma);
 // /G
+#endif
 
 	bool save();
 	void run();
