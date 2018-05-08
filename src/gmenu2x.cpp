@@ -1420,8 +1420,8 @@ void GMenu2X::skinMenu() {
 	}
 }
 
-void GMenu2X::umountSd() {
 #if defined(TARGET_RS97)
+void GMenu2X::umountSd() {
 	MessageBox mb(this, tr["Do you want to umount external sdcard ?"], "icons/eject.png");
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
@@ -1430,11 +1430,9 @@ void GMenu2X::umountSd() {
 		MessageBox mb(this,tr["Complete !"]);
 		mb.exec();
 	}
-#endif
 }
 
 void GMenu2X::formatSd() {
-#if defined(TARGET_RS97)
 	MessageBox mb(this, tr["Do you want to format internal SD card?"], "icons/format.png");
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
@@ -1450,8 +1448,8 @@ void GMenu2X::formatSd() {
 			mb.exec();
 		}
 	}
-#endif
 }
+#endif
 
 void GMenu2X::restart() {
 	MessageBox mb(this, tr["GMenuNext will restart to apply\nthe settings. Continue?"], "icons/exit.png");
