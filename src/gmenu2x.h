@@ -201,7 +201,7 @@ public:
 
 	//Configuration settings
 	bool useSelectionPng;
-	void setSkin(const string &skin, bool setWallpaper = true);
+	void setSkin(const string &skin, bool setWallpaper = true, bool clearSC = true);
 	//firmware type and version
 	string fwType, fwVersion;
 	//gp2x type
@@ -226,6 +226,7 @@ public:
 	long getBatteryStatus();
 
 	void skinMenu();
+	void onChangeSkin();
 
 #if defined(TARGET_GP2X)
 	void writeConfigOpen2x();
