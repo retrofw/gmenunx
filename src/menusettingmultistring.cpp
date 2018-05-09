@@ -33,9 +33,24 @@ MenuSettingMultiString::MenuSettingMultiString(
 		GMenu2X *gmenu2x, const string &name,
 		const string &description, string *value,
 		const vector<string> *choices_)
+	: MenuSettingMultiString(
+		gmenu2x, name,
+		description, value,
+		choices_, MakeDelegate(this, &MenuSettingMultiString::voidAction)
+	){
+	ERROR("NO FUNC");
+	};
+
+
+MenuSettingMultiString::MenuSettingMultiString(
+		GMenu2X *gmenu2x, const string &name,
+		const string &description, string *value,
+		const vector<string> *choices_, cbAction pFunc)
 	: MenuSettingStringBase(gmenu2x, name, description, value)
 	, choices(choices_)
 {
+this->onChange = pFunc; // store
+
 	setSel(find(choices->begin(), choices->end(), *value) - choices->begin());
 
 	IconButton *btn;
@@ -49,21 +64,22 @@ MenuSettingMultiString::MenuSettingMultiString(
 	buttonBox.add(btn);
 }
 
-void MenuSettingMultiString::manageInput()
-{
+void MenuSettingMultiString::manageInput() {
 	if (gmenu2x->input[LEFT ]) decSel();
-	if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) incSel();
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) incSel();
+
 }
 
-void MenuSettingMultiString::incSel()
-{
+void MenuSettingMultiString::incSel() {
 	setSel(selected + 1);
+		this->onChange();
 }
 
-void MenuSettingMultiString::decSel()
-{
+void MenuSettingMultiString::decSel() {
 	setSel(selected - 1);
+		this->onChange();
 }
+
 
 void MenuSettingMultiString::setSel(int sel)
 {
@@ -73,5 +89,6 @@ void MenuSettingMultiString::setSel(int sel)
 		sel = 0;
 	}
 	selected = sel;
+
 	setValue((*choices)[sel]);
 }
