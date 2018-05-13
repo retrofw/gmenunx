@@ -96,7 +96,7 @@ void LinkScannerDialog::exec() {
 	// ledOff();
 
 	while (!close) {
-		gmenu2x->input.update(0);
+		gmenu2x->input.update(false);
 
 // COMMON ACTIONS
 		if ( gmenu2x->input.isActive(MODIFIER) ) {
