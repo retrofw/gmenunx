@@ -1510,7 +1510,6 @@ void GMenu2X::poweroff() {
 #if !defined(TARGET_PC)
 		system("reboot");
 #endif
-
 	}
 }
 
