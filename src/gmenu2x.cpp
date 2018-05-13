@@ -2290,26 +2290,6 @@ void GMenu2X::drawScrollBar(uint pagesize, uint totalsize, uint pagepos, SDL_Rec
 	s->box(scrollRect.x + scrollRect.w - 4, by + 1, 2, bs - 2, skinConfColors[COLOR_SELECTION_BG]);
 }
 
-void GMenu2X::drawTopBar(Surface *s) {
-	if (s==NULL) s = this->s;
-
-	// Surface *bar = sc.skinRes("imgs/topbar.png");
-	// if (bar != NULL)
-	// 	bar->blit(s, 0, 0);
-	// else
-	s->box(0, 0, resX, skinConfInt["topBarHeight"], skinConfColors[COLOR_TOP_BAR_BG]);
-}
-
-void GMenu2X::drawBottomBar(Surface *s) {
-	if (s==NULL) s = this->s;
-
-	// Surface *bar = sc.skinRes("imgs/bottombar.png");
-	// if (bar != NULL)
-	// 	bar->blit(s, 0, resY-bar->raw->h);
-	// else
-	s->box(0, resY - skinConfInt["bottomBarHeight"], resX, skinConfInt["bottomBarHeight"], skinConfColors[COLOR_BOTTOM_BAR_BG]);
-}
-
 
 #if defined(TARGET_GP2X)
 void GMenu2X::settingsOpen2x() {

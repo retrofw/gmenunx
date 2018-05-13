@@ -290,11 +290,6 @@ public:
 	int drawButtonRight(Surface *s, const string &btn, const string &text, int x=5, int y=-10);
 	void drawScrollBar(uint pagesize, uint totalsize, uint pagepos, SDL_Rect scrollRect);
 
-	// void drawSectionBar(Surface *s=NULL);
-	void drawTopBar(Surface *s=NULL);
-	void drawBottomBar(Surface *s=NULL);
-	// void redrawBottomBar();
-
 	Menu* menu;
 };
 
