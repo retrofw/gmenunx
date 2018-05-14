@@ -838,7 +838,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 	if (popup) {
 		bool close = false;
-		input.setWakeUpInterval(40);
+		input.setWakeUpInterval(1000);
 		SDL_Rect progress = {52, 32, resX-84, 8};
 		SDL_Rect window = {20, 20, resX-40, 32};
 
@@ -893,11 +893,11 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 bool GMenu2X::setSuspend(bool suspend) {
 	if(suspend) {
-		input.setInterval(0);
+		// input.setInterval(0);
 		setBacklight(0);
 		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
 	} else{
-		setInputSpeed();
+		// setInputSpeed();
 		setBacklight(max(10, confInt["backlight"]));
 		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
 		setClock(528);
@@ -942,9 +942,12 @@ void GMenu2X::main() {
 	setClock(528);
 
 
+	input.setWakeUpInterval(1000);
+
 	while (!quit) {
 		tickNow = SDL_GetTicks();
-		inputAction = input.update(suspendActive);
+		// inputAction = input.update(suspendActive);
+		inputAction = input.update();
 		if(suspendActive) {
 			// SUSPEND ACTIVE
 			if (input[POWER]) {
@@ -1150,12 +1153,10 @@ void GMenu2X::main() {
 		s->flip();
 
 		if (inputAction == 0) {
-			// INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
+			INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
 
-			usleep(LOOP_DELAY);
-			
 			if (input.isActive(POWER)) {
-				if (tickPowerOff >= 5) { //5 * 500ms
+				if (tickPowerOff >= 4) { //4 * 500ms
 					poweroff();
 					tickPowerOff = 0;
 				}
