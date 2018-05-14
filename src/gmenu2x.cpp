@@ -943,10 +943,9 @@ void GMenu2X::main() {
 
 
 	while (!quit) {
-		tickNow = SDL_GetTicks();
-
 		// inputAction = input.update(suspendActive);
 		inputAction = input.update();
+		tickNow = SDL_GetTicks();
 		if(suspendActive) {
 			// SUSPEND ACTIVE
 			if (input[POWER]) {
@@ -1156,8 +1155,8 @@ void GMenu2X::main() {
 
 			if (input.isActive(POWER)) {
 				if (tickPowerOff >= 4) { //4 * 500ms
-					poweroff();
 					tickPowerOff = 0;
+					poweroff();
 				}
 			} else if (tickPowerOff >= 2 || tickNow - tickSuspend >= confInt["backlightTimeout"] * 1000) {
 					if(!suspendActive) {
