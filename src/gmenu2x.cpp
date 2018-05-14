@@ -892,9 +892,11 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 bool GMenu2X::setSuspend(bool suspend) {
 	if(suspend) {
+		input.setInterval(0);
 		setBacklight(0);
 		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
 	} else{
+		setInputSpeed();
 		setBacklight(max(10, confInt["backlight"]));
 		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
 		setClock(528);
@@ -941,7 +943,7 @@ void GMenu2X::main() {
 
 	while (!quit) {
 		tickNow = SDL_GetTicks();
-		inputAction = input.update(false);
+		inputAction = input.update(suspendActive);
 		if(suspendActive) {
 			// SUSPEND ACTIVE
 			if (input[POWER]) {
@@ -949,11 +951,9 @@ void GMenu2X::main() {
 				tickSuspend = tickNow;
 				suspendActive = setSuspend(false);
 			}
-			usleep(50000);
 			continue;
 		}
 		// SUSPEND NOT ACTIVE
-
 
 		//Background
 		if (prevBackdrop != currBackdrop) {
@@ -1151,9 +1151,9 @@ void GMenu2X::main() {
 		if (inputAction == 0) {
 			// INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
 
-			usleep(50000);
+			usleep(LOOP_DELAY);
 			
-			if(input.isActive(POWER)) {
+			if (input.isActive(POWER)) {
 				if (tickPowerOff >= 5) { //5 * 500ms
 					poweroff();
 					tickPowerOff = 0;
@@ -1164,7 +1164,7 @@ void GMenu2X::main() {
 						mb.setAutoHide(1000);
 						mb.exec();
 
-						SDL_Delay(1000);
+						// SDL_Delay(1000);
 						suspendActive = setSuspend(true);
 						tickPowerOff = 0;
 					}
@@ -1695,13 +1695,11 @@ void GMenu2X::contextMenu() {
 	input.setWakeUpInterval(40); //25FPS
 
 	while (!close) {
-		tickNow = SDL_GetTicks();
-
 		selbox.y = box.y+4+h*sel;
 		bg.blit(s,0,0);
 
 		if (fadeAlpha<200)
-			fadeAlpha = intTransition(0,200,tickStart,500,tickNow);
+			fadeAlpha = intTransition(0,200,tickStart,500,SDL_GetTicks());
 		else
 			input.setWakeUpInterval(0);
 		s->box(0, 0, resX, resY, 0,0,0,fadeAlpha);
@@ -1745,6 +1743,7 @@ void GMenu2X::contextMenu() {
 		}
 #endif
 		input.update();
+
 	// COMMON ACTIONS
 		if ( input.isActive(MODIFIER) ) {
 			if (input.isActive(SECTION_NEXT)) {
