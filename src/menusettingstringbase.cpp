@@ -47,7 +47,7 @@ void MenuSettingStringBase::draw(int y)
 
 uint MenuSettingStringBase::manageInput()
 {
-	if (gmenu2x->input[CANCEL ]) clear();
+	if (gmenu2x->input[MENU]) clear();
 	if (gmenu2x->input[CONFIRM]) edit();
 }
 
