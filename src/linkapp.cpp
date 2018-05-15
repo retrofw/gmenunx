@@ -114,7 +114,7 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 			setAliasFile( value );
 		} else if (name == "backdrop") {
 			backdrop = value;
-			WARNING("BACKDROP: '%s'", backdrop.c_str());
+			// WARNING("BACKDROP: '%s'", backdrop.c_str());
 		} else {
 			WARNING("Unrecognized option: '%s'", name.c_str());
 			break;
