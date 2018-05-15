@@ -939,9 +939,12 @@ void GMenu2X::main() {
 	setClock(528);
 
 
+	INFO("11 NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
+
+	input.setWakeUpInterval(1000);
 
 	while (!quit) {
-		// inputAction = input.update(suspendActive);
+		// INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
 		inputAction = input.update();
 		tickNow = SDL_GetTicks();
 		if(suspendActive) {
@@ -957,12 +960,6 @@ void GMenu2X::main() {
 		// SUSPEND NOT ACTIVE
 		input.setWakeUpInterval(1000);
 
-		//Background
-		if (prevBackdrop != currBackdrop) {
-			INFO("New backdrop: %s", currBackdrop.c_str());
-			sc.del(prevBackdrop);
-			prevBackdrop = currBackdrop;
-		}
 		sc[currBackdrop]->blit(s,0,0);
 
 		// SECTIONS
@@ -1076,6 +1073,13 @@ void GMenu2X::main() {
 		currBackdrop = confStr["wallpaper"];
 		if (menu->selLink() != NULL && menu->selLinkApp() != NULL && !menu->selLinkApp()->getBackdrop().empty() && sc.add(menu->selLinkApp()->getBackdrop()) != NULL) {
 			currBackdrop = menu->selLinkApp()->getBackdrop();
+		}
+		//Background
+		if (prevBackdrop != currBackdrop) {
+			INFO("New backdrop: %s", currBackdrop.c_str());
+			sc.del(prevBackdrop);
+			prevBackdrop = currBackdrop;
+			input.setWakeUpInterval(1);
 		}
 
 		if (confStr["sectionBarPosition"] != "OFF") {
