@@ -135,9 +135,6 @@ private:
 	string lastSelectorDir;
 	int lastSelectorElement;
 	void readConfig();
-
-
-
 	void readTmp();
 
 	void initFont();
@@ -220,6 +217,7 @@ public:
 	void options();
 	void restart();
 	void poweroff();
+
 	/*!
 	Reads the current battery state and returns a number representing it's level of charge
 	@return A number representing battery charge. 0 means fully discharged. 5 means fully charged. 6 represents a gp2x using AC power.
@@ -229,6 +227,8 @@ public:
 
 	void skinMenu();
 	uint onChangeSkin();
+
+	bool inputCommonActions();
 
 #if defined(TARGET_GP2X)
 	void writeConfigOpen2x();
