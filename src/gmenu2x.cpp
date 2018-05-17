@@ -1283,7 +1283,7 @@ bool GMenu2X::powerManager(bool &inputAction) {
 		tickSuspend = tickNow; //SDL_GetTicks();
 	}
 
-	INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
+	// INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
 
 	if (input.isActive(POWER)) {
 		if (tickPowerOff >= 4) { //4 * 500ms
