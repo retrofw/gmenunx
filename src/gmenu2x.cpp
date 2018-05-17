@@ -884,6 +884,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 		confInt["backlight"] = val;
 		writeConfig();
+		tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 	}
 	return val;
 }
@@ -914,8 +915,7 @@ void GMenu2X::main() {
 	udc_status curUDCStatus = UDC_REMOVE;
 	udc_status preUDCStatus = UDC_REMOVE;
 	int needUSBUmount = 0;
-	// int backlightOffset;
-	bool inputAction;
+
 	bool quit = false;
 	int x = 0, y = 0; //, helpBoxHeight = fwType=="open2x" ? 154 : 139;//, offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
 	uint i;
@@ -934,8 +934,7 @@ void GMenu2X::main() {
 	input.setWakeUpInterval(1000);
 
 	while (!quit) {
-		// INFO("NOW: %d\tSUSPEND: %d\tPOWER: %d", tickNow, tickSuspend, tickPowerOff);
-		inputAction = input.update();
+		bool inputAction = input.update();
 
 		if (powerManager(inputAction)) continue;
 
@@ -1808,7 +1807,8 @@ void GMenu2X::contextMenu() {
 		else if ( input[LEFT] || input[PAGEUP] ) sel = 0;
 		else if ( input[RIGHT] || input[PAGEDOWN] ) sel = (int)voices.size()-1;
 	}
-	// input.setWakeUpInterval(1000);
+
+	tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 }
 
 bool GMenu2X::saveScreenshot() {
