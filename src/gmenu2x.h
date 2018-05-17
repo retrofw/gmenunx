@@ -191,6 +191,8 @@ public:
 	InputManager input;
 	Touchscreen ts;
 
+	unsigned long tickSuspend, tickPowerOff;
+
 	//Configuration hashes
 	ConfStrHash confStr, skinConfStr;
 	ConfIntHash confInt, skinConfInt;
@@ -229,6 +231,7 @@ public:
 	uint onChangeSkin();
 
 	bool inputCommonActions();
+	bool powerManager(bool &inputAction);
 
 #if defined(TARGET_GP2X)
 	void writeConfigOpen2x();
