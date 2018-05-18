@@ -1058,7 +1058,7 @@ void GMenu2X::main() {
 						mb.exec();
 
 						while (getUDCStatus() == UDC_CONNECT) {
-							SDL_Delay(500);
+							SDL_Delay(200);
 						}
 					}
 				}
@@ -1474,13 +1474,11 @@ void GMenu2X::skinMenu() {
 
 		save = sd.save;
 		// font->setColor(skinConfColors[COLOR_FONT])->setOutlineColor(skinConfColors[COLOR_FONT_OUTLINE]);
-
-		if (save && sd.edited()) {
-			writeSkinConfig();
-			writeConfig();
-		}
-		
 	} while (!save);
+
+	writeSkinConfig();
+	writeConfig();
+
 	setSkin(confStr["skin"], true, true);
 	initBG();
 }
