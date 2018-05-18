@@ -1062,6 +1062,7 @@ void GMenu2X::main() {
 					WARNING("%s, unexpected USB status!", __func__);
 				}
 				preUDCStatus = curUDCStatus;
+				tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 			}
 		}
 
@@ -1302,7 +1303,7 @@ bool GMenu2X::powerManager(bool &inputAction) {
 
 	// INFO("START: %d\tSUSPEND: %d\tPOWER: %d", tickStart, tickStart - tickSuspend, tickPower - tickStart);
 
-	if (tickPower >= 200 || tickStart - tickSuspend >= confInt["backlightTimeout"] * 1000) {
+	if (tickPower >= 300 || tickStart - tickSuspend >= confInt["backlightTimeout"] * 1000) {
 		MessageBox mb(this, tr["Suspend"]);
 		mb.setAutoHide(1);
 		mb.exec();
