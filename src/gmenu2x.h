@@ -208,7 +208,7 @@ public:
 	RGBAColor skinConfColors[NUM_COLORS];
 
 	//Configuration settings
-	bool useSelectionPng;
+	// bool useSelectionPng;
 	void setSkin(const string &skin, bool setWallpaper = true, bool clearSC = true);
 	//firmware type and version
 	string fwType; //, fwVersion;
@@ -223,7 +223,7 @@ public:
 
 	//Status functions
 	void main();
-	void options();
+	void settings();
 	void restartDialog();
 	void poweroffDialog();
 
