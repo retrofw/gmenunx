@@ -41,10 +41,8 @@
 
 using namespace std;
 
-
 InputManager::InputManager()
 	: wakeUpTimer(NULL) {}
-
 
 InputManager::~InputManager() {
 	for (uint x = 0; x < joysticks.size(); x++)
@@ -52,13 +50,11 @@ InputManager::~InputManager() {
 			SDL_JoystickClose(joysticks[x]);
 }
 
-
 void InputManager::init(const string &conffile) {
 	initJoysticks();
 	if (!readConfFile(conffile))
 		ERROR("InputManager initialization from config file failed.");
 }
-
 
 void InputManager::initJoysticks() {
 	//SDL_JoystickEventState(SDL_IGNORE);
@@ -74,7 +70,6 @@ void InputManager::initJoysticks() {
 		else WARNING("Failed to initialize joystick: %i", x);
 	}
 }
-
 
 bool InputManager::readConfFile(const string &conffile) {
 	setActionsCount(20); // plus 2 for BACKLIGHT and POWER
@@ -162,7 +157,6 @@ bool InputManager::readConfFile(const string &conffile) {
 	return true;
 }
 
-
 void InputManager::setActionsCount(int count) {
 	actions.clear();
 	for (int x = 0; x < count; x++) {
@@ -174,7 +168,6 @@ void InputManager::setActionsCount(int count) {
 		actions.push_back(action);
 	}
 }
-
 
 bool InputManager::update(bool wait) {
 	bool anyactions = false;
@@ -194,14 +187,13 @@ bool InputManager::update(bool wait) {
 	}
 
 	long now = SDL_GetTicks();
-	for (uint x=0; x<actions.size(); x++) {
+	for (uint x = 0; x < actions.size(); x++) {
 		bool prevstate = actions[x].active;
 		bool state = isActive(x);
-		actions[x].active = false;
-
+// DEBUG("state: %x: %d", x, actions[x].active);
 		if (state != prevstate) {
 			if (state) {
-				if (now-actions[x].last >= actions[x].interval) {
+				if (now - actions[x].last >= actions[x].interval) {
 					actions[x].active = true;
 					anyactions = true;
 					actions[x].last = now;
@@ -215,6 +207,7 @@ bool InputManager::update(bool wait) {
 					}
 				}
 			} else {
+				actions[x].active = false;
 				if (actions[x].timer != NULL) {
 					SDL_RemoveTimer(actions[x].timer);
 					actions[x].timer = NULL;
@@ -227,9 +220,8 @@ bool InputManager::update(bool wait) {
 	return anyactions;
 }
 
-
 void InputManager::dropEvents() {
-	for (uint x=0; x<actions.size(); x++) {
+	for (uint x = 0; x < actions.size(); x++) {
 		actions[x].active = false;
 		if (actions[x].timer != NULL) {
 			SDL_RemoveTimer(actions[x].timer);
@@ -237,7 +229,6 @@ void InputManager::dropEvents() {
 		}
 	}
 }
-
 
 Uint32 InputManager::checkRepeat(Uint32 interval, void *_data) {
 	RepeatEventData *data = (RepeatEventData *)_data;
@@ -251,7 +242,6 @@ Uint32 InputManager::checkRepeat(Uint32 interval, void *_data) {
 		return 0;
 	}
 }
-
 
 SDL_Event *InputManager::fakeEventForAction(int action) {
 	MappingList mapList = actions[action].maplist;
@@ -282,11 +272,9 @@ SDL_Event *InputManager::fakeEventForAction(int action) {
 	return event;
 }
 
-
 int InputManager::count() {
 	return actions.size();
 }
-
 
 void InputManager::setInterval(int ms, int action) {
 	if (action<0)
@@ -295,7 +283,6 @@ void InputManager::setInterval(int ms, int action) {
 	else if ((uint)action < actions.size())
 		actions[action].interval = ms;
 }
-
 
 void InputManager::setWakeUpInterval(int ms) {
 	if (wakeUpTimer != NULL)
@@ -308,7 +295,6 @@ void InputManager::setWakeUpInterval(int ms) {
 		wakeUpTimer = SDL_AddTimer(ms, wakeUp, NULL);
 }
 
-
 Uint32 InputManager::wakeUp(Uint32 interval, void *_data) {
 	SDL_Event *event = new SDL_Event();
 	event->type = SDL_WAKEUPEVENT;
@@ -316,16 +302,14 @@ Uint32 InputManager::wakeUp(Uint32 interval, void *_data) {
 	return interval;
 }
 
-
-bool InputManager::operator[](int action) {
-	if (action<0 || (uint)action>=actions.size()) return false;
+bool &InputManager::operator[](int action) {
+	// if (action<0 || (uint32_t)action>=actions.size()) return false;
 	return actions[action].active;
 }
 
-
 bool InputManager::isActive(int action) {
 	MappingList mapList = actions[action].maplist;
-	for (MappingList::const_iterator it = mapList.begin(); it !=mapList.end(); ++it) {
+	for (MappingList::const_iterator it = mapList.begin(); it != mapList.end(); ++it) {
 		InputMap map = *it;
 
 		switch (map.type) {
