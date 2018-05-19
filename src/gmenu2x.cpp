@@ -452,9 +452,9 @@ void GMenu2X::initFont() {
 void GMenu2X::initMenu() {
 	//Menu structure handler
 	menu = new Menu(this);
-	for (uint i=0; i < menu->getSections().size(); i++) {
+	for (uint i = 0; i < menu->getSections().size(); i++) {
 		//Add virtual links in the applications section
-		if (menu->getSections()[i]=="applications") {
+		if (menu->getSections()[i] == "applications") {
 			menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Launch an application"], "skin:icons/explorer.png");
 #if !defined(TARGET_PC)
 			if (getBatteryLevel() > 5) // show only if charging
@@ -463,16 +463,16 @@ void GMenu2X::initMenu() {
 		}
 
 		//Add virtual links in the setting section
-		else if (menu->getSections()[i]=="settings") {
+		else if (menu->getSections()[i] == "settings") {
 			menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure settings"], "skin:icons/configure.png");
 			menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Configure skin"], "skin:icons/skin.png");
-			menu->addActionLink(i, tr["Wallpaper"], MakeDelegate(this, &GMenu2X::changeWallpaper), tr["Use image as wallpaper"], "skin:icons/wallpaper.png");
+			menu->addActionLink(i, tr["Wallpaper"], MakeDelegate(this, &GMenu2X::changeWallpaper), tr["Set background image"], "skin:icons/wallpaper.png");
 #if defined(TARGET_GP2X)
-			if (fwType=="open2x")
+			if (fwType == "open2x")
 				menu->addActionLink(i, "Open2x", MakeDelegate(this, &GMenu2X::settingsOpen2x), tr["Configure Open2x system settings"], "skin:icons/o2xconfigure.png");
 			// menu->addActionLink(i, "TV", MakeDelegate(this, &GMenu2X::toggleTvOut), tr["Activate/deactivate tv-out"], "skin:icons/tv.png");
 			menu->addActionLink(i, "USB SD", MakeDelegate(this, &GMenu2X::activateSdUsb), tr["Activate USB on SD"], "skin:icons/usb.png");
-			if (fwType=="gph" && !f200)
+			if (fwType == "gph" && !f200)
 				menu->addActionLink(i, "USB Nand", MakeDelegate(this, &GMenu2X::activateNandUsb), tr["Activate USB on NAND"], "skin:icons/usb.png");
 			//menu->addActionLink(i, "USB Root", MakeDelegate(this, &GMenu2X::activateRootUsb), tr["Activate USB on the root of the Gp2x Filesystem"], "skin:icons/usb.png");
 			//menu->addActionLink(i, "Speaker", MakeDelegate(this, &GMenu2X::toggleSpeaker), tr["Activate/deactivate Speaker"], "skin:icons/speaker.png");
