@@ -1249,8 +1249,7 @@ void GMenu2X::main() {
 		if ( input[CONFIRM] && menu->selLink() != NULL ) {
 			setVolume(confInt["globalVolume"]);
 
-			if (menu->selLinkApp()!=NULL && menu->selLinkApp()->getSelectorDir().empty()) {
-				// MessageBox mb(this, tr.translate("Launching $1", menu->selLink()->getTitle().c_str(), NULL), menu->selLinkApp()->getIconPath());
+			if (menu->selLinkApp() != NULL && menu->selLinkApp()->getSelectorDir().empty()) {
 				MessageBox mb(this, tr["Launching "] + menu->selLink()->getTitle().c_str(), menu->selLink()->getIconPath());
 				mb.setAutoHide(500);
 				mb.exec();
@@ -1261,8 +1260,8 @@ void GMenu2X::main() {
 		else if ( input[SETTINGS] ) settings();
 		else if ( input[MENU]     ) contextMenu();
 		// LINK NAVIGATION
-		else if ( input[LEFT ]  ) menu->linkLeft();
-		else if ( input[RIGHT]  ) menu->linkRight();
+		else if ( input[LEFT ]  ) menu->pageUp();
+		else if ( input[RIGHT]  ) menu->pageDown();
 		else if ( input[UP   ]  ) menu->linkUp();
 		else if ( input[DOWN ]  ) menu->linkDown();
 		// SECTION
