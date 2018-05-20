@@ -967,7 +967,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 			if (input.update()) tickStart = SDL_GetTicks();
 
-			if ((SDL_GetTicks() - tickStart) >= 3000 || input[MODIFIER] || input[CONFIRM] || input[CANCEL]) close = true;
+			if ((SDL_GetTicks() - tickStart) >= 3000 || input[SETTINGS] || input[MENU] || input[CONFIRM] || input[CANCEL]) close = true;
 
 			if ( input[LEFT] || input[DEC] )			val = setBacklight(max(1, val - backlightStep), false);
 			else if ( input[RIGHT] || input[INC] )		val = setBacklight(min(100, val + backlightStep), false);
@@ -1380,9 +1380,10 @@ bool GMenu2X::inputCommonActions() {
 }
 
 bool GMenu2X::powerManager(bool &inputAction) {
-	unsigned long tickStart = SDL_GetTicks(), tickPower = 0;
+	long tickStart = SDL_GetTicks(), tickPower = 0;
 
-	INFO("START: %d\tSUSPEND: %d\tPOWER: %d", tickStart, tickStart - tickSuspend, tickPower);
+	// INFO("START: %d\tSUSPEND: %d\tPOWER: %d\tsuspendActive: %d", tickStart, tickStart - tickSuspend, tickPower, suspendActive);
+	// input.setWakeUpInterval(1000); return false;
 
 	if(suspendActive) {
 		// SUSPEND ACTIVE
@@ -1486,10 +1487,11 @@ void GMenu2X::settings() {
 
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
+	sd.addSetting(new MenuSettingInt(this,tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this,tr["Screen timeout"], tr["Seconds to turn display off if inactive"], &confInt["backlightTimeout"], 30, 10, 300));
 	sd.addSetting(new MenuSettingInt(this,tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 1, 300));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Battery profile"], tr["Set the battery discharge profile"], &confStr["batteryType"], &batteryType));
-	sd.addSetting(new MenuSettingBool(this, tr["Skin backdrops"], tr["Automatic load of backdrops from skin pack"], &confInt["skinBackdrops"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &confInt["skinBackdrops"]));
 	// sd.addSetting(new MenuSettingMultiString(this, tr["Section Bar Postition"], tr["Set the position of the Section Bar"], &sb_sel, &sectionBar));
 	// sd.addSetting(new MenuSettingMultiString(this, tr["Section Bar Postition"], tr["Set the position of the Section Bar"], &confInt["sectionBar"], &sectionBar));
 
