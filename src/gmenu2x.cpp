@@ -689,6 +689,7 @@ void GMenu2X::readConfig() {
 
 	// Defaults
 	confStr["batteryType"] = "BL-5B";
+	confStr["datetime"] = __BUILDTIME__;
 
 	if (fileExists(conffile)) {
 		ifstream inf(conffile.c_str(), ios_base::in);
@@ -1551,13 +1552,6 @@ void GMenu2X::settings() {
 #else
 	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
 #endif
-
-
-	// stringstream ss;
-	// 	ss.clear();
-	// 	ss << "2018-01-23 12:34";
-	// 	ss >> confStr["datetime"];
-	confStr["datetime"] = "2018-01-23 12:34";
 
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
 
