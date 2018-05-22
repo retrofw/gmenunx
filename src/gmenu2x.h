@@ -278,6 +278,8 @@ public:
 	bool saveScreenshot();
 
 	void setClock(unsigned mhz);
+	const string getDateTime();
+	void setDateTime();
 
 	void setVolume(int vol);
 	int getVolume();

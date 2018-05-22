@@ -70,10 +70,14 @@
 
 #include "batteryloggerdialog.h"
 #include "linkscannerdialog.h"
+#include "menusettingdatetime.h"
 
 #include "debug.h"
 
 #include <sys/mman.h>
+
+#include <ctime>
+#include <sys/time.h>   /* for settimeofday() */
 
 const char *CARD_ROOT = "/"; //Note: Add a trailing /!
 const int CARD_ROOT_LEN = 1;
@@ -360,8 +364,12 @@ GMenu2X::GMenu2X() {
 #if !defined(TARGET_PC)
 	setenv("SDL_NOMOUSE", "1", 1);
 #endif
+
+	setDateTime();
+
 	//Screen
-	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_JOYSTICK)<0 ) {
+	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK)<0 ) {
+		SDL_InitSubSystem(SDL_INIT_TIMER);
 		ERROR("Could not initialize SDL: %s", SDL_GetError());
 		quit();
 	}
@@ -740,7 +748,7 @@ void GMenu2X::writeConfig() {
 	ofstream inf(conffile.c_str());
 	if (inf.is_open()) {
 		for(ConfStrHash::iterator curr = confStr.begin(); curr != confStr.end(); curr++) {
-			if (curr->first == "sectionBarPosition" || curr->first == "tvoutEncoding" || curr->first == "datetime" ) continue;
+			if (curr->first == "sectionBarPosition" || curr->first == "sectionBar" || curr->first == "tvoutEncoding"  || curr->first == "datetime" ) continue;
 			inf << curr->first << "=\"" << curr->second << "\"" << endl;
 		}
 
@@ -1006,6 +1014,8 @@ int GMenu2X::setBacklight(int val, bool popup) {
 }
 
 void GMenu2X::setSuspend(bool suspend) {
+	getDateTime();
+
 	if (suspend) {
 		input.setWakeUpInterval(60e3);
 		setBacklight(0);
@@ -1509,10 +1519,12 @@ void GMenu2X::settings() {
 	sectionBar.push_back("Bottom");
 
 	string sb_sel = sectionBar[confInt["sectionBar"]];
+	string prevDateTime = confStr["datetime"];
 
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 	sd.addSetting(new MenuSettingInt(this,tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
+	// sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
 	sd.addSetting(new MenuSettingInt(this,tr["Screen timeout"], tr["Seconds to turn display off if inactive"], &confInt["backlightTimeout"], 30, 10, 300));
 	sd.addSetting(new MenuSettingInt(this,tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 1, 300));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Battery profile"], tr["Set the battery discharge profile"], &confStr["batteryType"], &batteryType));
@@ -1540,7 +1552,15 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
 #endif
 
-//sd.addSetting(new MenuSettingBool(this,tr["Show root"],tr["Show root folder in the file selection dialogs"],&showRootFolder));
+
+	// stringstream ss;
+	// 	ss.clear();
+	// 	ss << "2018-01-23 12:34";
+	// 	ss >> confStr["datetime"];
+	confStr["datetime"] = "2018-01-23 12:34";
+
+	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
+
 
 	if (sd.exec() && sd.edited() && sd.save) {
 //G
@@ -1572,7 +1592,46 @@ void GMenu2X::settings() {
 #if defined(TARGET_RS97)
 		setTVOut();
 #endif
+		// if ((prevSkinBackdrops != confInt["skinBackdrops"] && menu != NULL) || (prevDateTime != confStr["datetime"])) restartDialog();
+		// if (prevSkinBackdrops != confInt["skinBackdrops"] || prevDateTime != confStr["datetime"]) restartDialog();
+		if (prevSkinBackdrops != confInt["skinBackdrops"]) restartDialog();
 	}
+}
+
+
+const string GMenu2X::getDateTime() {
+	char       buf[80];
+	time_t     now = time(0);
+	struct tm  tstruct = *localtime(&now);
+	strftime(buf, sizeof(buf), "%F %R", &tstruct);
+	confStr["datetime"] = buf;
+	return buf;
+}
+
+void GMenu2X::setDateTime() {
+	int imonth, iday, iyear, ihour, iminute;
+	string value = confStr["datetime"];
+
+	sscanf(value.c_str(), "%d-%d-%d %d:%d", &iyear, &imonth, &iday, &ihour, &iminute);
+
+	struct tm datetime = { 0 };
+
+	datetime.tm_year = iyear - 1900;
+	datetime.tm_mon  = imonth - 1;
+	datetime.tm_mday = iday;
+	datetime.tm_hour = ihour;
+	datetime.tm_min  = iminute;
+	datetime.tm_sec  = 0;
+
+	if (datetime.tm_year < 0) datetime.tm_year = 0;
+
+	time_t t = mktime(&datetime);
+
+	struct timeval newtime = { t, 0 };
+
+#if !defined(TARGET_PC)
+	settimeofday(&newtime, NULL);
+#endif
 }
 
 uint GMenu2X::onChangeSkin() {
@@ -2262,7 +2321,7 @@ void GMenu2X::setVolume(int vol) {
 	vol = constrain(vol,0,100);
 	unsigned long soundDev = open("/dev/mixer", O_RDWR);
 
-	vol = vol ? 100 : 0;
+	// vol = vol ? 100 : 0;
 	if (soundDev) {
 		vol = (vol << 8) | vol;
 #if defined(TARGET_RS97)
