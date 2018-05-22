@@ -388,11 +388,15 @@ GMenu2X::GMenu2X() {
 	btnContextMenu = NULL;
 	font = NULL;
 	menu = NULL;
+
 	setSkin(confStr["skin"], false);
-	
+
 	initBG();
 
+	initLayout();
+
 	initMenu();
+
 
 	if (!fileExists(confStr["wallpaper"])) {
 		DEBUG("Searching wallpaper");
@@ -468,7 +472,9 @@ void GMenu2X::initBG(const string &imagePath) {
 	} else if (sc.add(confStr["wallpaper"]) != NULL) {
 		sc[confStr["wallpaper"]]->blit(bg, 0, 0);
 	}
+}
 
+void GMenu2X::initLayout() {
 	// LINKS rect
 	linksRect = (SDL_Rect){0, 0, resX, resY};
 	sectionBarRect = (SDL_Rect){0, 0, resX, resY};

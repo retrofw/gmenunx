@@ -146,6 +146,7 @@ private:
 
 	void initFont();
 	void initMenu();
+	void initLayout();
 
 	IconButton *btnContextMenu;
 
