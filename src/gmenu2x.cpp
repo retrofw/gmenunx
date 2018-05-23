@@ -1549,14 +1549,13 @@ void GMenu2X::settings() {
 #endif
 
 #if defined(TARGET_RS97)
-	confInt["globalVolume"] = 1;
 	sd.addSetting(new MenuSettingMultiString(this, tr["TV-out"], tr["TV-out signal"], &confStr["TVOut"], &encodings));
-#else
-	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
+	// sd.addSetting(new MenuSettingBool(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"]));
+// #else
 #endif
+	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
 	// sd.addSetting(new MenuSettingBool(this,tr["Show root"],tr["Show root folder in the file selection dialogs"],&showRootFolder));
 
-	// sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
 
 
 	if (sd.exec() && sd.edited() && sd.save) {
