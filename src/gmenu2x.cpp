@@ -1660,10 +1660,10 @@ void GMenu2X::poweroffDialog() {
 
 #if defined(TARGET_RS97)
 void GMenu2X::checkUDC() {
-	if(getUDCStatus() == UDC_CONNECT) {
-		MessageBox mb(this, tr["USB connected. Select mode:"], "skin:icons/usb.png");
+	if (getUDCStatus() == UDC_CONNECT) {
+		MessageBox mb(this, tr["Select USB mode:"], "skin:icons/usb.png");
 		mb.setButton(CONFIRM, tr["USB Drive"]);
-		mb.setButton(CANCEL,  tr["Charge"]);
+		mb.setButton(CANCEL,  tr["Charger"]);
 		if (mb.exec() == CONFIRM) {
 			// needUSBUmount = 1;
 			// system("/usr/bin/usb_conn_int_sd.sh");
