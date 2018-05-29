@@ -515,9 +515,8 @@ void GMenu2X::initLayout() {
 			}
 		}
 	}
+
 	listRect = (SDL_Rect){0, skinConfInt["topBarHeight"], resX, resY - skinConfInt["bottomBarHeight"] - skinConfInt["topBarHeight"]};
-
-
 }
 
 void GMenu2X::initFont() {
@@ -1578,6 +1577,7 @@ void GMenu2X::skinMenu() {
 		sc.del("skin:icons/skin.png");
 		sc.del("skin:imgs/buttons/left.png");
 		sc.del("skin:imgs/buttons/right.png");
+
 		setSkin(confStr["skin"], true, false);
 
 		SettingsDialog sd(this, ts, tr["Skin"], "skin:icons/skin.png");
@@ -1604,7 +1604,6 @@ void GMenu2X::skinMenu() {
 		sd.exec();
 
 		save = sd.save;
-		// font->setColor(skinConfColors[COLOR_FONT])->setOutlineColor(skinConfColors[COLOR_FONT_OUTLINE]);
 	} while (!save);
 
 	writeSkinConfig();
