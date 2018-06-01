@@ -1341,7 +1341,8 @@ bool GMenu2X::inputCommonActions() {
 			isCombo = true;
 		}
 
-		SDL_Delay(100);
+		SDL_Delay(50);
+		input.setWakeUpInterval(50);
 		input.update();
 		wasActive = !isCombo;
 	}
