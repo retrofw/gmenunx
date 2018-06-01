@@ -1161,6 +1161,7 @@ void GMenu2X::main() {
 			sc.del(prevBackdrop);
 			prevBackdrop = currBackdrop;
 			input.setWakeUpInterval(1);
+			continue;
 		}
 
 		if (confInt["sectionBar"]) {
