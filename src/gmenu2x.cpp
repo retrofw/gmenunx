@@ -2326,15 +2326,6 @@ int GMenu2X::setBacklight(int val, bool popup) {
 	if (val < 0) val = 100;
 	else if (val > 100) val = backlightStep;
 
-#if defined(TARGET_RS97)
-	FILE *f = fopen("/proc/jz/lcd_backlight", "w");
-	if (f) {
-		sprintf(buf, "%d", val);
-		fputs(buf, f);
-	}
-	fclose(f);
-#endif
-
 	if (popup) {
 		bool close = false;
 
@@ -2367,11 +2358,20 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			else if ( input[RIGHT] || input[INC] )		val = setBacklight(min(100, val + backlightStep), false);
 			else if ( input[BACKLIGHT] )				val = setBacklight(val + backlightStep, false);
 		}
-
 		confInt["backlight"] = val;
 		writeConfig();
 		tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 	}
+
+#if defined(TARGET_RS97)
+	FILE *f = fopen("/proc/jz/lcd_backlight", "w");
+	if (f) {
+		sprintf(buf, "%d", val);
+		fputs(buf, f);
+	}
+	fclose(f);
+#endif
+
 	return val;
 }
 
