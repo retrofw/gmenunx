@@ -2285,6 +2285,8 @@ int GMenu2X::setVolume(int val, bool popup) {
 													if (val > 100) val = 0;
 												}
 		}
+		confInt["globalVolume"] = val;
+		writeConfig();
 		tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 	}
 
@@ -2300,9 +2302,6 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 		volumeMode = vol ? VOLUME_MODE_NORMAL : VOLUME_MODE_MUTE;
 	}
-
-	confInt["globalVolume"] = val;
-	writeConfig();
 
 	return val;
 }
