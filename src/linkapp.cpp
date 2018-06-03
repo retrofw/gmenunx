@@ -41,7 +41,7 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 	file = linkfile;
 	wrapper = false;
 	dontleave = false;
-	setClock(CPU_CLK_DEFAULT);
+	setClock(gmenu2x->confInt["menuClock"]);
 	setVolume(-1);
 
 #if defined(TARGET_GP2X)
@@ -207,14 +207,8 @@ int LinkApp::clock() {
 	return iclock;
 }
 
-
 void LinkApp::setClock(int mhz) {
-	iclock = constrain(mhz, CPU_CLK_MIN, CPU_CLK_MAX);
-	// stringstream ss;
-	// sclock = "";
-	// ss << iclock << "Mhz";
-	// ss >> sclock;
-
+	iclock = constrain(mhz, gmenu2x->confInt["minClock"], gmenu2x->confInt["maxClock"]);
 	edited = true;
 }
 
