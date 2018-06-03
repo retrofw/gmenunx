@@ -131,11 +131,13 @@ const string &LinkApp::searchManual() {
 	if (!manual.empty()) return manual;
 	string filename = exec;
 	string::size_type pos = exec.rfind(".");
-	if (pos != string::npos) filename = exec.substr(0,pos);
+	if (pos != string::npos) filename = exec.substr(0, pos);
 	filename += ".man.txt";
 
 	string dirtitle = base_name(dir_name(exec)) + ".man.txt";
 	string linktitle = base_name(file);
+	pos = linktitle.rfind(".");
+	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
 
 	if (fileExists(linktitle))
 		manual = linktitle;
@@ -155,6 +157,8 @@ const string &LinkApp::searchBackdrop() {
 	string exectitle = base_name(execicon);
 	string dirtitle = base_name(dir_name(exec));
 	string linktitle = base_name(file);
+	pos = linktitle.rfind(".");
+	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
 
 // auto backdrop
 	if (!gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".png").empty())
@@ -180,7 +184,10 @@ const string &LinkApp::searchIcon() {
 	execicon += ".png";
 	string exectitle = base_name(execicon);
 	string dirtitle = base_name(dir_name(exec)) + ".png";
-	string linktitle = base_name(file) + ".png";
+	string linktitle = base_name(file);
+	pos = linktitle.rfind(".");
+	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
+	linktitle += ".png";
 
 	if (!gmenu2x->sc.getSkinFilePath("icons/" + linktitle).empty())
 		iconPath = gmenu2x->sc.getSkinFilePath("icons/" + linktitle);
