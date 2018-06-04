@@ -1343,6 +1343,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	}
 
 	while (input[MENU]) {
+		input.update();
+
 		if (input[SECTION_NEXT]) {
 			// SCREENSHOT
 			if (!saveScreenshot()) { ERROR("Can't save screenshot"); return true; }
@@ -1355,11 +1357,6 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			setVolume(confInt["globalVolume"], true);
 			isCombo = true;
 		}
-
-		SDL_Delay(50);
-		// input.setWakeUpInterval(50);
-		WARNING("MENU HOLD");
-		input.update();
 
 		wasActive = !isCombo;
 	}
@@ -2323,6 +2320,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 	}
 
 #if defined(TARGET_RS97)
+	char buf[4];
 	FILE *f = fopen("/proc/jz/lcd_backlight", "w");
 	if (f) {
 		sprintf(buf, "%d", val);
