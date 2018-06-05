@@ -194,8 +194,6 @@ public:
 	InputManager input;
 	Touchscreen ts;
 
-	Uint32 tickSuspend; //, tickPowerOff;
-
 	//Configuration hashes
 	ConfStrHash confStr, skinConfStr;
 	ConfIntHash confInt, skinConfInt;
