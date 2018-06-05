@@ -2134,21 +2134,21 @@ if (confStr["batteryType"] == "BL-5B") {
 
 void GMenu2X::setInputSpeed() {
 	input.setInterval(180);
-	// input.setInterval(30,  VOLDOWN);
-	// input.setInterval(30,  VOLUP);
 	input.setInterval(1000, SETTINGS);
 	input.setInterval(1000, MENU);
+	input.setInterval(1000, CONFIRM);
+	input.setInterval(1500, POWER);
+	// input.setInterval(30,  VOLDOWN);
+	// input.setInterval(30,  VOLUP);
 	// input.setInterval(300, CANCEL);
 	// input.setInterval(300, MANUAL);
 	// input.setInterval(100, INC);
 	// input.setInterval(100, DEC);
-	input.setInterval(1000, CONFIRM);
 	// input.setInterval(500, SECTION_PREV);
 	// input.setInterval(500, SECTION_NEXT);
 	// input.setInterval(500, PAGEUP);
 	// input.setInterval(500, PAGEDOWN);
-	input.setInterval(500, BACKLIGHT);
-	input.setInterval(1500, POWER);
+	// input.setInterval(200, BACKLIGHT);
 }
 
 void GMenu2X::setCPU(unsigned mhz) {
