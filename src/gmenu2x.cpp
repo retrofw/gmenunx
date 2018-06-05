@@ -1739,45 +1739,44 @@ void GMenu2X::contextMenu() {
 	voices.push_back((MenuOption){tr["Delete section"],	MakeDelegate(this, &GMenu2X::deleteSection)});
 	voices.push_back((MenuOption){tr["Link scanner"],	MakeDelegate(this, &GMenu2X::linkScanner)});
 
+	Surface bg(s);
 	bool close = false;
-	uint i, fadeAlpha=0;
-	int sel=0;
+	int sel = 0;
+	uint i, fadeAlpha = 0, h = font->getHeight(), h2 = font->getHalfHeight();
 
-	int h = font->getHeight();
-	int h2 = font->getHalfHeight();
 	SDL_Rect box;
-	box.h = h*voices.size()+8;
+	box.h = h * voices.size() + 8;
 	box.w = 0;
 	for (i = 0; i < voices.size(); i++) {
 		int w = font->getTextWidth(voices[i].text);
 		if (w > box.w) box.w = w;
 	}
 	box.w += 23;
-	box.x = halfX - box.w/2;
-	box.y = halfY - box.h/2;
+	box.x = halfX - box.w / 2;
+	box.y = halfY - box.h / 2;
 
-	SDL_Rect selbox = {box.x+4, 0, box.w-8, h};
+	SDL_Rect selbox = {box.x + 4, 0, box.w - 8, h};
 	Uint32 tickStart = SDL_GetTicks();
 
-	Surface bg(s);
-	input.setWakeUpInterval(20); //25FPS
-
+	input.setWakeUpInterval(45);
 	while (!close) {
-		selbox.y = box.y + 4 + h * sel;
 		bg.blit(s, 0, 0);
 
-		if (fadeAlpha < 200) fadeAlpha = intTransition(0, 200, tickStart, 500, SDL_GetTicks());
-		else input.setWakeUpInterval(0);
-
-		s->box(0, 0, resX, resY, 0,0,0,fadeAlpha);
+		s->box(0, 0, resX, resY, 0,0,0, fadeAlpha);
 		s->box(box.x, box.y, box.w, box.h, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-		s->rectangle( box.x+2, box.y+2, box.w-4, box.h-4, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
+		s->rectangle( box.x + 2, box.y + 2, box.w - 4, box.h - 4, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
 
-	//draw selection rect
+		//draw selection rect
+		selbox.y = box.y + 4 + h * sel;
 		s->box( selbox.x, selbox.y, selbox.w, selbox.h, skinConfColors[COLOR_MESSAGE_BOX_SELECTION] );
 		for (i = 0; i < voices.size(); i++)
 			s->write( font, voices[i].text, box.x + 12, box.y + h2 + 3 + h * i, HAlignLeft, VAlignMiddle, skinConfColors[COLOR_FONT_ALT], skinConfColors[COLOR_FONT_ALT_OUTLINE]);
 		s->flip();
+
+		if (fadeAlpha < 200) {
+			fadeAlpha = intTransition(0, 200, tickStart, 200);
+			continue; 
+		}
 
 #if defined(TARGET_GP2X)
 		//touchscreen
@@ -1809,37 +1808,35 @@ void GMenu2X::contextMenu() {
 			}
 		}
 #endif
+		input.setWakeUpInterval(0);
+
 		bool inputAction = input.update();
 
 		if (inputCommonActions(inputAction)) continue;
 
 		if ( input[MENU] || input[CANCEL]) close = true;
-		else if ( input[UP] ) sel = (sel-1 < 0) ? (int)voices.size()-1 : sel - 1 ;
-		else if ( input[DOWN] ) sel = (sel+1 > (int)voices.size()-1) ? 0 : sel + 1;
+		else if ( input[UP] ) sel = (sel - 1 < 0) ? (int)voices.size() - 1 : sel - 1 ;
+		else if ( input[DOWN] ) sel = (sel + 1 > (int)voices.size() - 1) ? 0 : sel + 1;
 		else if ( input[LEFT] || input[PAGEUP] ) sel = 0;
 		else if ( input[RIGHT] || input[PAGEDOWN] ) sel = (int)voices.size() - 1;
 		else if ( input[SETTINGS] || input[CONFIRM] ) { voices[sel].action(); close = true; }
 	}
-	input.setWakeUpInterval(0);
-	// tickSuspend = SDL_GetTicks(); // prevent immediate suspend
-	// powerManager->resetSuspendTimer();
 }
 
 bool GMenu2X::saveScreenshot() {
 	ledOn();
 	uint x = 0;
-	stringstream ss;
 	string fname;
 	
-	mkdir("screenshots/",0777);
+	mkdir("screenshots/", 0777);
 
 	do {
 		x++;
-		fname = "";
-		ss.clear();
+		// fname = "";
+		stringstream ss;
 		ss << x;
 		ss >> fname;
-		fname = "screenshots/screen"+fname+".bmp";
+		fname = "screenshots/screen" + fname + ".bmp";
 	} while (fileExists(fname));
 	x = SDL_SaveBMP(s->raw, fname.c_str());
 	sync();
@@ -1848,7 +1845,7 @@ bool GMenu2X::saveScreenshot() {
 }
 
 void GMenu2X::addLink() {
-	FileDialog fd(this,tr["Select an application"],"","",tr["File Dialog"]);
+	FileDialog fd(this, tr["Select an application"], "", "", tr["File Dialog"]);
 	if (fd.exec()) {
 		ledOn();
 		menu->addLink(fd.getPath(), fd.getFile());

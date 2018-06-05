@@ -163,7 +163,6 @@ void InputManager::setActionsCount(int count) {
 		InputManagerAction action;
 		action.active = false;
 		action.interval = 0;
-		action.last = 0;
 		action.timer = NULL;
 		actions.push_back(action);
 	}
@@ -194,13 +193,13 @@ bool InputManager::update(bool wait) {
 		if (actions[x].active) {
 			if (actions[x].timer == NULL) actions[x].timer = SDL_AddTimer(actions[x].interval, wakeUp, NULL);
 			anyactions = true;
-			actions[x].last = now;
+			// actions[x].last = now;
 		} else {
 			if (actions[x].timer != NULL) {
 				SDL_RemoveTimer(actions[x].timer);
 				actions[x].timer = NULL;
 			}
-			actions[x].last = 0;
+			// actions[x].last = 0;
 		}
 	}
 
