@@ -42,7 +42,8 @@
 using namespace std;
 
 InputManager::InputManager()
-	: wakeUpTimer(NULL) {}
+	: wakeUpTimer(NULL) {
+}
 
 InputManager::~InputManager() {
 	for (uint x = 0; x < joysticks.size(); x++)
@@ -191,6 +192,8 @@ bool InputManager::update(bool wait) {
 	for (uint x = 0; x < actions.size(); x++) {
 		actions[x].active = isActive(x);
 		if (actions[x].active) {
+			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); // eegg
+			input_combo[sizeof(input_combo) - 1] = x; // eegg
 			if (actions[x].timer == NULL) actions[x].timer = SDL_AddTimer(actions[x].interval, wakeUp, NULL);
 			anyactions = true;
 			// actions[x].last = now;
@@ -204,6 +207,10 @@ bool InputManager::update(bool wait) {
 	}
 
 	return anyactions;
+}
+
+bool InputManager::combo() { // eegg
+	return !memcmp(input_combo, konami, sizeof(input_combo));
 }
 
 void InputManager::dropEvents() {
