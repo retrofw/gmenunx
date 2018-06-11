@@ -2319,6 +2319,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		sprintf(buf, "%d", val);
 		fputs(buf, f);
 	}
+	fflush(f);
 	fclose(f);
 #endif
 
