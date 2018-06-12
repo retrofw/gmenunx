@@ -11,37 +11,21 @@ BatteryLoggerDialog::BatteryLoggerDialog(GMenu2X *gmenu2x, const string &title, 
 }
 
 void BatteryLoggerDialog::exec() {
-	gmenu2x->initBG();
-
 	bool close = false;
 
-	drawTopBar(gmenu2x->bg, title, description, icon);
+	drawTopBar(this->bg, title, description, icon);
 
-	gmenu2x->bg->box(gmenu2x->listRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
+	this->bg->box(gmenu2x->listRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
 
-	drawBottomBar(gmenu2x->bg);
-	gmenu2x->drawButton(gmenu2x->bg, "b", gmenu2x->tr["Back"],
-	gmenu2x->drawButton(gmenu2x->bg, "select", gmenu2x->tr["Del battery.csv"],
-	gmenu2x->drawButton(gmenu2x->bg, "down", gmenu2x->tr["Scroll"],
-	gmenu2x->drawButton(gmenu2x->bg, "up", "", 5)-10)));
+	drawBottomBar(this->bg);
+	gmenu2x->drawButton(this->bg, "b", gmenu2x->tr["Back"],
+	gmenu2x->drawButton(this->bg, "select", gmenu2x->tr["Del battery.csv"],
+	gmenu2x->drawButton(this->bg, "down", gmenu2x->tr["Scroll"],
+	gmenu2x->drawButton(this->bg, "up", "", 5)-10)));
 
-	gmenu2x->bg->blit(gmenu2x->s,0,0);
+	this->bg->blit(gmenu2x->s,0,0);
 
 	gmenu2x->setBacklight(100);
-
-// // skinConfColor
-// 	int i = 0, j = 0;
-// 	for(ConfColorHash::iterator curr = skinConfColor.begin(); curr != skinConfColor.end(); curr++) {
-// 		i++;
-// 		if (i > 31) {
-// 			j++;
-// 			i=0;
-// 		}
-// 		if (j > 14) break;
-
-// 		DEBUG("COLOR: %d,%d %s = %d", i,j, curr->first.c_str(),  (unsigned short)curr->second.r);
-// 		gmenu2x->bg->box(2+i*10,2+j*10,8,8, curr->second);
-// 	}
 
 	gmenu2x->s->flip();
 
@@ -86,7 +70,7 @@ void BatteryLoggerDialog::exec() {
 			inf.close();
 		}
 
-		gmenu2x->bg->blit(gmenu2x->s,0,0);
+		this->bg->blit(gmenu2x->s,0,0);
 
 		for (uint i = firstRow; i < firstRow + rowsPerPage && i < log.size(); i++) {
 			int rowY, j = log.size() - i - 1;
