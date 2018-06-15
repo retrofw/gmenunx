@@ -1325,14 +1325,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	bool wasActive = false;
 	while (input[POWER]) {
-		WARNING("POWER HOLD");
-
 		wasActive = true;
-
 		input.update();
-
-		// HOLD POWER BUTTON
 		if (input[POWER]) {
+			// HOLD POWER BUTTON
 			powerManager->doPowerOff(0, NULL);
 			return true;
 		}
@@ -1343,24 +1339,23 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		return true;
 	}
 
-	wasActive = false;
 	while (input[MENU]) {
-		input.update();
 		wasActive = true;
+		input.update();
 		if (input[SECTION_NEXT]) {
 			// SCREENSHOT
 			if (!saveScreenshot()) { ERROR("Can't save screenshot"); return true; }
 			MessageBox mb(this, tr["Screenshot saved"]);
-			mb.setAutoHide(500);
+			mb.setAutoHide(1000);
 			mb.exec();
-			wasActive = false;
+			return true;
 		} else if (input[SECTION_PREV]) {
 			// VOLUME / MUTE
 			setVolume(confInt["globalVolume"], true);
-			wasActive = false;
+			return true;
 		}
 	}
-
+	
 	input[MENU] = wasActive; // Key was active but no combo was pressed
 
 	if ( input[BACKLIGHT] ) {
