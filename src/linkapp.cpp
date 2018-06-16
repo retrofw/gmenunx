@@ -297,7 +297,7 @@ void LinkApp::run() {
 void LinkApp::showManual() {
 	if (manual == "" || !fileExists(manual)) return;
 
-	string ext = manual.substr(manual.size()-4,4);
+	string ext = manual.substr(manual.size() - 4, 4);
 	if (ext == ".png" || ext == ".bmp" || ext == ".jpg" || ext == "jpeg") {
 
 		ImageViewerDialog im(gmenu2x, title, description, icon, manual);
