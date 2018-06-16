@@ -69,13 +69,9 @@ Uint32 PowerManager::doSuspend(unsigned int interval, void *param) {
 };
 
 Uint32 PowerManager::doPowerOff(unsigned int interval, void *param) {
-	if (interval > 0) {
+	// if (interval > 0) {
 #if !defined(TARGET_PC)
-		system("poweroff");
+	system("poweroff");
 #endif
-		return interval;
-	}
-
-	PowerManager::instance->gmenu2x->poweroffDialog();
-	return 0;
+	return interval;
 };
