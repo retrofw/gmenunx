@@ -1388,6 +1388,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		WARNING("TV OUT TOGGLE");
 		tvOutToggle = 0;
 		TVOut = "OFF";
+		int lcd_brightness = confInt["backlight"];
 
 		if (tvOutConnected) {
 			MessageBox mb(this, tr["TV-out connected.\nContinue?"], "skin:icons/tv.png");
@@ -1396,9 +1397,11 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 			if (mb.exec() == SETTINGS) {
 				TVOut = confStr["TVOut"];
+				lcd_brightness = 0;
 			}
 		}
 		setTVOut(TVOut);
+		setBacklight(lcd_brightness);
 	}
 
 	bool wasActive = false;
