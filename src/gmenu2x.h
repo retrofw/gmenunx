@@ -133,13 +133,6 @@ private:
 
 	// IconButton *btnContextMenu;
 
-	unsigned int memdev;
-#ifdef TARGET_RS97
-	volatile unsigned long *memregs;
-#else
-	volatile unsigned short *memregs;
-#endif
-
 #ifdef TARGET_GP2X
 	typedef struct {
 		unsigned short batt;
