@@ -69,6 +69,7 @@
 #include "menusettingimage.h"
 #include "menusettingdir.h"
 
+#include "imageviewerdialog.h"
 #include "batteryloggerdialog.h"
 #include "linkscannerdialog.h"
 #include "menusettingdatetime.h"
@@ -1332,7 +1333,7 @@ void GMenu2X::main() {
 		}
 #endif
 		// SELLINKAPP SELECTED
-		else if (input[MANUAL] && menu->selLinkApp() != NULL) menu->selLinkApp()->showManual();
+		else if (input[MANUAL] && menu->selLinkApp() != NULL) showManual(); // menu->selLinkApp()->showManual();
 
 
 		// On Screen Help
@@ -1362,6 +1363,37 @@ void GMenu2X::main() {
 	pthread_join(thread_id, NULL);
 	// delete btnContextMenu;
 	// btnContextMenu = NULL;
+}
+
+void GMenu2X::showManual() {
+	string linkTitle = menu->selLinkApp()->getTitle();
+	string linkDescription = menu->selLinkApp()->getDescription();
+	string linkIcon = menu->selLinkApp()->getIcon();
+	string linkManual = menu->selLinkApp()->getManual();
+	string linkBackdrop = menu->selLinkApp()->getBackdrop();
+
+	if (linkManual == "" || !fileExists(linkManual)) return;
+
+	string ext = linkManual.substr(linkManual.size() - 4, 4);
+	if (ext == ".png" || ext == ".bmp" || ext == ".jpg" || ext == "jpeg") {
+		ImageViewerDialog im(this, linkTitle, linkDescription, linkIcon, linkManual);
+		im.exec();
+		return;
+	}
+
+	// Txt manuals and readmes
+	vector<string> txtman;
+
+	string line;
+	ifstream infile(linkManual.c_str(), ios_base::in);
+	if (infile.is_open()) {
+		while (getline(infile, line, '\n'))
+			txtman.push_back( strreplace(line, "\r", "") );
+		infile.close();
+
+		TextDialog td(this, linkTitle, linkDescription, linkIcon, &txtman, linkBackdrop);
+		td.exec();
+	}
 }
 
 bool GMenu2X::inputCommonActions(bool &inputAction) {
