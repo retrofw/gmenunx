@@ -1369,23 +1369,21 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
+		input.setWakeUpInterval(0);
 		while (!input[POWER]) {
 			input.update();
 		}
 		powerManager->doSuspend(0);
+		input.setWakeUpInterval(1000);
 		return true;
 	}
 
-	input.setWakeUpInterval(1000);
 	if (inputAction) powerManager->resetSuspendTimer();
-
+	input.setWakeUpInterval(1000);
 
 	hwCheck();
-	WARNING("NOT SUSPENDED");
-
 
 	if (tvOutToggle) {
-		WARNING("TV OUT TOGGLE");
 		tvOutToggle = 0;
 		TVOut = "OFF";
 		int lcd_brightness = confInt["backlight"];
