@@ -279,13 +279,9 @@ void GMenu2X::hwDeinit() {
 GMenu2X::GMenu2X() {
 	// instance = this;
 	//Detect firmware version and type
-	if (fileExists("/etc/open2x")) {
-		fwType = "open2x";
-		// fwVersion = "";
-	} else {
-		fwType = "gph";
-		// fwVersion = "";
-	}
+	if (fileExists("/etc/open2x")) fwType = "open2x";
+	else fwType = "gph";
+
 #if defined(TARGET_GP2X)
 	f200 = fileExists("/dev/touchscreen/wm97xx");
 
@@ -372,8 +368,8 @@ GMenu2X::GMenu2X() {
 	s->raw = SDL_SetVideoMode(resX, resY, confInt["videoBpp"], SDL_HWSURFACE|SDL_DOUBLEBUF);
 #endif
 
-	bg = NULL;
 	// btnContextMenu = NULL;
+	bg = NULL;
 	font = NULL;
 	menu = NULL;
 
@@ -389,9 +385,9 @@ GMenu2X::GMenu2X() {
 			confStr["wallpaper"] = fl.getPath() + "/" + fl.getFiles()[0];
 	}
 
-	setSkin(confStr["skin"], false, false);
-
 	sc[confStr["wallpaper"]]->blit(s,0,0);
+
+	setSkin(confStr["skin"], false, true);
 
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
