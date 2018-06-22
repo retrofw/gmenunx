@@ -154,10 +154,12 @@ private:
 	void initServices();
 
 #elif defined(TARGET_RS97)
-	void umountSd();
 	void formatSd();
 	void checkUDC();
+	void umountSdDialog();
 #endif
+	void umountSd();
+	void mountSd();
 
 	// void toggleTvOut();
 	void hwDeinit();
