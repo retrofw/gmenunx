@@ -256,11 +256,11 @@ void Surface::blendAdd(Surface *target, int x, int y) {
 */
 }
 
-void Surface::write(FontHelper *font, const string &text, int x, int y, const unsigned short halign, const unsigned short valign) {
-	font->write(this, text, x, y, halign, valign);
+void Surface::write(FontHelper *font, const string &text, int x, int y, const Uint8 align) {
+	font->write(this, text, x, y, align);
 }
-void Surface::write(FontHelper *font, const string &text, int x, int y, const unsigned short halign, const unsigned short valign, RGBAColor fgColor, RGBAColor bgColor) {
-	font->write(this, text, x, y, halign, valign, fgColor, bgColor);
+void Surface::write(FontHelper *font, const string &text, int x, int y, const Uint8 align, RGBAColor fgColor, RGBAColor bgColor) {
+	font->write(this, text, x, y, align, fgColor, bgColor);
 }
 
 void Surface::operator = (SDL_Surface *s) {
@@ -332,25 +332,7 @@ void Surface::setClipRect(SDL_Rect rect) {
 	SDL_SetClipRect(raw, &rect);
 }
 
-
-
-
-
-
-// bool Surface::blit(SDL_Surface *destination, int x, int y, int w, int h, int a) {
-// 	if (destination == NULL || a==0) return false;
-
-// 	SDL_Rect src = {0,0,w,h};
-// 	SDL_Rect dest;
-// 	dest.x = x;
-// 	dest.y = y;
-// 	if (a>0 && a!=raw->format->alpha)
-// 		SDL_SetAlpha(raw, SDL_SRCALPHA|SDL_RLEACCEL, a);
-// 	return SDL_BlitSurface(raw, (w==0 || h==0) ? NULL : &src, destination, &dest);
-// }
-
-
-bool Surface::blit(Surface *destination, int x, int y, const unsigned short align, int alpha) {
+bool Surface::blit(Surface *destination, int x, int y, const Uint8 align, Uint8 alpha) {
 	if (align & HAlignCenter) {
 		x -= raw->w / 2;
 	} else if (align & HAlignRight) {
@@ -366,7 +348,7 @@ bool Surface::blit(Surface *destination, int x, int y, const unsigned short alig
 	return blit(destination, {x, y, raw->w, raw->h}, HAlignLeft | VAlignTop, alpha);
 }
 
-bool Surface::blit(Surface *destination, SDL_Rect destrect, const unsigned short align, int alpha) {
+bool Surface::blit(Surface *destination, SDL_Rect destrect, const Uint8 align, Uint8 alpha) {
 	if (destination->raw == NULL || alpha == 0) return false;
 
 	SDL_Rect srcrect = {0, 0, destrect.w, destrect.h};
