@@ -18,9 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
- #include <SDL.h>
- #include <SDL_gfxPrimitives.h>
-
 //for browsing the filesystem
 #include <sys/stat.h>
 #include <sys/types.h>
