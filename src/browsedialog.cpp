@@ -1,12 +1,6 @@
-#include <string>
-#include <iostream>
 #include "browsedialog.h"
 #include "FastDelegate.h"
-#include "filelister.h"
-#include "gmenu2x.h"
-#include "messagebox.h"
-
-#include "debug.h"
+// #include "debug.h"
 #include <algorithm>
 
 using namespace fastdelegate;
@@ -341,7 +335,6 @@ const std::string BrowseDialog::getExt() {
 	string filename = (*fl)[selected];
 	string ext = "";
 	string::size_type pos = filename.rfind(".");
-	DEBUG("filename: %s", filename.c_str());
 	if (pos != string::npos && pos > 0) {
 		ext = filename.substr(pos, filename.length());
 		transform(ext.begin(), ext.end(), ext.begin(), (int(*)(int)) tolower);

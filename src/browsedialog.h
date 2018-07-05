@@ -107,8 +107,6 @@ public:
 		fl->setPath(path);
 		onChangeDir();
 	}
-
-
 };
 
 #endif /*INPUTDIALOG_H_*/
