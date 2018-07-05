@@ -18,8 +18,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "menusettingfile.h"
-#include "iconbutton.h"
-#include "filedialog.h"
+#include "browsedialog.h"
+#include "debug.h"
 
 using std::string;
 using fastdelegate::MakeDelegate;
@@ -42,8 +42,19 @@ MenuSettingFile::MenuSettingFile(GMenu2X *gmenu2x, const string &name, const str
 void MenuSettingFile::edit() {
 	string _value = value();
 	if (_value.empty())
-		_value = startPath+"/";
-	FileDialog fd(gmenu2x, description, filter, _value);
+		_value = startPath + "/";
+
+	_value = dir_name(_value);
+
+	// FileDialog fd(gmenu2x, description, filter, _value);
+	// BrowseDialog fd(gmenu2x, gmenu2x->tr["File Browser"], description, filter, _value);
+
+	BrowseDialog fd(gmenu2x, gmenu2x->tr["File Browser"], description);
+	fd.showDirectories = true;
+	fd.showFiles = true;
+	fd.setPath(_value);
+	fd.setFilter(filter);
+
 	if (fd.exec())
 		setValue(real_path(fd.getPath() + "/" + fd.getFile()));
 }
