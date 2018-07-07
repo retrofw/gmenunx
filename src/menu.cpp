@@ -272,7 +272,8 @@ bool Menu::addLink(string path, string file, string section) {
 		}
 		shorttitle += "..";
 	}
-
+	
+	int isection;
 	ofstream f(linkpath.c_str());
 	if (f.is_open()) {
 		f << "title=" << shorttitle << endl;
@@ -282,7 +283,7 @@ bool Menu::addLink(string path, string file, string section) {
 		if (wrapper) f << "wrapper=true" << endl;
 		f.close();
 
-		int isection = find(sections.begin(),sections.end(),section) - sections.begin();
+		isection = find(sections.begin(), sections.end(), section) - sections.begin();
 
 		if (isection >= 0 && isection < (int)sections.size()) {
 			INFO("Section: '%s(%i)'", sections[isection].c_str(), isection);
@@ -297,6 +298,9 @@ bool Menu::addLink(string path, string file, string section) {
 		ERROR("Error while opening the file '%s' for write.", linkpath.c_str());
 		return false;
 	}
+
+	setLinkIndex(links[isection].size() - 1);
+
 	return true;
 }
 
