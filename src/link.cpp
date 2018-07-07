@@ -36,20 +36,6 @@ void Link::run() {
 	this->action();
 }
 
-void Link::paint() {
-	iconSurface->blit(gmenu2x->s, {rect.x + padding, rect.y + padding, rect.w - 2 * padding, rect.h - 2 * padding});
-	gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr.translate(getTitle()), rect.x + padding + 36, rect.y + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
-	gmenu2x->s->write(gmenu2x->font, gmenu2x->tr.translate(getDescription()), rect.x + padding + 36, rect.y + rect.h - padding/2, VAlignBottom);
-}
-
-bool Link::paintHover() {
-	// if (gmenu2x->useSelectionPng)
-	// 	gmenu2x->sc["imgs/selection.png"]->blit(gmenu2x->s,rect,HAlignCenter,VAlignMiddle);
-	// else
-		gmenu2x->s->box(rect.x, rect.y, rect.w, rect.h, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
-	// return true;
-}
-
 void Link::updateSurfaces() {
 	iconSurface = gmenu2x->sc[getIconPath()];
 }
@@ -109,12 +95,4 @@ void Link::setIconPath(const string &icon) {
 	else
 		iconPath = gmenu2x->sc.getSkinFilePath("icons/generic.png");
 	updateSurfaces();
-}
-
-void Link::setSize(int w, int h) {
-	Button::setSize(w,h);
-}
-
-void Link::setPosition(int x, int y) {
-	Button::setPosition(x,y);
 }
