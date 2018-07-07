@@ -37,10 +37,11 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 {
 	manual = manualPath = "";
 	file = linkfile;
-	wrapper = false;
-	dontleave = false;
 	setCPU(gmenu2x->confInt["cpuMenu"]);
-	setVolume(-1);
+
+	// wrapper = false;
+	// dontleave = false;
+	// setVolume(-1);
 
 #if defined(TARGET_GP2X)
 	//G
@@ -51,8 +52,8 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 	selectorfilter = "";
 	icon = iconPath = "";
 	selectorbrowser = false;
-	useRamTimings = false;
-	useGinge = false;
+	// useRamTimings = false;
+	// useGinge = false;
 	workdir = "";
 	backdrop = backdropPath = "";
 
@@ -66,44 +67,39 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 		string::size_type position = line.find("=");
 		string name = trim(line.substr(0,position));
 		string value = trim(line.substr(position+1));
-		if (name == "title") {
-			title = value;
-		} else if (name == "description") {
-			description = value;
-		} else if (name == "icon") {
-			setIcon(value);
-		} else if (name == "exec") {
-			exec = value;
-		} else if (name == "params") {
-			params = value;
-		} else if (name == "workdir") {
-			workdir = value;
-		} else if (name == "manual") {
-			setManual(value);
-		} else if (name == "wrapper" && value == "true") {
-			wrapper = true;
-		} else if (name == "dontleave" && value == "true") {
-			dontleave = true;
-		} else if (name == "clock") {
-			setCPU( atoi(value.c_str()) );
+
+		if (name == "title") title = value;
+		else if (name == "description") description = value;
+		else if (name == "icon") setIcon(value);
+		else if (name == "exec") exec = value;
+		else if (name == "params") params = value;
+		else if (name == "workdir") workdir = value;
+		else if (name == "manual") setManual(value);
+		else if (name == "clock") setCPU(atoi(value.c_str()));
+
+		// else if (name == "wrapper" && value == "true") // wrapper = true;
+		// else if (name == "dontleave" && value == "true") // dontleave = true;
+		// else if (name == "volume") // setVolume(atoi(value.c_str()));
+		// else if (name == "useramtimings" && value == "true") // useRamTimings = true;
+		// else if (name == "useginge" && value == "true") // useGinge = true;
 
 #if defined(TARGET_GP2X)
 		//G
 		} else if (name == "gamma") {
 			setGamma( atoi(value.c_str()) );
 #endif
-		} else if (name == "volume") {
-			setVolume( atoi(value.c_str()) );
+		// } else if (name == "volume") {
+			// setVolume( atoi(value.c_str()) );
 		} else if (name == "selectordir") {
 			setSelectorDir( value );
 		} else if (name == "selectorbrowser" && value == "true") {
 			selectorbrowser = true;
 		} else if (name == "selectorbrowser" && value == "false") {
 			selectorbrowser = false;
-		} else if (name == "useramtimings" && value == "true") {
-			useRamTimings = true;
-		} else if (name == "useginge" && value == "true") {
-			useGinge = true;
+		// } else if (name == "useramtimings" && value == "true") {
+			// useRamTimings = true;
+		// } else if (name == "useginge" && value == "true") {
+			// useGinge = true;
 		} else if (name == "selectorfilter") {
 			setSelectorFilter( value );
 		} else if (name == "selectorscreens") {
@@ -215,15 +211,6 @@ void LinkApp::setCPU(int mhz) {
 	edited = true;
 }
 
-int LinkApp::volume() {
-	return ivolume;
-}
-
-void LinkApp::setVolume(int vol) {
-	ivolume = constrain(vol, -1, 100);
-	edited = true;
-}
-
 #if defined(TARGET_GP2X)
 int LinkApp::gamma() {
 	return igamma;
@@ -264,9 +251,9 @@ bool LinkApp::save() {
 		if (workdir != ""      ) f << "workdir="         << workdir         << endl;
 		if (manual != ""       ) f << "manual="          << manual          << endl;
 		if (iclock != 0        ) f << "clock="           << iclock          << endl;
-		if (useRamTimings      ) f << "useramtimings=true"                  << endl;
-		if (useGinge           ) f << "useginge=true"                       << endl;
-		if (ivolume > 0        ) f << "volume="          << ivolume         << endl;
+		// if (useRamTimings      ) f << "useramtimings=true"                  << endl;
+		// if (useGinge           ) f << "useginge=true"                       << endl;
+		// if (ivolume > 0        ) f << "volume="          << ivolume         << endl;
 
 #if defined(TARGET_GP2X)
 		//G
@@ -279,8 +266,8 @@ bool LinkApp::save() {
 		if (selectorscreens != "") f << "selectorscreens=" << selectorscreens << endl;
 		if (aliasfile != ""      ) f << "selectoraliases=" << aliasfile       << endl;
 		if (backdrop != ""       ) f << "backdrop="        << backdrop        << endl;
-		if (wrapper              ) f << "wrapper=true"                        << endl;
-		if (dontleave            ) f << "dontleave=true"                      << endl;
+		// if (wrapper              ) f << "wrapper=true"                        << endl;
+		// if (dontleave            ) f << "dontleave=true"                      << endl;
 		f.close();
 		return true;
 	} else
@@ -308,8 +295,8 @@ void LinkApp::selector(int startSelection, const string &selectorDir) {
 
 void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 	save();
-  
-	//Set correct working directory
+
+	// Set correct working directory
 	string wd = getRealWorkdir();
 	if (!wd.empty())
 		chdir(wd.c_str());
@@ -360,18 +347,15 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 	} // else, well.. we are no worse off :)
 
 	if (params != "") command += " " + params;
-	if (useGinge) {
-		string ginge_prep = gmenu2x->getExePath() + "/ginge/ginge_prep";
-		if (fileExists(ginge_prep)) command = cmdclean(ginge_prep) + " " + command;
+	// if (useGinge) {
+		// string ginge_prep = gmenu2x->getExePath() + "/ginge/ginge_prep";
+		// if (fileExists(ginge_prep)) command = cmdclean(ginge_prep) + " " + command;
+	// }
+	if (gmenu2x->confInt["outputLogs"]) command += " 2>&1 | tee " + cmdclean(gmenu2x->getExePath()) + "/log.txt";
+
+	if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
+		gmenu2x->writeConfig();
 	}
-	if (gmenu2x->confInt["outputLogs"]) command += " &> " + cmdclean(gmenu2x->getExePath()) + "/log.txt";
-	if (wrapper) command += "; sync & cd " + cmdclean(gmenu2x->getExePath()) + "; exec ./gmenu2x";
-	if (dontleave) {
-		system(command.c_str());
-	} else {
-		if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
-			gmenu2x->writeConfig();
-		}
 
 #if defined(TARGET_GP2X)
 		if (gmenu2x->fwType == "open2x" && gmenu2x->savedVolumeMode != gmenu2x->volumeMode)
@@ -466,24 +450,6 @@ void LinkApp::setSelectorBrowser(bool value) {
 	edited = true;
 }
 
-bool LinkApp::getUseRamTimings() {
-	return useRamTimings;
-}
-
-void LinkApp::setUseRamTimings(bool value) {
-	useRamTimings = value;
-	edited = true;
-}
-
-bool LinkApp::getUseGinge() {
-	return useGinge;
-}
-
-void LinkApp::setUseGinge(bool value) {
-	useGinge = value;
-	edited = true;
-}
-
 const string &LinkApp::getSelectorFilter() {
 	return selectorfilter;
 }
@@ -516,3 +482,21 @@ void LinkApp::setAliasFile(const string &aliasfile) {
 void LinkApp::renameFile(const string &name) {
 	file = name;
 }
+
+// bool LinkApp::getUseRamTimings() {
+// 	return useRamTimings;
+// }
+
+// void LinkApp::setUseRamTimings(bool value) {
+// 	useRamTimings = value;
+// 	edited = true;
+// }
+
+// bool LinkApp::getUseGinge() {
+// 	return useGinge;
+// }
+
+// void LinkApp::setUseGinge(bool value) {
+// 	useGinge = value;
+// 	edited = true;
+// }
