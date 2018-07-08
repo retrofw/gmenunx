@@ -1121,7 +1121,6 @@ void GMenu2X::resetSettings() {
 	}
 }
 
-
 void GMenu2X::readTmp() {
 	lastSelectorElement = -1;
 	if (!fileExists("/tmp/gmenu2x.tmp")) return;
