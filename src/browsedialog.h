@@ -49,6 +49,7 @@ private:
 		BD_ACTION_PAGEDOWN,
 		BD_ACTION_GOUP,
 		BD_ACTION_CONFIRM,
+		BD_ACTION_CANCEL,
 	};
 
 	bool close, result;
