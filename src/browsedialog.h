@@ -62,10 +62,6 @@ private:
 
 	bool ts_pressed;
 
-	Surface *iconGoUp;
-	Surface *iconFolder;
-	Surface *iconFile;
-
 	ButtonBox buttonBox;
 
 	uint32_t getAction();
