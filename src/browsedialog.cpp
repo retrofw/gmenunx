@@ -6,8 +6,8 @@
 using namespace fastdelegate;
 using namespace std;
 
-BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &subtitle)
-: Dialog(gmenu2x), title(title), subtitle(subtitle), ts_pressed(false), buttonBox(gmenu2x) {
+BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon)
+: Dialog(gmenu2x), title(title), description(description), icon(icon) {
 	fl = new FileLister(CARD_ROOT, true, false);
 }
 
@@ -37,7 +37,7 @@ bool BrowseDialog::exec() {
 	uint32_t rowHeight = gmenu2x->font->getHeight() + 1;
 	uint32_t numRows = (gmenu2x->listRect.h - 2)/rowHeight - 1;
 
-	drawTopBar(this->bg, title, subtitle, "icons/explorer.png");
+	drawTopBar(this->bg, title, description, icon);
 	drawBottomBar(this->bg);
 	this->bg->box(gmenu2x->listRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
 
@@ -51,7 +51,7 @@ bool BrowseDialog::exec() {
 	uint32_t tickStart = SDL_GetTicks();
 	while (!close) {
 		this->bg->blit(gmenu2x->s,0,0);
-		buttonBox.paint(5);
+		// buttonBox.paint(5);
 
 		//Selection
 		if (selected >= firstElement + numRows) firstElement = selected - numRows;
@@ -156,7 +156,7 @@ bool BrowseDialog::exec() {
 		}
 
 		// if (gmenu2x->f200) gmenu2x->ts.poll();
-		buttonBox.handleTS();
+		// buttonBox.handleTS();
 	}
 	// gmenu2x->s->clearClipRect();
 	return result;
