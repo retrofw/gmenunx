@@ -1773,7 +1773,7 @@ void GMenu2X::contextMenu() {
 	voices.push_back((MenuOption){tr["Link scanner"],	MakeDelegate(this, &GMenu2X::linkScanner)});
 
 	Surface bg(s);
-	bool close = false;
+	bool close = false, inputAction = false;
 	int sel = 0;
 	uint32_t i, fadeAlpha = 0, h = font->getHeight(), h2 = font->getHalfHeight();
 
@@ -1806,21 +1806,20 @@ void GMenu2X::contextMenu() {
 
 		if (fadeAlpha < 200) {
 			fadeAlpha = intTransition(0, 200, tickStart, 200);
-			continue; 
+			continue;
 		}
+		do {
+			inputAction = input.update();
 
-		// input.setWakeUpInterval(0);
+			if (inputCommonActions(inputAction)) continue;
 
-		bool inputAction = input.update();
-
-		if (inputCommonActions(inputAction)) continue;
-
-		if ( input[MENU] || input[CANCEL]) close = true;
-		else if ( input[UP] ) sel = (sel - 1 < 0) ? (int)voices.size() - 1 : sel - 1 ;
-		else if ( input[DOWN] ) sel = (sel + 1 > (int)voices.size() - 1) ? 0 : sel + 1;
-		else if ( input[LEFT] || input[PAGEUP] ) sel = 0;
-		else if ( input[RIGHT] || input[PAGEDOWN] ) sel = (int)voices.size() - 1;
-		else if ( input[SETTINGS] || input[CONFIRM] ) { voices[sel].action(); close = true; }
+			if ( input[MENU] || input[CANCEL]) close = true;
+			else if ( input[UP] ) sel = (sel - 1 < 0) ? (int)voices.size() - 1 : sel - 1 ;
+			else if ( input[DOWN] ) sel = (sel + 1 > (int)voices.size() - 1) ? 0 : sel + 1;
+			else if ( input[LEFT] || input[PAGEUP] ) sel = 0;
+			else if ( input[RIGHT] || input[PAGEDOWN] ) sel = (int)voices.size() - 1;
+			else if ( input[SETTINGS] || input[CONFIRM] ) { voices[sel].action(); close = true; }
+		} while (!inputAction);
 	}
 }
 
