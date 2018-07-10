@@ -70,8 +70,8 @@ void MenuSettingBool::draw(int y)
 
 uint32_t MenuSettingBool::manageInput()
 {
-	if ( gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] )
-		toggle();
+	if ( gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] ) toggle();
+	return 0; // SD_NO_ACTION
 }
 
 void MenuSettingBool::toggle()
