@@ -1822,8 +1822,7 @@ void GMenu2X::addLink() {
 	BrowseDialog fd(this, tr["Add link"], tr["Select an application"]);
 	fd.showDirectories = true;
 	fd.showFiles = true;
-	fd.setFilter(".dge,.gpu,.gpe,.sh,.bin,.elf");
-	// FileDialog fd(this, tr["Select an application"], "", "", tr["File Dialog"]);
+	fd.setFilter(".dge,.gpu,.gpe,.sh,.bin,.elf,");
 	if (fd.exec()) {
 		ledOn();
 		if (menu->addLink(fd.getPath(), fd.getFile())) {
