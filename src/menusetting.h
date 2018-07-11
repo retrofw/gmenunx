@@ -21,6 +21,7 @@
 #define MENUSETTING_H
 
 #include "buttonbox.h"
+#include "iconbutton.h"
 
 class MenuSetting {
 protected:
@@ -32,6 +33,7 @@ protected:
 
 public:
 	MenuSetting(GMenu2X *gmenu2x, const std::string &title, const std::string &description);
+	IconButton *btn;
 	virtual ~MenuSetting();
 
 	virtual void draw(int y);
