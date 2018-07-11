@@ -1189,24 +1189,20 @@ void GMenu2X::readConfig() {
 	if (!confStr["wallpaper"].empty() && !fileExists(confStr["wallpaper"])) confStr["wallpaper"] = "";
 	if (confStr["skin"].empty() || !dirExists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
 
-	// evalIntConf( &confInt["batteryLog"], 0, 0, 1 );
 	evalIntConf( &confInt["backlightTimeout"], 30, 10, 300);
 	evalIntConf( &confInt["powerTimeout"], 10, 1, 300);
 	evalIntConf( &confInt["outputLogs"], 0, 0, 1 );
-
 	evalIntConf( &confInt["cpuMax"], 642, 200, 1200 );
-	evalIntConf( &confInt["cpuMin"], 318, 200, 1200 );
-	evalIntConf( &confInt["cpuMenu"], 528, 200, 1200 );
-
+	evalIntConf( &confInt["cpuMin"], 342, 200, 1200 );
+	evalIntConf( &confInt["cpuMenu"], 600, 200, 1200 );
 	evalIntConf( &confInt["globalVolume"], 60, 1, 100 );
-	evalIntConf( &confInt["gamma"], 10, 1, 100 );
 	evalIntConf( &confInt["videoBpp"], 16, 8, 32 );
 	evalIntConf( &confInt["backlight"], 70, 1, 100);
-
 	evalIntConf( &confInt["minBattery"], 0, 1, 10000);
 	evalIntConf( &confInt["maxBattery"], 4500, 1, 10000);
-
 	evalIntConf( &confInt["sectionBar"], SB_LEFT, 1, 4);
+	evalIntConf( &confInt["linkCols"], 1, 1, 8);
+	evalIntConf( &confInt["linkRows"], 6, 1, 8);
 
 	if (!confInt["saveSelection"]) {
 		confInt["section"] = 0;
