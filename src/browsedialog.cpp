@@ -25,7 +25,7 @@ bool BrowseDialog::exec() {
 	Surface *iconFile = gmenu2x->sc.skinRes("imgs/file.png");
 
 	string path = fl->getPath();
-	if (path.empty() || !dirExists(path) || path.compare(0,CARD_ROOT_LEN,CARD_ROOT)!=0)
+	if (path.empty() || !dirExists(path))
 		setPath(CARD_ROOT);
 
 	fl->browse();
@@ -181,7 +181,8 @@ void BrowseDialog::directoryUp() {
 	if (p == path.size() - 1)
 		p = path.rfind("/", p - 1);
 
-	if (p == string::npos || p < 4 || path.compare(0, CARD_ROOT_LEN, CARD_ROOT) != 0) {
+	// if (p == string::npos || p < 4 || path.compare(0, CARD_ROOT_LEN, CARD_ROOT) != 0) {
+	if (p == string::npos || p < 4) {
 		close = true;
 		result = false;
 	} else {

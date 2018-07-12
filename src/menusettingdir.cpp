@@ -18,8 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "menusettingdir.h"
-#include "iconbutton.h"
-// #include "dirdialog.h"
 #include "browsedialog.h"
 #include "debug.h"
 
@@ -43,9 +41,8 @@ MenuSettingDir::MenuSettingDir(GMenu2X *gmenu2x, const string &title, const stri
 void MenuSettingDir::edit() {
 	string _value = value();
 	if (_value.empty())
-		_value = startPath+"/";
+		_value = startPath + "/";
 
-	// DirDialog dd(gmenu2x, description, _value);
 	BrowseDialog dd(gmenu2x, dialogTitle, description, dialogIcon);
 	dd.showDirectories = true;
 	dd.showFiles = false;
