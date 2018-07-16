@@ -669,6 +669,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	hwCheck();
 
+#if defined(TARGET_RS97)
 	if (MMCToggle) {
 		MMCToggle = 0;
 		string msg;
@@ -705,6 +706,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		setTVOut(TVOut);
 		setBacklight(lcd_brightness);
 	}
+#endif
 
 	bool wasActive = false;
 	while (input[POWER]) {
