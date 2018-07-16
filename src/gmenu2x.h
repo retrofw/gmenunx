@@ -195,13 +195,10 @@ public:
 	//Configuration hashes
 	ConfStrHash confStr, skinConfStr;
 	ConfIntHash confInt, skinConfInt;
-	// ConfColorHash skinConfColor;
 
 	RGBAColor skinConfColors[NUM_COLORS];
 
-	//Configuration settings
-	// bool useSelectionPng;
-	void setSkin(const string &skin, bool setWallpaper = true, bool clearSC = true);
+	void setSkin(const string &skin, bool resetWallpaper = true, bool clearSC = true);
 	//firmware type and version
 	string fwType; //, fwVersion;
 	//gp2x type
@@ -228,6 +225,7 @@ public:
 	int32_t getBatteryStatus();
 
 	void skinMenu();
+	void skinColors();
 	uint32_t onChangeSkin();
 	void initLayout();
 
@@ -291,7 +289,7 @@ public:
 	void renameSection();
 	void deleteSection();
 
-	void initBG(const string &imagePath="");
+	void initBG(const string &wallpaper="");
 
 	int drawButton(Button *btn, int x=5, int y=-10);
 	int drawButton(Surface *s, const string &btn, const string &text, int x=5, int y=-10);
