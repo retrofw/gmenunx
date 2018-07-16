@@ -846,8 +846,7 @@ void GMenu2X::initBG(const string &wallpaper) {
 	bg->box((SDL_Rect){0, 0, resX, resY}, (RGBAColor){0, 0, 0, 0});
 
 	confStr["wallpaper"] = wallpaper;
-
-	if (!wallpaper.empty() && sc.add(wallpaper) == NULL) {
+	if (wallpaper.empty() || sc.add(wallpaper) == NULL) {
 		DEBUG("Searching wallpaper");
 
 		FileLister fl("skins/" + confStr["skin"] + "/wallpapers", false, true);
@@ -858,8 +857,7 @@ void GMenu2X::initBG(const string &wallpaper) {
 		if (fl.getFiles().size() > 0)
 			confStr["wallpaper"] = fl.getPath() + "/" + fl.getFiles()[0];
 	}
-
-	sc[confStr["wallpaper"]]->blit(bg, 0, 0);
+	sc[wallpaper]->blit(bg, 0, 0);
 }
 
 void GMenu2X::initLayout() {
