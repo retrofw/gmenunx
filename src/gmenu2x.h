@@ -46,13 +46,6 @@ const int VOLUME_SCALER_PHONES = 65;
 const int VOLUME_SCALER_NORMAL = 100;
 const int BATTERY_READS = 10;
 
-enum vol_mode_t {
-	VOLUME_MODE_MUTE,
-	VOLUME_MODE_PHONES,
-	VOLUME_MODE_NORMAL
-};
-// const int LOOP_DELAY = 50000;
-
 extern const char *CARD_ROOT;
 extern const int CARD_ROOT_LEN;
 
@@ -203,7 +196,6 @@ public:
 	string fwType; //, fwVersion;
 	//gp2x type
 	bool f200;
-	int volumeMode = VOLUME_MODE_NORMAL;
 
 	SurfaceCollection sc;
 	Translator tr;
