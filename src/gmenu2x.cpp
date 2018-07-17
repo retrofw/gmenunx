@@ -157,7 +157,7 @@ enum mmc_status {
 	MMC_REMOVE, MMC_INSERT, MMC_ERROR
 };
 
-int16_t curMMCStatus, preMMCStatus, MMCToggle = MMC_REMOVE;
+int16_t curMMCStatus, preMMCStatus;
 int16_t getMMCStatus(void) {
 	if (memdev > 0) return !(memregs[0x10500 >> 2] >> 0 & 0b1);
 	return MMC_ERROR;
@@ -173,7 +173,7 @@ int16_t getUDCStatus(void) {
 	return UDC_ERROR;
 }
 
-int16_t tvOutPrev, tvOutConnected, tvOutToggle = 0;
+int16_t tvOutPrev, tvOutConnected;
 bool getTVOutStatus() {
 	if (memdev > 0) return !(memregs[0x10300 >> 2] >> 25 & 0b1);
 	return false;
@@ -603,45 +603,6 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	input.setWakeUpInterval(1000);
 
 	hwCheck();
-
-#if defined(TARGET_RS97)
-	if (MMCToggle) {
-		MMCToggle = 0;
-		string msg;
-
-		if (curMMCStatus == MMC_INSERT) msg = tr["SD card connected"];
-		else msg = tr["SD card removed"];
-
-		MessageBox mb(this, msg, "skin:icons/eject.png");
-		mb.setAutoHide(1000);
-		mb.exec();
-
-		if (curMMCStatus == MMC_INSERT) {
-			mountSd();
-			menu->addActionLink(menu->getSectionIndex("settings"), tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external SD"], "skin:icons/eject.png");
-		}
-		else umountSd();
-	}
-
-	if (tvOutToggle) {
-		tvOutToggle = 0;
-		TVOut = "OFF";
-		int lcd_brightness = confInt["backlight"];
-
-		if (tvOutConnected) {
-			MessageBox mb(this, tr["TV-out connected.\nContinue?"], "skin:icons/tv.png");
-			mb.setButton(SETTINGS, tr["Yes"]);
-			mb.setButton(CONFIRM,  tr["No"]);
-
-			if (mb.exec() == SETTINGS) {
-				TVOut = confStr["TVOut"];
-				lcd_brightness = 0;
-			}
-		}
-		setTVOut(TVOut);
-		setBacklight(lcd_brightness);
-	}
-#endif
 
 	bool wasActive = false;
 	while (input[POWER]) {
@@ -1511,18 +1472,48 @@ void GMenu2X::ledOff() {
 }
 
 void GMenu2X::hwCheck() {
+#if defined(TARGET_RS97)
 	if (memdev > 0) {
 
 		curMMCStatus = getMMCStatus();
 		if (preMMCStatus != curMMCStatus) {
 			preMMCStatus = curMMCStatus;
-			MMCToggle = 1;
+			string msg;
+
+			if (curMMCStatus == MMC_INSERT) msg = tr["SD card connected"];
+			else msg = tr["SD card removed"];
+
+			MessageBox mb(this, msg, "skin:icons/eject.png");
+			mb.setAutoHide(1000);
+			mb.exec();
+
+			if (curMMCStatus == MMC_INSERT) {
+				mountSd();
+				menu->addActionLink(menu->getSectionIndex("settings"), tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external SD"], "skin:icons/eject.png");
+			} else {
+				umountSd();
+			}
 		}
 
 		tvOutConnected = getTVOutStatus();
 		if (tvOutPrev != tvOutConnected) {
 			tvOutPrev = tvOutConnected;
-			tvOutToggle = 1;
+
+			TVOut = "OFF";
+			int lcd_brightness = confInt["backlight"];
+
+			if (tvOutConnected) {
+				MessageBox mb(this, tr["TV-out connected.\nContinue?"], "skin:icons/tv.png");
+				mb.setButton(SETTINGS, tr["Yes"]);
+				mb.setButton(CONFIRM,  tr["No"]);
+
+				if (mb.exec() == SETTINGS) {
+					TVOut = confStr["TVOut"];
+					lcd_brightness = 0;
+				}
+			}
+			setTVOut(TVOut);
+			setBacklight(lcd_brightness);
 		}
 
 		volumeMode = getVolumeMode(confInt["globalVolume"]);
@@ -1530,8 +1521,8 @@ void GMenu2X::hwCheck() {
 			volumeModePrev = volumeMode;
 			setVolume(70, true);
 		}
-
 	}
+#endif
 }
 
 const string GMenu2X::getDateTime() {
