@@ -1601,7 +1601,7 @@ void GMenu2X::poweroffDialog() {
 		MessageBox mb(this, tr["Poweroff"]);
 		mb.setAutoHide(500);
 		mb.exec();
-
+		setBacklight(0);
 #if !defined(TARGET_PC)
 		system("poweroff");
 #endif
@@ -1610,7 +1610,7 @@ void GMenu2X::poweroffDialog() {
 		MessageBox mb(this, tr["Rebooting"]);
 		mb.setAutoHide(500);
 		mb.exec();
-
+		setBacklight(0);
 #if !defined(TARGET_PC)
 		system("reboot");
 #endif
