@@ -607,7 +607,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
 		input.setWakeUpInterval(0);
-		while (!input[POWER]) {
+		while (!(input[POWER] || input[SETTINGS])) {
 			input.update();
 		}
 		powerManager->doSuspend(0);
