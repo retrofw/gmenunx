@@ -1413,10 +1413,12 @@ void GMenu2X::about() {
 	temp += tr["Battery: "] + ((battlevel < 0 || battlevel > 10000) ? tr["Charging"] : batt) + "\n";
 	// temp += tr["Checksum: 0x"] + hwv + "\n";
 #endif
-	// temp += tr["Storage:"];
-	// temp += "\n    " + tr["Root: "] + getDiskFree("/");
-	// temp += "\n    " + tr["Internal: "] + getDiskFree("/mnt/int_sd");
-	// temp += "\n    " + tr["External: "] + getDiskFree("/mnt/ext_sd");
+
+	char res[32];
+	sprintf(res, "%dx%d", resX, resY);
+
+	temp += tr["Resolution: "] + res + "px\n";
+	temp += "----\n";
 	temp += "----\n";
 
 	TextDialog td(this, "GMenuNX", tr["Info about GMenuNX"], "skin:icons/about.png");
