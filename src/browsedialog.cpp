@@ -9,7 +9,7 @@ using namespace std;
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon)
 : Dialog(gmenu2x), title(title), description(description), icon(icon) {
-
+	directoryEnter(getPath());
 }
 BrowseDialog::~BrowseDialog() {
 }
@@ -21,7 +21,6 @@ bool BrowseDialog::exec() {
 	Surface *iconFolder = gmenu2x->sc.skinRes("imgs/folder.png");
 	Surface *iconFile = gmenu2x->sc.skinRes("imgs/file.png");
 
-	selected = 0;
 	close = false;
 	bool inputAction = false;
 
@@ -45,7 +44,6 @@ bool BrowseDialog::exec() {
 	// if (path.empty() || !dirExists(path))
 	// setPath(CARD_ROOT);
 	// browse();
-	directoryEnter(getPath());
 
 	uint32_t tickStart = SDL_GetTicks();
 
@@ -62,7 +60,7 @@ bool BrowseDialog::exec() {
 			if (selected >= firstElement + numRows) firstElement = selected - numRows;
 			if (selected < firstElement) firstElement = selected;
 
-			if (getPath() == "/media" && getFile() != ".." && isDirectory(selected)) {
+			if (getPath() == "/media" && getFile(selected) != ".." && isDirectory(selected)) {
 				gmenu2x->drawButton(gmenu2x->s, "select", gmenu2x->tr["Umount"], buttonPos);
 			}
 
@@ -82,7 +80,7 @@ bool BrowseDialog::exec() {
 			}
 
 			// preview
-			string preview = getPreview();
+			string preview = getPreview(selected);
 			if (preview != "") {
 				gmenu2x->s->box(gmenu2x->resX - animation, gmenu2x->listRect.y, gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h, gmenu2x->skinConfColors[COLOR_TOP_BAR_BG]);
 
@@ -148,14 +146,14 @@ bool BrowseDialog::exec() {
 					break;
 				case BD_ACTION_UMOUNT:
 					if (getPath() == "/media" && isDirectory(selected)) {
-						string umount = "sync; umount -fl " + getFilePath() + "; rm -r " + getFilePath();
+						string umount = "sync; umount -fl " + getFilePath(selected) + "; rm -r " + getFilePath(selected);
 						system(umount.c_str());
 					}
 					directoryEnter(getPath()); // refresh
 					break;
 				case BD_ACTION_SELECT:
 					if (allowEnterDirectory && isDirectory(selected)) {
-						directoryEnter(getFilePath());
+						directoryEnter(getFilePath(selected));
 						// directoryEnter();
 						break;
 					}
@@ -209,22 +207,19 @@ void BrowseDialog::directoryEnter(const string &path) {
 	mb.setBgAlpha(0);
 	mb.exec(3e3);
 
-	showDirectories = showDirectories;
-	showFiles = showFiles;
-	allowDirUp = allowDirUp;
 	setPath(path);
 	onChangeDir();
 
 	mb.clearTimer();
 }
-std::string BrowseDialog::getFile() {
-	return at(selected);
+const std::string BrowseDialog::getFile(uint32_t i) {
+	return at(i);
 }
-const std::string BrowseDialog::getFilePath() {
-	return getPath() + "/" + getFile();
+const std::string BrowseDialog::getFilePath(uint32_t i) {
+	return getPath() + "/" + getFile(i);
 }
-const std::string BrowseDialog::getExt() {
-	string filename = getFile();
+const std::string BrowseDialog::getExt(uint32_t i) {
+	string filename = getFile(i);
 	string ext = "";
 	string::size_type pos = filename.rfind(".");
 	if (pos != string::npos && pos > 0) {
@@ -233,8 +228,8 @@ const std::string BrowseDialog::getExt() {
 	}
 	return ext;
 }
-const std::string BrowseDialog::getPreview() {
-	string ext = getExt();
-	if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif") return getFilePath();
+const std::string BrowseDialog::getPreview(uint32_t i) {
+	string ext = getExt(i);
+	if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif") return getFilePath(i);
 	return "";
 }
