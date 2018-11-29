@@ -21,38 +21,22 @@
 #ifndef SELECTOR_H_
 #define SELECTOR_H_
 
-#include <string>
-#include "gmenu2x.h"
-#include "utilities.h"
-#include "dialog.h"
-#include "filelister.h"
+#include "browsedialog.h"
 
 class LinkApp;
-class FileLister;
 
 using std::string;
-using std::vector;
-
-class Selector : protected Dialog {
-protected:
-	FileLister fl;
-
+class Selector : public BrowseDialog {
 private:
 	LinkApp *link;
 
-	string file, dir;
 	unordered_map<string, string> aliases;
 	void loadAliases();
-	void setPath(const string &path);
-	string getAlias(const string &fname);
-	string getScreenshot(const string &path, const string &fname, const string &screendir = "");
-	void freeScreenshots(vector<string> *screens);
+	const std::string getPreview(uint32_t i = 0);
 	
 public:
-	Selector(GMenu2X *gmenu2x, LinkApp *link, const string &selectorDir = "");
-	int exec(int startSelection = 0);
-	const string &getFile() { return file; }
-	const string &getDir() { return dir; }
+	Selector(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, LinkApp *link);
+	const std::string getFile(uint32_t i = 0);
 };
 
 #endif /*SELECTOR_H_*/
