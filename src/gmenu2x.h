@@ -154,7 +154,7 @@ private:
 	void readCommonIni();
 	void initServices();
 
-#elif defined(TARGET_RS97)
+#elif defined(TARGET_RETROGAME)
 	void formatSd();
 	void udcDialog();
 #endif
