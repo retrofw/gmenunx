@@ -134,7 +134,7 @@ private:
 	void initMenu();
 	void showManual();
 	// IconButton *btnContextMenu;
-	int32_t tickBattery = -2e30;
+	int32_t tickBattery = -2e3;
 
 #ifdef TARGET_GP2X
 	typedef struct {
