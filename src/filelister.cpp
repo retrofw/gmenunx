@@ -77,7 +77,7 @@ void FileLister::browse() {
 					}
 
 					if (it->length() <= file.length()) {
-						if (file.compare(file.length() - it->length(), it->length(), *it) == 0) {
+						if (!strcasecmp(file.substr(file.size() - it->length()).c_str(), it->c_str())) {
 							files.push_back(file);
 							break;
 						}
