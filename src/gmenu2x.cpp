@@ -1512,8 +1512,6 @@ void GMenu2X::about() {
 
 	temp = tr["Build date: "] + __DATE__ + "\n";
 
-	{ stringstream ss; ss << resX << "x" << resY << "px"; ss >> buf; }
-	temp += tr["Resolution: "] + buf + "\n";
 
 #ifdef TARGET_RETROGAME
 	// temp += tr["CPU: "] + entryPoint() + "\n";
