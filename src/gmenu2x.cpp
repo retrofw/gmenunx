@@ -74,7 +74,7 @@
 #include "menusettingdir.h"
 #include "imageviewerdialog.h"
 // #include "batteryloggerdialog.h"
-#include "linkscannerdialog.h"
+// #include "linkscannerdialog.h"
 // #include "menusettingdatetime.h"
 #include "debug.h"
 
@@ -1318,12 +1318,6 @@ void GMenu2X::viewLog() {
 	}
 }
 
-
-void GMenu2X::linkScanner() {
-	LinkScannerDialog ls(this, tr["Link scanner"], tr["Scan for applications and games"], "skin:icons/configure.png");
-	ls.exec();
-}
-
 void GMenu2X::changeWallpaper() {
 	WallpaperDialog wp(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], "skin:icons/wallpaper.png");
 	if (wp.exec() && confStr["wallpaper"] != wp.wallpaper) {
@@ -1517,7 +1511,7 @@ void GMenu2X::contextMenu() {
 	voices.push_back((MenuOption){tr["Add section"],	MakeDelegate(this, &GMenu2X::addSection)});
 	voices.push_back((MenuOption){tr["Rename section"],	MakeDelegate(this, &GMenu2X::renameSection)});
 	voices.push_back((MenuOption){tr["Delete section"],	MakeDelegate(this, &GMenu2X::deleteSection)});
-	voices.push_back((MenuOption){tr["Link scanner"],	MakeDelegate(this, &GMenu2X::linkScanner)});
+	// voices.push_back((MenuOption){tr["Link scanner"],	MakeDelegate(this, &GMenu2X::linkScanner)});
 
 	Surface bg(s);
 	bool close = false, inputAction = false;
