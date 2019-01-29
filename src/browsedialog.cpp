@@ -9,7 +9,6 @@ using namespace std;
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon)
 : Dialog(gmenu2x), title(title), description(description), icon(icon) {
-	directoryEnter(getPath());
 }
 BrowseDialog::~BrowseDialog() {
 }
@@ -39,10 +38,9 @@ bool BrowseDialog::exec() {
 		buttonPos = gmenu2x->drawButton(this->bg, "a", gmenu2x->tr["Select"], buttonPos);
 	}
 
-	// string path = getPath();
-	// if (path.empty() || !dirExists(path))
-	// setPath(CARD_ROOT);
-	// browse();
+	string path = getPath();
+	if (path.empty() || !dirExists(path))
+		directoryEnter(CARD_ROOT);
 
 	uint32_t tickStart = SDL_GetTicks();
 
