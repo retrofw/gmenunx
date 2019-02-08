@@ -1029,8 +1029,8 @@ void GMenu2X::writeConfig() {
 			inf << curr->first << "=" << curr->second << endl;
 		}
 		inf.close();
-		sync();
 	}
+	sync();
 
 #if defined(TARGET_GP2X)
 		if (fwType == "open2x" && savedVolumeMode != volumeMode)
@@ -1474,9 +1474,9 @@ void GMenu2X::poweroffDialog() {
 	mb.setButton(CONFIRM, tr["Poweroff"]);
 	mb.setButton(CANCEL,  tr["Cancel"]);
 	int response = mb.exec();
+	writeConfig();
 	if (response == CONFIRM) {
 		MessageBox mb(this, tr["Poweroff"]);
-		sync();
 		mb.setAutoHide(500);
 		mb.exec();
 		setBacklight(0);
@@ -1486,10 +1486,9 @@ void GMenu2X::poweroffDialog() {
 	}
 	else if (response == SECTION_NEXT) {
 		MessageBox mb(this, tr["Rebooting"]);
-		sync();
 		mb.setAutoHide(500);
 		mb.exec();
-		setBacklight(0);
+		// setBacklight(0);
 #if !defined(TARGET_PC)
 		system("sync; reboot");
 #endif
