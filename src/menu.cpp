@@ -87,11 +87,15 @@ void Menu::readLinks() {
 		}
 
 		while ((dptr = readdir(dirp))) {
-			if (dptr->d_name[0] == '.') continue;
-			filepath = sectionPath(i) + dptr->d_name;
-			int statRet = stat(filepath.c_str(), &st);
-			// if (S_ISDIR(st.st_mode)) continue;
-			if (statRet != -1 && st.st_mode & S_IFREG) {
+			if (dptr->d_name[0] == '.') {
+				continue;
+			}
+			string filepath = sectionPath(i) + dptr->d_name;
+			if (filepath.substr(filepath.size() - 5, 5) == "-opkg") {
+				continue;
+			}
+
+			if (file_exists(filepath)) {
 				linkfiles.push_back(filepath);
 			}
 		}
