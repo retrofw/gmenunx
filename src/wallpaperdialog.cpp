@@ -53,7 +53,7 @@ bool WallpaperDialog::exec()
 			wallpapers.push_back(fl.getFiles()[i]);
 	}
 
-	wallpaper = base_name(gmenu2x->confStr["wallpaper"]);
+	wallpaper = base_name(gmenu2x->confStr["tmp_wallpaper"]);
 
 	for (uint32_t i = 0; i < wallpapers.size(); i++) {
 		if (wallpaper == wallpapers[i]) selected = i;
@@ -128,6 +128,5 @@ bool WallpaperDialog::exec()
 		else
 			gmenu2x->sc.del("skins/Default/wallpapers/" + wallpapers[i]);
 
-	gmenu2x->confStr["wallpaper"] = wallpaper;
 	return result;
 }
