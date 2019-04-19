@@ -818,7 +818,6 @@ void GMenu2X::settings() {
 	opFactory.push_back(">>");
 	string tmp = ">>";
 
-
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 
