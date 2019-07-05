@@ -39,17 +39,6 @@ class PowerManager;
 #include "fonthelper.h"
 #include "debug.h"
 
-
-const int MAX_VOLUME_SCALE_FACTOR = 200;
-// Default values - going to add settings adjustment, saving, loading and such
-const int VOLUME_SCALER_MUTE = 0;
-const int VOLUME_SCALER_PHONES = 65;
-const int VOLUME_SCALER_NORMAL = 100;
-const int BATTERY_READS = 10;
-
-extern const char *CARD_ROOT;
-extern const int CARD_ROOT_LEN;
-
 // Note: Keep this in sync with colorNames!
 enum color {
 	COLOR_TOP_BAR_BG,
@@ -197,7 +186,7 @@ public:
 
 	bool inputCommonActions(bool &inputAction);
 
-	unsigned int TVOut = 0;
+	// unsigned int TVOut = 0;
 	void about();
 	void viewLog();
 	void contextMenu();
