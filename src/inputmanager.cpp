@@ -64,8 +64,7 @@ void InputManager::initJoysticks() {
 bool InputManager::readConfFile(const string &conffile) {
 	setActionsCount(NUM_ACTIONS);
 
-	if (!fileExists(conffile)) {
-		// ERROR("File not found: %s", conffile.c_str());
+	if (!file_exists(conffile)) {
 		return false;
 	}
 

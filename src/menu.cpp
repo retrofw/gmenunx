@@ -214,7 +214,7 @@ bool Menu::addActionLink(uint32_t section, const string &title, fastdelegate::Fa
 	Link *linkact = new Link(gmenu2x, action);
 	linkact->setTitle(title);
 	linkact->setDescription(description);
-	// if (gmenu2x->sc.exists(icon) || (icon.substr(0,5) == "skin:" && !gmenu2x->sc.getSkinFilePath(icon.substr(5, icon.length())).empty()) || fileExists(icon))
+	// if (gmenu2x->sc.exists(icon) || (icon.substr(0,5) == "skin:" && !gmenu2x->sc.getSkinFilePath(icon.substr(5, icon.length())).empty()) || file_exists(icon))
 	linkact->setIcon("skin:icons/" + icon);
 	linkact->setBackdrop("skin:backdrops/" + icon);
 
@@ -246,7 +246,7 @@ bool Menu::addLink(string exec, string section, string title, string description
 	string linkpath = "sections/" + section + "/" + title;
 	if (section != "favourites") {
 		int x = 2;
-		while (fileExists(linkpath)) {
+		while (file_exists(linkpath)) {
 			stringstream ss;
 			linkpath = ""; ss << x; ss >> linkpath;
 			linkpath = "sections/" + section + "/" + title + linkpath;
@@ -270,7 +270,7 @@ bool Menu::addLink(string exec, string section, string title, string description
 
 		INFO("ICON: '%s'", icon.c_str());
 
-		if (!icon.empty() && fileExists(icon))
+		if (!icon.empty() && file_exists(icon))
 			f << "icon=" << icon << endl;
 
 		if (!params.empty())
@@ -280,7 +280,7 @@ bool Menu::addLink(string exec, string section, string title, string description
 			f << "description=" << description << endl;
 
 		string selectoraliases = path + "/aliases.txt";
-		if (fileExists(selectoraliases))
+		if (file_exists(selectoraliases))
 			f << "selectoraliases=" << selectoraliases << endl;
 
 		f.close();
