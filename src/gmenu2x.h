@@ -131,6 +131,11 @@ private:
 	void showManual();
 	void umountSdDialog();
 
+	void opkUninstall();
+	void opkScanner();
+	string ipkName(const string _file);
+	void ipkUninstall();
+
 	virtual void udcDialog(int udcStatus = -1) { };
 	virtual void tvOutDialog(int16_t mode = -1) { };
 	virtual void hwInit() { };
@@ -207,7 +212,6 @@ public:
 	void addSection();
 	void renameSection();
 	void deleteSection();
-	void opkScanner();
 
 	void setBackground(Surface *_bg, const string &_wallpaper);
 
