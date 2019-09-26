@@ -1712,6 +1712,7 @@ void GMenu2X::poweroffDialog() {
 		#if !defined(TARGET_PC)
 			system("sync; mount -o remount,ro $HOME; poweroff");
 		#endif
+		setVolume(0);
 		setBacklight(0);
 	}
 	else if (response == SECTION_NEXT) {
@@ -1721,6 +1722,7 @@ void GMenu2X::poweroffDialog() {
 		#if !defined(TARGET_PC)
 			system("sync; mount -o remount,ro $HOME; reboot");
 		#endif
+		setVolume(0);
 		SDL_Delay(2000);
 	}
 }
