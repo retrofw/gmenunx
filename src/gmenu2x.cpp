@@ -316,7 +316,7 @@ void GMenu2X::main() {
 
 	SDL_TimerID hwCheckTimer = SDL_AddTimer(1000, hwCheck, NULL);
 
-	section_changed = icon_changed = SDL_GetTicks();
+	button_hold = section_changed = icon_changed = SDL_GetTicks();
 	SDL_TimerID sectionChangedTimer = SDL_AddTimer(2000, input.doNothing, (void*)false);
 	SDL_TimerID iconChangedTimer = SDL_AddTimer(1000, input.doNothing, (void*)false);
 
@@ -725,7 +725,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		input.update();
 
-		if (input[POWER] || input[SETTINGS])	poweroffDialog(); // HOLD POWER BUTTON
+		if ((input[POWER] || input[SETTINGS]) && SDL_GetTicks() - button_hold > 1000)	poweroffDialog(); // HOLD POWER BUTTON
 		else if (wasActive == POWER)			powerManager->doSuspend(1);
 		else continue;
 		return true;
@@ -743,6 +743,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		else continue;
 		break;
 	}
+
+	button_hold = SDL_GetTicks();
 
 	if (input[SCREENSHOT]) {
 		if (!saveScreenshot()) { ERROR("Can't save screenshot"); return true; }
