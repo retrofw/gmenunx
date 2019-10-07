@@ -37,7 +37,11 @@ typedef vector<string> stringlist;
 // class InputManager;
 // class Touchscreen;
 
-class InputDialog : protected Dialog {
+// class InputDialog : protected Dialog {
+class InputDialog {
+protected:
+	GMenu2X *gmenu2x;
+
 private:
 	enum id_actions {
 		ID_NO_ACTION,
@@ -55,7 +59,7 @@ private:
 	};
 
 	int selRow, selCol;
-	bool close, ok;
+	bool loop = true, ok = true;
 	string title, text, icon;
 	int16_t curKeyboard;
 	vector<stringlist> keyboard;
