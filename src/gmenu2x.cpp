@@ -807,6 +807,11 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	// 	WARNING("volume mode changed");
 	// 	return true;
 
+	} else if (input[MMC_REMOVE]) {
+		confInt["section"] = menu->selSectionIndex();
+		confInt["link"] = menu->selLinkIndex();
+		initMenu();
+
 	} else {
 		return false;
 	}
