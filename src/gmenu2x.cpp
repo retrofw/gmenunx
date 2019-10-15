@@ -639,9 +639,7 @@ void GMenu2X::main() {
 			mb.setAutoHide(100);
 			mb.exec();
 			input[CONFIRM] = false;
-		}
-
-		if (!powerManager->suspendActive && !input.combo()) s->flip();
+		} else if (!powerManager->suspendActive) s->flip();
 
 		if (inputCommonActions(inputAction)) continue;
 
