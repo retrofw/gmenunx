@@ -237,7 +237,7 @@ void GMenu2X::quit() {
 }
 
 int main(int /*argc*/, char * /*argv*/[]) {
-	INFO("GMenu2X starting: If you read this message in the logs, check http://mtorromeo.github.com/gmenu2x/troubleshooting.html for a solution");
+	INFO("Starting GMenuNX...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);
@@ -254,7 +254,6 @@ int main(int /*argc*/, char * /*argv*/[]) {
 	usleep(1000);
 
 	app = new GMenuNX();
-	DEBUG("Starting GMenuNX");
 	app->main();
 
 	return 0;
