@@ -126,7 +126,6 @@ private:
 	void readTmp();
 
 	void initFont();
-	void initMenu();
 
 	void showManual();
 	void umountSdDialog();
@@ -135,6 +134,7 @@ private:
 	void opkScanner();
 	string ipkName(string cmd);
 	void ipkUninstall();
+	void ipkInstall();
 
 	virtual void udcDialog(int udcStatus = -1) { };
 	virtual void tvOutDialog(int16_t mode = -1) { };
@@ -206,6 +206,7 @@ public:
 	void writeSkinConfig();
 	void writeTmp(int selelem = -1, const string &selectordir = "");
 
+	void initMenu();
 	void addLink();
 	void editLink();
 	void deleteLink();
