@@ -96,7 +96,6 @@ class Menu;
 class GMenu2X {
 private:
 	static GMenu2X *instance;
-	int getVolume();
 
 	string path; //!< Contains the working directory of GMenu2X
 	/*!
@@ -231,6 +230,7 @@ public:
 	virtual void ledOn() { };
 	virtual void ledOff() { };
 	virtual int setVolume(int val, bool popup = false);
+	virtual int getVolume() { return 0; };
 	virtual int getBacklight() { return -1; };
 	virtual int setBacklight(int val, bool popup = false);
 	virtual string hwPreLinkLaunch() { return ""; };
