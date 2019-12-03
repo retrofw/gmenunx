@@ -1934,6 +1934,7 @@ void GMenu2X::editLink() {
 	scaleMode.push_back("Stretch");
 	scaleMode.push_back("Aspect");
 	scaleMode.push_back("Original");
+	if (((float)(this->w)/this->h) != (4.0f/3.0f)) scaleMode.push_back("4:3");
 	string linkScaleMode = scaleMode[menu->selLinkApp()->getScaleMode()];
 
 	SettingsDialog sd(this, ts, dialogTitle, dialogIcon);
@@ -1998,6 +1999,7 @@ void GMenu2X::editLink() {
 		int scalemode = 0;
 		if (linkScaleMode == "Aspect") scalemode = 1;
 		else if (linkScaleMode == "Original") scalemode = 2;
+		else if (linkScaleMode == "4:3") scalemode = 3;
 		menu->selLinkApp()->setScaleMode(scalemode);
 
 		menu->selLinkApp()->setSelectorDir(linkSelDir);
