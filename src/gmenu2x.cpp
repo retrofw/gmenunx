@@ -816,7 +816,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		tvOutDialog(TV_OFF);
 
 	} else if (input[JOYSTICK_CONNECT]) {
-		input.initJoysticks();
+		input.initJoysticks(true);
+
 	// } else if (input[PHONES_CONNECT]) {
 	// 	// tvOutDialog(TV_OFF);
 	// 	WARNING("volume mode changed");
