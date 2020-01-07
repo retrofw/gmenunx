@@ -1500,8 +1500,9 @@ void GMenu2X::skinMenu() {
 			wallpapers = fl_wp.getFiles();
 
 			if (confStr["skin"] != "Default") {
-				fl_wp.setPath("skins/Default/wallpapers", true);
-				wallpapers.insert( wallpapers.end(), fl_wp.getFiles().begin(), fl_wp.getFiles().end());
+				fl_wp.setPath("skins/Default/wallpapers");
+				fl_wp.browse();
+				wallpapers.insert(wallpapers.end(), fl_wp.getFiles().begin(), fl_wp.getFiles().end());
 			}
 
 			sc.del("skin:icons/skin.png");
