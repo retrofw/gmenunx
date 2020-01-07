@@ -2136,6 +2136,7 @@ void GMenu2X::opkUninstall() {
 		case MODIFIER:
 			package = menu->selLinkApp()->getExec();
 			unlink(package.c_str());
+			initMenu();
 		case MANUAL:
 			menu->deleteSelectedLink();
 			break;
@@ -2197,6 +2198,7 @@ void GMenu2X::ipkUninstall() {
 				return;
 		}
 		sync();
+		initMenu();
 	}
 }
 #endif
