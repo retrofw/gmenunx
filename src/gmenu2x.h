@@ -122,7 +122,7 @@ private:
 	string lastSelectorDir, currBackdrop;
 	int lastSelectorElement;
 	void readConfig();
-	void readTmp();
+	bool readTmp();
 
 	void initFont();
 
