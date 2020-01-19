@@ -37,6 +37,9 @@ private:
 	InputManager &input;
 	int iclock = 0, selectorelement = 0, scalemode, _scalemode = 0; //, ivolume = 0;
 	bool selectorbrowser;
+	bool	selectorbrowser = true,
+			terminal = false;
+
 	string	params = "",
 			homedir = "",
 			manual = "",
@@ -63,6 +66,8 @@ public:
 	bool getSelectorBrowser();
 	void setSelectorBrowser(bool value);
 	int getScaleMode();
+	bool getTerminal() { return terminal; }
+	void setTerminal(bool value);
 	void setScaleMode(int value);
 	const string &getSelectorScreens();
 	void setSelectorScreens(const string &selectorscreens);
