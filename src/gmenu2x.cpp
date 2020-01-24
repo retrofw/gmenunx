@@ -203,7 +203,6 @@ void GMenu2X::main() {
 	setVolume(confInt["globalVolume"]);
 
 	setSkin(confStr["skin"], true);
-	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
 	setenv("SDL_FBCON_DONT_CLEAR", "1", 0);
 	setenv("SDL_NOMOUSE", "1", 1);
@@ -234,6 +233,8 @@ void GMenu2X::main() {
 	setBackground(s, currBackdrop);
 
 	bg = new Surface(s);
+
+	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
 	MessageBox mb(this, tr["Loading"]);
 	mb.setAutoHide(1);
