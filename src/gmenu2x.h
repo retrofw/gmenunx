@@ -108,7 +108,6 @@ class Menu;
 
 class GMenu2X {
 private:
-	static GMenu2X *instance;
 	/*!
 	Starts the scanning of the nand and sd filesystems, searching for gpe and gpu files and creating the links in 2 dedicated sections.
 	*/
@@ -148,6 +147,7 @@ private:
 	virtual void hwDeinit() { };
 
 public:
+	static GMenu2X *instance;
 
 	/*
 	 * Variables needed for elements disposition
