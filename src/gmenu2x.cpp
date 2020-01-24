@@ -46,7 +46,6 @@
 #include "wallpaperdialog.h"
 #include "textdialog.h"
 #include "terminaldialog.h"
-#include "opkscannerdialog.h"
 #include "menusettingint.h"
 #include "menusettingbool.h"
 #include "menusettingrgba.h"
@@ -58,6 +57,11 @@
 #include "imageviewerdialog.h"
 #include "menusettingdatetime.h"
 #include "debug.h"
+
+#if defined(OPK_SUPPORT)
+	#include "opkscannerdialog.h"
+	#include <libopk.h>
+#endif
 
 using std::ifstream;
 using std::ofstream;
@@ -89,9 +93,6 @@ uint8_t numJoyPrev, numJoy; // number of connected joysticks
 	#include "platform/linux.h"
 #endif
 
-#if defined(OPK_SUPPORT)
-	#include <libopk.h>
-#endif
 
 const char *CARD_ROOT = getenv("HOME"); // Note: Add a trailing /!
 // const int CARD_ROOT_LEN = 1;
