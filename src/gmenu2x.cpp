@@ -181,6 +181,9 @@ void GMenu2X::quit() {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 	s->free();
 
+	font->free();
+	titlefont->free();
+
 	fflush(NULL);
 	SDL_Quit();
 	hwDeinit();
