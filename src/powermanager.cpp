@@ -48,7 +48,7 @@ Uint32 PowerManager::doSuspend(unsigned int interval, void * param) {
 		ERROR("POWER MANAGER ENTER SUSPEND");
 	
 		// MessageBox mb(this, tr["Suspend PM"]);
-		MessageBox mb(PowerManager::instance->gmenu2x, PowerManager::instance->gmenu2x->tr["Suspend PM"]);
+		MessageBox mb(PowerManager::instance->gmenu2x, PowerManager::instance->gmenu2x->tr["Suspend"]);
 		mb.setAutoHide(500);
 		mb.exec();
 
@@ -76,6 +76,9 @@ Uint32 PowerManager::doSuspend(unsigned int interval, void * param) {
 Uint32 PowerManager::doPowerOff(unsigned int interval, void * param) {
 	if (interval > 0) {
 		ERROR("POWER MANAGER DO POWEROFF");
+#if !defined(TARGET_PC)
+		system("poweroff");
+#endif
 		return interval;
 	}
 
