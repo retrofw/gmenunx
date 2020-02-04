@@ -207,6 +207,7 @@ public:
 	void addSection();
 	void renameSection();
 	void deleteSection();
+	void opkScanner();
 
 	void setBackground(Surface *_bg, const string &_wallpaper);
 
