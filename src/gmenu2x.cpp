@@ -198,8 +198,6 @@ void GMenu2X::main() {
 
 	readConfig();
 
-	setCPU(confInt["cpuMenu"]);
-
 	setScaleMode(0);
 
 	setBacklight(confInt["backlight"]);
@@ -269,6 +267,9 @@ void GMenu2X::main() {
 			setBackground(bg, confStr["wallpaper"]);
 		menu->selLinkApp()->selector(lastSelectorElement, lastSelectorDir);
 	}
+
+	setCPU(confInt["cpuMenu"]);
+
 	menu->exec();
 }
 
