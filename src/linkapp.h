@@ -48,7 +48,8 @@ private:
 			selectorfilter = "",
 			selectorscreens = "",
 			aliasfile = "",
-			file = "";
+			file = "",
+			icon_opk = "";
 
 public:
 	LinkApp(GMenu2X *gmenu2x, const char* file);
