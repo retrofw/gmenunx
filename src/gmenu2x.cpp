@@ -1423,8 +1423,7 @@ void GMenu2X::addLink() {
 #endif
 
 	bd.setFilter(filter);
-	if (bd.exec()) {
-		ledOn();
+	while (bd.exec()) {
 		string ext = bd.getExt(bd.selected);
 
 #if defined(IPK_SUPPORT)
@@ -1439,10 +1438,10 @@ void GMenu2X::addLink() {
 #endif
 		if (menu->addLink(bd.getFilePath(bd.selected))) {
 			editLink();
+			return;
 		}
-		sync();
-		ledOff();
 	}
+	sync();
 }
 
 void GMenu2X::changeSelectorDir() {
