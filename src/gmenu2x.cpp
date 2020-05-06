@@ -266,8 +266,6 @@ void GMenu2X::main() {
 		menu->selLinkApp()->selector(lastSelectorElement, lastSelectorDir);
 	}
 
-	setCPU(confInt["cpuMenu"]);
-
 	menu->exec();
 }
 
