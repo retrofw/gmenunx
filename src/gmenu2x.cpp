@@ -1354,8 +1354,8 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, tr["Poweroff"]);
 			mb.setAutoHide(1);
 			mb.exec();
-			setVolume(0);
 			quit();
+			setVolume(0);
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; poweroff");
 #endif
@@ -1365,8 +1365,8 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, tr["Rebooting"]);
 			mb.setAutoHide(1);
 			mb.exec();
-			setVolume(0);
 			quit();
+			setVolume(0);
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; reboot");
 #endif
