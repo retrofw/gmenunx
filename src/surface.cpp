@@ -60,16 +60,12 @@ Surface::Surface(const string &img, bool alpha, const string &skin) {
 	raw = NULL;
 	dblbuffer = NULL;
 	load(img, alpha, skin);
-	halfW = raw->w/2;
-	halfH = raw->h/2;
 }
 
 Surface::Surface(const string &img, const string &skin, bool alpha) {
 	raw = NULL;
 	dblbuffer = NULL;
 	load(img, alpha, skin);
-	halfW = raw->w/2;
-	halfH = raw->h/2;
 }
 
 Surface::Surface(SDL_Surface *s, SDL_PixelFormat *fmt, uint32_t flags) {
@@ -106,8 +102,6 @@ Surface::Surface(int w, int h, uint32_t flags) {
 	raw = SDL_DisplayFormat(_raw);
 	SDL_FreeSurface(_raw);
 	//SDL_SetAlpha(raw, SDL_SRCALPHA|SDL_RLEACCEL, SDL_ALPHA_OPAQUE);
-	halfW = w/2;
-	halfH = h/2;
 }
 
 Surface::~Surface() {
@@ -289,8 +283,6 @@ void Surface::write(FontHelper *font, const string &text, SDL_Rect &wrapRect, co
 
 void Surface::operator = (SDL_Surface *s) {
 	raw = SDL_DisplayFormat(s);
-	halfW = raw->w/2;
-	halfH = raw->h/2;
 }
 
 void Surface::operator = (Surface *s) {
