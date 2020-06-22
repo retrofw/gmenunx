@@ -96,6 +96,8 @@ extern int CPU_MAX;
 extern int CPU_MIN;
 extern int CPU_STEP;
 
+extern string dataPath, homePath;
+
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;
 typedef unordered_map<string, int, hash<string> > ConfIntHash;

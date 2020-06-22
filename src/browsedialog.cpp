@@ -278,8 +278,8 @@ void BrowseDialog::exploreMedia() {
 }
 
 void BrowseDialog::setWallpaper() {
-	string dst = "skins/Default/wallpapers/Wallpaper" + file_ext(src, true);
 	string src = getPath(selected);
+	string dst = homePath + "/Wallpaper" + file_ext(src, true);
 	if (file_copy(src, dst)) {
 		gmenu2x->confStr["wallpaper"] = dst;
 		gmenu2x->writeConfig();

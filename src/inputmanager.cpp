@@ -72,8 +72,8 @@ void InputManager::init(string conffile) {
 	SDL_EnableKeyRepeat(0, 0);
 
 	if (!file_exists(conffile)) {
-		ERROR("File not found: %s", conffile.c_str());
-		return;
+		INFO("File not found: %s. Using default values.", conffile.c_str());
+		conffile = dataPath + "/input.conf";
 	}
 
 	ifstream f(conffile, std::ios_base::in);

@@ -16,7 +16,7 @@ Dialog::~Dialog() {
 }
 
 void Dialog::drawTopBar(Surface *s, const std::string &title, const std::string &description, const std::string &icon) {
-	// Surface *bar = sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/topbar.png"];
+	// Surface *bar = sc[gmenu2x->confStr["skin"] + "/imgs/topbar.png"];
 	// if (bar != NULL) bar->blit(s, 0, 0);
 	// else
 	s->setClipRect({0, 0, gmenu2x->w, gmenu2x->skinConfInt["sectionBarSize"]});
@@ -50,7 +50,7 @@ void Dialog::drawTopBar(Surface *s, const std::string &title, const std::string 
 }
 
 void Dialog::drawBottomBar(Surface *s, buttons_t buttons) {
-	// Surface *bar = sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/bottombar.png"];
+	// Surface *bar = sc[gmenu2x->confStr["skin"] + "/imgs/bottombar.png"];
 	// if (bar != NULL) bar->blit(s, 0, gmenu2x->h - bar->raw->h);
 	// else
 	s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);

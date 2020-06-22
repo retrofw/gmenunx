@@ -24,6 +24,8 @@
 #include "debug.h"
 #include <cassert>
 
+extern string dataPath;
+
 RGBAColor strtorgba(const string &strColor) {
 	const int s = (strColor.at(0) == '#') ? 1 : 0;
 	RGBAColor c = {0,0,0,255};
@@ -139,10 +141,11 @@ SDL_PixelFormat *Surface::format() {
 void Surface::load(const string &img, bool alpha, string skin) {
 	free();
 
-	if (!skin.empty() && !img.empty() && img[0]!='/') {
-		skin = "skins/" + skin + "/" + img;
-		if (!file_exists(skin))
-			skin = "skins/Default/" + img;
+	if (!skin.empty() && !img.empty() && img[0] != '/') {
+		skin = skin + "/" + img;
+		if (!file_exists(skin)) {
+			skin = dataPath + "/skins/Default/" + img;
+		}
 	} else {
 		skin = img;
 	}

@@ -414,9 +414,9 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	command = gmenu2x->hwPreLinkLaunch() + command;
 
 	if (gmenu2x->confInt["outputLogs"]) {
-		params = "echo " + cmdclean(command) + " > " + cmdclean(exe_path()) + "/log.txt";
+		params = "echo " + cmdclean(command) + " > " + cmdclean(homePath + "/log.txt");
 		system(params.c_str());
-		command += " 2>&1 | tee -a " + cmdclean(exe_path()) + "/log.txt";
+		command += " 2>&1 | tee -a " + cmdclean(homePath + "/log.txt");
 	}
 
 	// params = this->getHomeDir();

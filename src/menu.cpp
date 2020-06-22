@@ -53,9 +53,10 @@ void Menu::readSections() {
 	DIR *dirp;
 	struct dirent *dptr;
 
-	mkdir("sections", 0777);
+	string sectiondir = homePath + "/sections";
+	mkdir(sectiondir.c_str(), 0777);
 
-	if ((dirp = opendir("sections")) == NULL) {
+	if ((dirp = opendir(sectiondir.c_str())) == NULL) {
 		return;
 	}
 
@@ -67,8 +68,8 @@ void Menu::readSections() {
 			continue;
 		}
 
-		string filepath = (string)"sections/" + dptr->d_name;
-		if (dir_exists(filepath)) {
+		string section = sectiondir + "/" + dptr->d_name;
+		if (dir_exists(section)) {
 			sections.push_back((string)dptr->d_name);
 			linklist ll;
 			links.push_back(ll);
@@ -193,7 +194,7 @@ string Menu::sectionPath(int section) {
 		section = iSectionIndex;
 	}
 
-	return "sections/" + sections[section] + "/";
+	return homePath + "/sections/" + sections[section] + "/";
 }
 
 // LINKS MANAGEMENT
@@ -215,7 +216,7 @@ bool Menu::addActionLink(uint32_t section, const string &title, fastdelegate::Fa
 bool Menu::addLink(string exec) {
 	string section = getSection();
 	string title = base_name(exec, true);
-	string linkpath = unique_filename("sections/" + section + "/" + title, ".lnk");
+	string linkpath = unique_filename(homePath + "/sections/" + section + "/" + title, ".lnk");
 
 	// Reduce title length to fit the link width
 	if ((int)gmenu2x->font->getTextWidth(title) > linkWidth) {
@@ -242,7 +243,7 @@ bool Menu::addLink(string exec) {
 }
 
 bool Menu::addSection(const string &sectionName) {
-	string sectiondir = "sections/" + sectionName;
+	string sectiondir = homePath + "/sections/" + sectionName;
 	if (mkdir(sectiondir.c_str(), 0777) == 0) {
 		sections.push_back(sectionName);
 		linklist ll;
@@ -278,7 +279,7 @@ void Menu::deleteSelectedLink() {
 void Menu::deleteSelectedSection() {
 	INFO("Deleting section '%s'", getSection().c_str());
 
-	string iconpath = "sections/" + getSection() + ".png";
+	string iconpath = homePath + "/sections/" + getSection() + ".png";
 
 	links.erase(links.begin() + getSectionIndex());
 	sections.erase(sections.begin() + getSectionIndex());
@@ -397,8 +398,8 @@ void Menu::setLinkIndex(int i) {
 
 void Menu::renameSection(int index, const string &name) {
 	// section directory doesn't exists
-	string oldsection = "sections/" + getSection();
-	string newsection = "sections/" + name;
+	string oldsection = homePath + "/sections/" + getSection();
+	string newsection = homePath + "/sections/" + name;
 
 	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
 		sections[index] = name;
@@ -756,10 +757,10 @@ void Menu::exec() {
 	iconManual = gmenu2x->sc["skin:imgs/manual.png"];
 	iconCPU = gmenu2x->sc["skin:imgs/cpu.png"];
 	iconMenu = gmenu2x->sc["skin:imgs/menu.png"];
-	iconL = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/section-l.png"];
-	iconR = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/section-r.png"];
-	iconBGoff = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/iconbg_off.png"];
-	iconBGon = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/imgs/iconbg_on.png"];
+	iconL = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/section-l.png"];
+	iconR = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/section-r.png"];
+	iconBGoff = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_off.png"];
+	iconBGon = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_on.png"];
 
 	while (true) {
 		// BACKGROUND

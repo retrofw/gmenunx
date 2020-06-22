@@ -75,6 +75,8 @@ enum vol_mode_t {
 };
 
 string fwType = "";
+string dataPath = "/usr/share/gmenunx";
+string homePath = (string)getenv("HOME") + "/.gmenunx";
 
 uint16_t mmcPrev, mmcStatus;
 uint16_t udcPrev = UDC_REMOVE, udcStatus;
@@ -188,9 +190,9 @@ void GMenu2X::quit() {
 void GMenu2X::main() {
 	hwInit();
 
-	chdir(exe_path().c_str());
+	mkdir(homePath.c_str(), 0777);
 
-	readConfig();
+	readConfig(homePath + "/gmenunx.conf", true);
 
 	setScaleMode(0);
 
@@ -207,7 +209,7 @@ void GMenu2X::main() {
 	}
 	SDL_ShowCursor(SDL_DISABLE);
 
-	input.init(exe_path() + "/input.conf");
+	input.init(homePath + "/input.conf");
 
 	setInputSpeed();
 
@@ -406,8 +408,8 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 			fl.showDirectories = false;
 			fl.showFiles = true;
 			fl.setFilter(".png,.jpg,.jpeg,.bmp");
-			fl.browse();
-			wallpaper = "skins/Default/wallpapers/" + fl.getFiles()[0];
+			fl.browse(dataPath + "/skins/Default/wallpapers");
+			wallpaper = dataPath + "/skins/Default/wallpapers/" + fl.getFiles()[0];
 		}
 		if (sc[wallpaper] == NULL) return "";
 		if (confStr["bgscale"] == "Stretch") sc[wallpaper]->softStretch(this->w, this->h, SScaleStretch);
@@ -421,20 +423,20 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 }
 
 void GMenu2X::initFont() {
-	string skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+	string skinFont = confStr["skinFont"] == "Default" ? dataPath + "/skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
 	if (!font->font) {
 		delete font;
-		font = new FontHelper("skins/Default/font.ttf", skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+		font = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
 	}
 
 	delete titlefont;
 	titlefont = new FontHelper(skinFont, skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
 	if (!titlefont->font) {
 		delete titlefont;
-		titlefont = new FontHelper("skins/Default/font.ttf", skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+		titlefont = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
 	}
 }
 
@@ -466,7 +468,7 @@ void GMenu2X::initMenu() {
 				menu->addActionLink(i, "USB Nand", MakeDelegate(this, &GMenu2X::activateNandUsb), tr["Activate USB on NAND"], "usb.png");
 			}
 #endif
-			if (file_exists(exe_path() + "/log.txt")) {
+			if (file_exists(homePath + "/log.txt")) {
 				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
 			}
 
@@ -483,6 +485,7 @@ void GMenu2X::settings() {
 
 	// int prevgamma = confInt["gamma"];
 	FileLister fl;
+	fl.browse(dataPath + "/translations");
 	fl.insertFile("English");
 	string lang = tr.lang();
 	if (lang == "") lang = "English";
@@ -607,11 +610,11 @@ void GMenu2X::resetSettings() {
 			}
 		}
 		if (reset_skin) {
-			string tmppath = exe_path() + "/skins/Default/skin.conf";
+			string tmppath = homePath + "/skins/Default/skin.conf";
 			unlink(tmppath.c_str());
 		}
 		if (reset_gmenu) {
-			string tmppath = exe_path() + "/gmenu2x.conf";
+			string tmppath = homePath + "/gmenunx.conf";
 			unlink(tmppath.c_str());
 		}
 		quit();
@@ -708,7 +711,7 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 
 	if (!confStr["lang"].empty()) tr.setLang(confStr["lang"]);
 	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
-	if (confStr["skin"].empty() || !dir_exists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
+	if (confStr["skin"].empty() || !dir_exists(confStr["skin"])) confStr["skin"] = dataPath + "/skins/Default";
 
 	evalIntConf(&confInt["backlightTimeout"], 30, 10, 300);
 	evalIntConf(&confInt["powerTimeout"], 10, 1, 300);
@@ -733,7 +736,6 @@ void GMenu2X::writeConfig() {
 		confInt["link"] = menu->getLinkIndex();
 	}
 
-	string conf = exe_path() + "/gmenu2x.conf";
 	ofstream f(homePath + "/gmenunx.conf");
 	if (!f.is_open()) return;
 
@@ -810,9 +812,7 @@ void GMenu2X::writeConfig() {
 }
 
 void GMenu2X::writeSkinConfig() {
-	string skinconf = exe_path() + "/skins/" + confStr["skin"] + "/skin.conf";
-
-	ofstream f(skinPath + "/skin.conf");
+	ofstream f(confStr["skin"] + "/skin.conf");
 	if (!f.is_open()) return;
 
 	for (ConfStrHash::iterator curr = skinConfStr.begin(); curr != skinConfStr.end(); curr++) {
@@ -863,7 +863,7 @@ void GMenu2X::writeSkinConfig() {
 
 void GMenu2X::setSkin(string skin, bool clearSC) {
 	input.update(false);
-	if (input[SETTINGS]) skin = "Default";
+	if (input[SETTINGS]) skin = dataPath + "/skins/Default";
 
 	confStr["skin"] = skin;
 
@@ -899,7 +899,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfColors[COLOR_FONT_ALT_OUTLINE] = (RGBAColor){253, 1, 252, 0};
 
 	// load skin settings
-	skin = "skins/" + skin + "/skin.conf";
+	skin = skin + "/skin.conf";
 
 	ifstream f(skin, std::ios_base::in);
 	if (!f.is_open()) {
@@ -977,7 +977,12 @@ void GMenu2X::skinMenu() {
 
 	fl.addExclude("..");
 
+	fl.browse(dataPath + "/skins");
 	skins = fl.getDirectories();
+
+	fl.browse(homePath + "/skins");
+	skins.insert(skins.end(), fl.getFiles().begin(), fl.getFiles().end());
+
 	vector<string> wpLabel;
 	wpLabel.push_back(">>");
 	string tmp = ">>";
@@ -1035,10 +1040,12 @@ void GMenu2X::skinMenu() {
 
 			wallpapers.clear();
 
+			if (confStr["skin"] != dataPath + "/skins/Default") {
 				fl.browse(confStr["skin"] + "/wallpapers");
 				wallpapers.insert(wallpapers.end(), fl.getFiles().begin(), fl.getFiles().end());
 			}
 
+			fl.browse(dataPath + "/skins/Default/wallpapers");
 			wallpapers.insert(wallpapers.end(), fl.getFiles().begin(), fl.getFiles().end());
 
 			sc.del("skin:icons/skin.png");
@@ -1047,7 +1054,7 @@ void GMenu2X::skinMenu() {
 			sc.del("skin:imgs/buttons/a.png");
 		}
 
-		if (!file_exists(confStr["wallpaper"])) confStr["wallpaper"] = wallpapers.at(0);
+		confStr["wallpaper"] = wallpapers.at(0);
 
 		sc.del(confStr["wallpaper"]);
 		setBackground(bg, confStr["wallpaper"]);
@@ -1148,11 +1155,11 @@ void GMenu2X::about() {
 }
 
 void GMenu2X::viewLog() {
-	string logfile = exe_path() + "/log.txt";
+	string logfile = homePath + "/log.txt";
 	if (!file_exists(logfile)) return;
 
 	TextDialog td(this, tr["Log Viewer"], tr["Last launched program's output"], "skin:icons/ebook.png");
-	td.appendFile(exe_path() + "/log.txt");
+	td.appendFile(logfile);
 	td.exec();
 
 	MessageBox mb(this, tr["Delete the log file?"], "skin:icons/ebook.png");
@@ -1270,7 +1277,7 @@ void GMenu2X::explorer() {
 			string skinname = base_name(path, true).substr(13); // strip gmenu2x-skin- and .zip
 			if (skinname.size() > 1) {
 				TerminalDialog td(this, tr["Skin installer"], tr["Installing skin"] + " " + skinname, "skin:icons/skin.png");
-				string cmd = "rm -rf \"skins/" + skinname + "/\"; mkdir -p \"skins/" + skinname + "/\"; unzip \"" + path + "\" -d \"skins/" + skinname + "/\"; if [ `ls \"skins/" + skinname + "\" | wc -l` == 1 ]; then subdir=`ls \"skins/" + skinname + "\"`; mv \"skins/" + skinname + "\"/$subdir/* \"skins/" + skinname + "/\"; rmdir \"skins/" + skinname + "\"/$subdir; fi; sync";
+				string cmd = "rm -rf \"" + homePath + "/skins/" + skinname + "/\"; mkdir -p \"" + homePath + "/skins/" + skinname + "/\"; unzip \"" + path + "\" -d \"" + homePath + "/skins/" + skinname + "/\"; if [ `ls \"" + homePath + "/skins/" + skinname + "\" | wc -l` == 1 ]; then subdir=`ls \"" + homePath + "/skins/" + skinname + "\"`; mv \"" + homePath + "/skins/" + skinname + "\"/$subdir/* \"" + homePath + "/skins/" + skinname + "/\"; rmdir \"" + homePath + "/skins/" + skinname + "\"/$subdir; fi; sync";
 				td.exec(cmd);
 				setSkin(skinname, false);
 			}
@@ -1290,7 +1297,7 @@ void GMenu2X::explorer() {
 					params = "-batch -ex \"run\" -ex \"bt\" --args " + command;
 					command = "gdb";
 				}
-				params += " 2>&1 | tee " + cmdclean(exe_path()) + "/log.txt";
+				params += " 2>&1 | tee " + cmdclean(homePath + + "/log.txt");
 			}
 
 			LinkApp *link = new LinkApp(this, "explorer.lnk~");
@@ -1503,7 +1510,7 @@ void GMenu2X::editLink() {
 
 #if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	bool linkUseGinge = menu->getLinkApp()->getUseGinge();
-	string ginge_prep = exe_path() + "/ginge/ginge_prep";
+	string ginge_prep = dataPath + "/ginge/ginge_prep";
 	if (file_exists(ginge_prep))
 		sd.addSetting(new MenuSettingBool(		this, tr["Use Ginge"],			tr["Compatibility layer for running GP2X applications"], &linkUseGinge ));
 #endif
@@ -1553,12 +1560,12 @@ void GMenu2X::editLink() {
 		if (oldSection != newSection) {
 			vector<string>::const_iterator newSectionIndex = find(menu->getSections().begin(), menu->getSections().end(), newSection);
 			if (newSectionIndex == menu->getSections().end()) return;
-			string newFileName = "sections/" + newSection + "/" + linkTitle;
+			string newFileName = homePath + "/sections/" + newSection + "/" + linkTitle;
 			uint32_t x = 2;
 			while (file_exists(newFileName)) {
 				string id = "";
 				stringstream ss; ss << x; ss >> id;
-				newFileName = "sections/" + newSection + "/" + linkTitle + id;
+				newFileName = homePath + "/sections/" + newSection + "/" + linkTitle + id;
 				x++;
 			}
 			rename(menu->getLinkApp()->getFile().c_str(), newFileName.c_str());
@@ -1646,7 +1653,7 @@ void GMenu2X::deleteSection() {
 	mb.setButton(MANUAL, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
-	if (rmtree(exe_path() + "/sections/" + menu->getSection())) {
+	if (rmtree(homePath + "/sections/" + menu->getSection())) {
 		menu->deleteSelectedSection();
 		sync();
 	}

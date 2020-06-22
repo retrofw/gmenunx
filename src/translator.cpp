@@ -26,6 +26,8 @@
 
 using std::ifstream;
 
+extern string dataPath, homePath;
+
 Translator::Translator(const string &lang) {
 	_lang = "";
 	if (!lang.empty())
@@ -41,6 +43,7 @@ bool Translator::exists(const string &term) {
 void Translator::setLang(const string &lang) {
 	translations.clear();
 
+	string line = dataPath + "/translations/" + lang;
 	ifstream f(line, std::ios_base::in);
 	if (f.is_open()) {
 		while (getline(f, line, '\n')) {

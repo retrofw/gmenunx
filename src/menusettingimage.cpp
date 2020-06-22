@@ -27,11 +27,11 @@ MenuSettingImage::MenuSettingImage(GMenu2X *gmenu2x, const string &title, const 
 MenuSettingFile(gmenu2x, title, description, value, filter, startPath, dialogTitle, dialogIcon) {}
 
 void MenuSettingImage::setValue(const string &value) {
-	string skinpath(exe_path() + "/skins/" + gmenu2x->confStr["skin"]);
+	string skinpath = homePath + "/skins/" + gmenu2x->confStr["skin"];
 	bool inSkinDir = value.substr(0, skinpath.length()) == skinpath;
 
 	if (!inSkinDir && gmenu2x->confStr["skin"] != "Default") {
-		skinpath = exe_path() + "/skins/Default";
+		skinpath = homePath + "/skins/Default";
 		inSkinDir = value.substr(0, skinpath.length()) == skinpath;
 	}
 

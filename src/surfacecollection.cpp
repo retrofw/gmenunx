@@ -28,7 +28,6 @@
 #endif
 
 SurfaceCollection::SurfaceCollection() {
-	setSkin("Default");
 }
 
 void SurfaceCollection::debug() {
@@ -43,12 +42,12 @@ void SurfaceCollection::setSkin(const string &skin) {
 }
 
 string SurfaceCollection::getSkinFilePath(const string &file, bool fallback) {
-	string ret = "skins/" + skin + "/" + file;
+	string ret = skin + "/" + file;
 	if (file_exists(ret))
 		return ret;
 
 	if (fallback) {
-		ret = "skins/Default/" + file;
+		ret = dataPath + "/skins/Default/" + file;
 		if (file_exists(ret))
 			return ret;
 	}

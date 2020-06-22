@@ -154,7 +154,7 @@ void OPKScannerDialog::opkInstall(const string &path) {
 
 		gmenu2x->menu->addSection(section);
 
-		linkpath = "sections/" + section + "/" + linkpath;
+		linkpath = homePath + "/sections/" + section + "/" + linkpath;
 
 		LinkApp *link = new LinkApp(gmenu2x, linkpath.c_str());
 

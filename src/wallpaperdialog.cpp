@@ -43,6 +43,7 @@ bool WallpaperDialog::exec() {
 	this->showFiles = true;
 
 	setFilter(".png,.jpg,.jpeg,.bmp");
+	browse(dataPath + "/skins/Default/wallpapers");
 
 	wallpapers = getFiles();
 
