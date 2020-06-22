@@ -155,7 +155,6 @@ public:
 	void quit();
 	void main();
 	void settings();
-	void reinit(bool showDialog = false);
 	void poweroffDialog();
 	void resetSettings();
 	void cpuSettings();
