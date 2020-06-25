@@ -727,7 +727,6 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 }
 
 void GMenu2X::writeConfig() {
-	ledOn();
 	if (confInt["saveSelection"] && menu != NULL) {
 		confInt["section"] = menu->getSectionIndex();
 		confInt["link"] = menu->getLinkIndex();
@@ -763,9 +762,7 @@ void GMenu2X::writeConfig() {
 
 		f << curr->first << "=\"" << curr->second << "\"" << std::endl;
 	}
-	sync();
 
-	ledOff();
 	for (ConfIntHash::iterator curr = confInt.begin(); curr != confInt.end(); curr++) {
 		if (
 			// deprecated
@@ -814,7 +811,6 @@ void GMenu2X::writeConfig() {
 void GMenu2X::writeSkinConfig() {
 	string skinconf = exe_path() + "/skins/" + confStr["skin"] + "/skin.conf";
 
-	ledOn();
 	ofstream f(skinPath + "/skin.conf");
 	if (!f.is_open()) return;
 
@@ -862,7 +858,6 @@ void GMenu2X::writeSkinConfig() {
 	f.close();
 
 	sync();
-	ledOff();
 }
 
 void GMenu2X::setSkin(string skin, bool clearSC) {
@@ -1176,11 +1171,9 @@ void GMenu2X::viewLog() {
 			writeConfig();
 
 		case CONFIRM:
-			ledOn();
 			unlink(logfile.c_str());
 			sync();
 			initMenu();
-			ledOff();
 			break;
 	}
 }
@@ -1522,8 +1515,6 @@ void GMenu2X::editLink() {
 #endif
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		ledOn();
-
 		menu->getLinkApp()->setExec(linkExec);
 		menu->getLinkApp()->setTitle(linkTitle);
 		menu->getLinkApp()->setDescription(linkDescription);
@@ -1580,7 +1571,6 @@ void GMenu2X::editLink() {
 		}
 		menu->getLinkApp()->save();
 		sync();
-		ledOff();
 	}
 	confInt["section"] = menu->getSectionIndex();
 	confInt["link"] = menu->getLinkIndex();
@@ -1636,12 +1626,10 @@ void GMenu2X::addSection() {
 		// only if a section with the same name does not exist
 		if (find(menu->getSections().begin(), menu->getSections().end(), id.getInput()) == menu->getSections().end()) {
 			// section directory doesn't exists
-			ledOn();
 			if (menu->addSection(id.getInput())) {
 				menu->setSectionIndex(menu->getSections().size() - 1); //switch to the new section
 				sync();
 			}
-			ledOff();
 		}
 	}
 }
@@ -1659,12 +1647,10 @@ void GMenu2X::deleteSection() {
 	mb.setButton(MANUAL, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
-	ledOn();
 	if (rmtree(exe_path() + "/sections/" + menu->getSection())) {
 		menu->deleteSelectedSection();
 		sync();
 	}
-	ledOff();
 }
 
 #if defined(OPK_SUPPORT)
