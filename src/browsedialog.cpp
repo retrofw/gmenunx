@@ -7,6 +7,7 @@ extern const char *CARD_ROOT;
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon):
 Dialog(gmenu2x, title, description, icon) {
+	srand(SDL_GetTicks());
 }
 
 bool BrowseDialog::exec(string _path) {
@@ -162,6 +163,8 @@ bool BrowseDialog::exec(string _path) {
 				}
 			} else if (gmenu2x->input[MENU]) {
 				contextMenu();
+			} else if (gmenu2x->input[MANUAL]) {
+				selected = (rand() % fileCount()) + dirCount();
 			} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
 				selected = 0;
 				preview = "";
