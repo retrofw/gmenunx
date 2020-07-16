@@ -151,14 +151,14 @@ bool BrowseDialog::exec(string _path) {
 				string cur = getFileName(selected);
 				while ((selected < this->size() - 1) && selected++) {
 					string sel = getFileName(selected);
-					if (cur.at(0) != sel.at(0))
+					if (tolower(cur.at(0)) != tolower(sel.at(0)))
 						break;
 				}
 			} else if (gmenu2x->input[PAGEUP]) {
 				string cur = getFileName(selected);
 				while (selected > 0 && selected--) {
 					string sel = getFileName(selected);
-					if (cur.at(0) != sel.at(0))
+					if (tolower(cur.at(0)) != tolower(sel.at(0)))
 						break;
 				}
 			} else if (gmenu2x->input[MENU]) {
