@@ -161,10 +161,6 @@ bool BrowseDialog::exec(string _path) {
 					if (tolower(cur.at(0)) != tolower(sel.at(0)))
 						break;
 				}
-			} else if (gmenu2x->input[MENU]) {
-				contextMenu();
-			} else if (gmenu2x->input[MANUAL]) {
-				selected = (rand() % fileCount()) + dirCount();
 			} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
 				selected = 0;
 				preview = "";
@@ -187,6 +183,10 @@ bool BrowseDialog::exec(string _path) {
 				if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#")))
 					return false; // close only if preview is empty.
 				preview = "";
+			} else if (gmenu2x->input[MANUAL]) {
+				selected = (rand() % fileCount()) + dirCount();
+			} else if (gmenu2x->input[MENU]) {
+				contextMenu();
 			}
 
 			if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN]) {
