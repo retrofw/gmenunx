@@ -325,6 +325,9 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			wasActive = VOLUP;
 		} else if (input[POWER]) {
 			wasActive = UDC_CONNECT;
+		} else if (input[CONFIRM] || input[CANCEL]) {
+			wasActive = 0;
+			break;
 		} else {
 			continue;
 		}
@@ -1668,7 +1671,7 @@ void GMenu2X::opkScanner() {
 
 void GMenu2X::opkInstall(string path) {
 	input.update(false);
-	bool debug = input[MANUAL];
+	bool debug = input[MENU];
 
 	OPKScannerDialog od(this, tr["Package installer"], tr["Installing"] + " " + base_name(path), "skin:icons/configure.png");
 	od.opkpath = path;
