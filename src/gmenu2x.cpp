@@ -1172,7 +1172,7 @@ void GMenu2X::main() {
 		sc[currBackdrop]->blit(s,0,0);
 
 		// SECTIONS
-		x = 0; y = 0; string sectionBarPosition = "right";
+		x = 0; y = 0; string sectionBarPosition = "left";
 		if (sectionBarPosition == "left" || sectionBarPosition == "right") {
 			s->box((sectionBarPosition == "right")*(resX - skinConfInt["sectionBarWidth"]), 0, skinConfInt["sectionBarWidth"], resY, skinConfColors[COLOR_TOP_BAR_BG]);
 		} else {
