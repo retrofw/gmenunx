@@ -134,7 +134,6 @@ private:
 	void initMenu();
 	void showManual();
 	// IconButton *btnContextMenu;
-	int32_t tickBattery = -2e3;
 
 #ifdef TARGET_GP2X
 	typedef struct {
@@ -167,8 +166,9 @@ private:
 	// void toggleTvOut();
 	void hwDeinit();
 	void hwInit();
-	void hwCheck();
-	// static GMenu2X *instance;
+	// void hwCheck();
+	static uint32_t hwCheck(unsigned int interval, void *param);
+	static GMenu2X *instance;
 
 public:
 	GMenu2X();

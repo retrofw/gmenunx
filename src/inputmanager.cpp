@@ -41,6 +41,8 @@
 
 using namespace std;
 
+uint8_t *keystate = SDL_GetKeyState(NULL);
+
 InputManager::InputManager()
 	: wakeUpTimer(NULL) {
 }
@@ -90,6 +92,13 @@ bool InputManager::readConfFile(const string &conffile) {
 	string line, name, value;
 	string::size_type pos;
 	vector<string> values;
+
+	for (uint32_t x = UDC_CONNECT; x < NUM_ACTIONS; x++) {
+		InputMap map;
+		map.type = InputManager::MAPPING_TYPE_KEYPRESS;
+		map.value = x - UDC_CONNECT + SDLK_WORLD_0;
+		actions[x].maplist.push_back(map);
+	}
 
 	while (getline(inf, line, '\n')) {
 		linenum++;
@@ -178,31 +187,31 @@ bool InputManager::update(bool wait) {
 	events.clear();
 	SDL_Event event;
 
-	if (wait) {
-		SDL_WaitEvent(&event);
-		// if (event.type == SDL_KEYUP) return false;
-		if (event.type == SDL_KEYUP) anyactions = true;
-		if (event.type == SDL_KEYDOWN) {
-			SDL_Event evcopy = event;
-			events.push_back(evcopy);
-		}
+	SDL_WaitEvent(&event);
+
+	if (event.type == SDL_KEYDOWN) {
+		anyactions = true;
+		// SDL_Event evcopy = event;
+		events.push_back(event);
+		keystate[event.key.keysym.sym] = true;
+	} else 
+	if (event.type == SDL_KEYUP) {
+		anyactions = true;
+		keystate[event.key.keysym.sym] = false;
 	}
-	while (SDL_PollEvent(&event)) {
-		// if (event.type == SDL_KEYUP) return false;
-		if (event.type == SDL_KEYUP) anyactions = true;
-		if (event.type == SDL_KEYDOWN) {
-			SDL_Event evcopy = event;
-			events.push_back(evcopy);
-		}
-	}
+	// else {
+	// 	SDL_PumpEvents();
+	// }
 
 	int32_t now = SDL_GetTicks();
+
 	for (uint32_t x = 0; x < actions.size(); x++) {
 		actions[x].active = isActive(x);
+// WARNING("is active: %d %d", x, actions[x].active);
 		if (actions[x].active) {
 			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); // eegg
 			input_combo[sizeof(input_combo) - 1] = x; // eegg
-			if (actions[x].timer == NULL) actions[x].timer = SDL_AddTimer(actions[x].interval, wakeUp, NULL);
+			if (actions[x].timer == NULL) actions[x].timer = SDL_AddTimer(actions[x].interval, wakeUp, (void*)true);
 			anyactions = true;
 			// actions[x].last = now;
 		} else {
@@ -229,6 +238,21 @@ void InputManager::dropEvents() {
 			actions[x].timer = NULL;
 		}
 	}
+}
+
+void InputManager::pushEvent(int action) {
+	SDL_Event event;
+	event.type = SDL_KEYDOWN;
+	event.key.state = SDL_PRESSED;
+	event.key.keysym.sym = (SDLKey)(action - UDC_CONNECT + SDLK_WORLD_0);
+	SDL_PushEvent(&event);
+	SDL_Delay(200);
+	event.type = SDL_WAKEUPEVENT;
+	SDL_PushEvent(&event);
+	SDL_Delay(100);
+	event.type = SDL_KEYUP;
+	event.key.state = SDL_RELEASED;
+	SDL_PushEvent(&event);
 }
 
 uint32_t InputManager::checkRepeat(uint32_t interval, void *_data) {
@@ -286,18 +310,20 @@ void InputManager::setInterval(int ms, int action) {
 }
 
 void InputManager::setWakeUpInterval(int ms) {
+	return; // temp
 	if (wakeUpTimer != NULL)
 		SDL_RemoveTimer(wakeUpTimer);
 
 	if (ms > 0)
-		wakeUpTimer = SDL_AddTimer(ms, wakeUp, NULL);
+		wakeUpTimer = SDL_AddTimer(ms, wakeUp, (void*)true);
 }
 
-uint32_t InputManager::wakeUp(uint32_t interval, void *_data) {
+uint32_t InputManager::wakeUp(uint32_t interval, void *repeat) {
 	SDL_Event *event = new SDL_Event();
 	event->type = SDL_WAKEUPEVENT;
 	SDL_PushEvent( event );
-	return interval;
+	if ((bool*) repeat) return interval;
+	return 0;
 }
 
 bool &InputManager::operator[](int action) {
@@ -323,7 +349,6 @@ bool InputManager::isActive(int action) {
 				}
 			break;
 			case InputManager::MAPPING_TYPE_KEYPRESS:
-				uint8_t *keystate = SDL_GetKeyState(NULL);
 				return keystate[map.value];
 			break;
 		}
