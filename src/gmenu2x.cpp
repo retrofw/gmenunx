@@ -1552,8 +1552,9 @@ void GMenu2X::settings() {
 #else
 	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
 #endif
+	// sd.addSetting(new MenuSettingBool(this,tr["Show root"],tr["Show root folder in the file selection dialogs"],&showRootFolder));
 
-	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
+	// sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date time"], &confStr["datetime"]));
 
 
 	if (sd.exec() && sd.edited() && sd.save) {
