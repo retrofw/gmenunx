@@ -755,7 +755,6 @@ void GMenu2X::ledOff() {
 #endif
 }
 
-int exitMainThread=0;
 enum mmc_status{
 	MMC_REMOVE, MMC_INSERT, MMC_ERROR
 };
@@ -818,9 +817,10 @@ udc_status getUDCStatus(void) {
 	return UDC_ERROR;
 }
 
+bool exitMainThread = false;
 void* mainThread(void* param) {
 	GMenu2X *menu = (GMenu2X*)param;
-	while(exitMainThread == 0) {
+	while(!exitMainThread) {
 		sleep(1);
 	}
 	return NULL;
@@ -933,10 +933,6 @@ void GMenu2X::main() {
 	stringstream ss;
 
 	setBacklight(confInt["backlight"]);
-	// btnContextMenu = new IconButton(this,"skin:imgs/menu.png");
-	// btnContextMenu->setPosition(resX-18, resY-18);
-	// btnContextMenu->setAction(MakeDelegate(this, &GMenu2X::contextMenu));
-	exitMainThread = 0;
 	if (pthread_create(&thread_id, NULL, mainThread, this)) {
 		ERROR("%s, failed to create main thread\n", __func__);
 	}
@@ -1294,7 +1290,7 @@ void GMenu2X::main() {
 		tickSuspend = SDL_GetTicks();
 	}
 	
-	exitMainThread = 1;
+	exitMainThread = true;
 	pthread_join(thread_id, NULL);
 	delete btnContextMenu;
 	btnContextMenu = NULL;
