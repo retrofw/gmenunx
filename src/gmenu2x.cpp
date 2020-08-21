@@ -901,9 +901,9 @@ void GMenu2X::setSuspend(bool suspend) {
 		setBacklight(0);
 		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
 	} else {
+		setClock(528);
 		setBacklight(max(10, confInt["backlight"]));
 		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
-		setClock(528);
 	}
 	suspendActive = suspend;
 }
