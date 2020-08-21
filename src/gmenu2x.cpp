@@ -2230,7 +2230,7 @@ void GMenu2X::setClock(unsigned mhz) {
 	}
 }
 
-int GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
+void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
 	SDL_Rect progress = {52, 32, resX-84, 8};
 	SDL_Rect box = {20, 20, resX-40, 32};
 
