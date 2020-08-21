@@ -695,6 +695,7 @@ void GMenu2X::writeSkinConfig() {
 
 		ConfIntHash::iterator endI = skinConfInt.end();
 		for(ConfIntHash::iterator curr = skinConfInt.begin(); curr != endI; curr++)
+			if (curr->first == "titleFontSize" || curr->first == "sectionBarHeight" || curr->first == "linkHeight" ) continue;
 			inf << curr->first << "=" << curr->second << endl;
 
 		for (int i = 0; i < NUM_COLORS; ++i) {
