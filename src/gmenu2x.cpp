@@ -1056,7 +1056,7 @@ void GMenu2X::main() {
 						needUSBUmount = 1;
 						// system("/usr/bin/usb_conn_int_sd.sh");
 						// system("mount -o remount,ro /dev/mmcblk0p4");
-						system("umount /dev/mmcblk0p4");
+						system("umount -l /dev/mmcblk0p4");
 						system("echo '/dev/mmcblk0p4' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
 						INFO("%s, connect USB disk for internal SD", __func__);
 						if (curMMCStatus == MMC_INSERT) {
