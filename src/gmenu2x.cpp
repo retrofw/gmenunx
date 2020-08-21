@@ -762,8 +762,8 @@ void GMenu2X::writeConfig() {
 			inf << curr->first << "=\"" << curr->second << "\"" << endl;
 		}
 
-		for(ConfIntHash::iterator curr = confInt.begin(); curr != confInt.end(); curr++) {
-			if (curr->first == "batteryLog" ) continue;
+		for (ConfIntHash::iterator curr = confInt.begin(); curr != confInt.end(); curr++) {
+			if (curr->first == "batteryLog" || curr->first == "sectionBar" ) continue;
 			inf << curr->first << "=" << curr->second << endl;
 		}
 		inf.close();
