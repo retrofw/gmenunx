@@ -707,10 +707,99 @@ void GMenu2X::writeSkinConfig() {
 	ledOff();
 }
 
+void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
+	confStr["skin"] = skin;
 
+//Clear previous skin settings
+	skinConfStr.clear();
+	skinConfInt.clear();
 
+//clear collection and change the skin path
+	if (clearSC) sc.clear();
+	sc.setSkin(skin);
+	if (btnContextMenu != NULL)
+		btnContextMenu->setIcon( btnContextMenu->getIcon() );
 
+//reset colors to the default values
+	skinConfColors[COLOR_TOP_BAR_BG] = (RGBAColor){255,255,255,130};
+	skinConfColors[COLOR_LIST_BG] = (RGBAColor){255,255,255,0};
+	skinConfColors[COLOR_BOTTOM_BAR_BG] = (RGBAColor){255,255,255,130};
+	skinConfColors[COLOR_SELECTION_BG] = (RGBAColor){255,255,255,130};
+	skinConfColors[COLOR_MESSAGE_BOX_BG] = (RGBAColor){255,255,255,255};
+	skinConfColors[COLOR_MESSAGE_BOX_BORDER] = (RGBAColor){80,80,80,255};
+	skinConfColors[COLOR_MESSAGE_BOX_SELECTION] = (RGBAColor){160,160,160,255};
+	skinConfColors[COLOR_FONT] = (RGBAColor){255,255,255,255};
+	skinConfColors[COLOR_FONT_OUTLINE] = (RGBAColor){0,0,0,200};
 
+	skinConfColors[COLOR_FONT_ALT] = (RGBAColor){253,1,252,0};
+	skinConfColors[COLOR_FONT_ALT_OUTLINE] = (RGBAColor){253,1,252,0};
+
+//load skin settings
+	string skinconfname = "skins/"+skin+"/skin.conf";
+	if (fileExists(skinconfname)) {
+		ifstream skinconf(skinconfname.c_str(), ios_base::in);
+		if (skinconf.is_open()) {
+			string line;
+			while (getline(skinconf, line, '\n')) {
+				line = trim(line);
+				// DEBUG("skinconf: '%s'", line.c_str());
+				string::size_type pos = line.find("=");
+				string name = trim(line.substr(0,pos));
+				string value = trim(line.substr(pos+1,line.length()));
+
+				if (value.length()>0) {
+					if (value.length()>1 && value.at(0)=='"' && value.at(value.length()-1)=='"')
+						skinConfStr[name] = value.substr(1,value.length()-2);
+					else if (value.at(0) == '#') {
+						// skinConfColor[name] = strtorgba( value.substr(1,value.length()) );
+						skinConfColors[stringToColor(name)] = strtorgba(value);
+					}
+					else
+						skinConfInt[name] = atoi(value.c_str());
+				}
+			}
+			skinconf.close();
+
+			if (setWallpaper && !skinConfStr["wallpaper"].empty() && fileExists("skins/" + skin + "/wallpapers/" + skinConfStr["wallpaper"])) {
+				confStr["wallpaper"] = "skins/" + skin + "/wallpapers/" + skinConfStr["wallpaper"];
+				sc[confStr["wallpaper"]]->blit(bg,0,0);
+			}
+		}
+	}
+
+// (poor) HACK: ensure font alt colors have a default value
+	if (skinConfColors[COLOR_FONT_ALT].r == 253 && skinConfColors[COLOR_FONT_ALT].g == 1 && skinConfColors[COLOR_FONT_ALT].b == 252 && skinConfColors[COLOR_FONT_ALT].a == 0) skinConfColors[COLOR_FONT_ALT] = skinConfColors[COLOR_FONT];
+	if (skinConfColors[COLOR_FONT_ALT_OUTLINE].r == 253 && skinConfColors[COLOR_FONT_ALT_OUTLINE].g == 1 && skinConfColors[COLOR_FONT_ALT_OUTLINE].b == 252 && skinConfColors[COLOR_FONT_ALT_OUTLINE].a == 0) skinConfColors[COLOR_FONT_ALT_OUTLINE] = skinConfColors[COLOR_FONT_OUTLINE];
+
+// prevents breaking current skin until they are updated
+	if (!skinConfInt["fontSizeTitle"] && skinConfInt["titleFontSize"] > 0) skinConfInt["fontSizeTitle"] = skinConfInt["titleFontSize"];
+
+	evalIntConf( &skinConfInt["topBarHeight"], 40, 1, resY);
+	// evalIntConf( &skinConfInt["sectionBarHeight"], 200, 32, resY);
+	evalIntConf( &skinConfInt["sectionBarSize"], 40, 1, resX);
+	// evalIntConf( &skinConfInt["linkHeight"], 40, 16, resY);
+	evalIntConf( &skinConfInt["linkItemHeight"], 40, 32, resY);
+	evalIntConf( &skinConfInt["bottomBarHeight"], 16, 1, resY);
+	evalIntConf( &skinConfInt["selectorX"], 142, 1, resX);
+	evalIntConf( &skinConfInt["selectorPreviewX"], 7, 1, resX);
+	evalIntConf( &skinConfInt["selectorPreviewY"], 56, 1, resY);
+	evalIntConf( &skinConfInt["selectorPreviewWidth"], 128, 32, resY);
+	evalIntConf( &skinConfInt["selectorPreviewHeight"], 128, 32, resX);
+	evalIntConf( &skinConfInt["fontSize"], 9, 6, 60);
+	evalIntConf( &skinConfInt["fontSizeTitle"], 14, 6, 60);
+
+//recalculate some coordinates based on the new element sizes
+	// linkRows = resY/skinConfInt["linkItemHeight"];
+	// needed until refactor menu.cpp
+	linkColumns = 1;//(resX-10)/skinConfInt["linkWidth"];
+	linkRows = resY / skinConfInt["linkItemHeight"];
+	// linkRows = linksRect.h / skinConfInt["linkItemHeight"];
+
+	if (menu != NULL && clearSC) menu->loadIcons();
+
+//font
+	initFont();
+}
 
 void GMenu2X::readTmp() {
 	lastSelectorElement = -1;
@@ -1599,147 +1688,9 @@ void GMenu2X::setTvOut() {
 }
 #endif
 
-
-// void GMenu2X::toggleTvOut() {
-// #if defined(TARGET_GP2X)
-// 	if (cx25874!=0)
-// 		gp2x_tvout_off();
-// 	else
-// 		gp2x_tvout_on(confStr["TVOut"] == "PAL");
-// #elif defined(TARGET_RS97)
-// 	int tvout=0;
-// 	char buf[32]={0};
-// 	int fd = open("/mnt/game/gmenu2x/tvout", O_RDWR);
-// 	if(fd > 0){
-// 		read(fd, buf, sizeof(buf));
-// 		INFO("Current TV-out value: %s", buf);
-// 		if(memcmp(buf, "1", 1) == 0){
-// 			tvout = 0;
-// 			sprintf(buf, "0");
-// 			INFO("Turn off TV-out");
-// 		}
-// 		else{
-// 			tvout = 1;
-// 			sprintf(buf, "1");
-// 			INFO("Turn on TV-out");
-// 		}
-// 		lseek(fd, 0, SEEK_SET);
-// 		write(fd, buf, 1);
-// 		close(fd);
-// 	}
-// 	else{
-// 		tvout = 1;
-// 		fd = open("/mnt/game/gmenu2x/tvout", O_CREAT);
-// 		sprintf(buf, "1");
-// 		write(fd, buf, 1);
-// 		close(fd);
-// 		INFO("Create new TV-out file");
-// 	}
-
-// 	sprintf(buf, "/usr/bin/tvout.sh %d %d", tvout, confStr["TVOut"] == "PAL" ? 1 : 2);
-// 	system(buf);
-// 	INFO("run cmd: %s", buf);
-// #endif
-// }
-
-void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
-	confStr["skin"] = skin;
-
-//Clear previous skin settings
-	skinConfStr.clear();
-	skinConfInt.clear();
-
-//clear collection and change the skin path
-	if (clearSC) sc.clear();
-	sc.setSkin(skin);
-	if (btnContextMenu != NULL)
-		btnContextMenu->setIcon( btnContextMenu->getIcon() );
-
-//reset colors to the default values
-	skinConfColors[COLOR_TOP_BAR_BG] = (RGBAColor){255,255,255,130};
-	skinConfColors[COLOR_LIST_BG] = (RGBAColor){255,255,255,0};
-	skinConfColors[COLOR_BOTTOM_BAR_BG] = (RGBAColor){255,255,255,130};
-	skinConfColors[COLOR_SELECTION_BG] = (RGBAColor){255,255,255,130};
-	skinConfColors[COLOR_MESSAGE_BOX_BG] = (RGBAColor){255,255,255,255};
-	skinConfColors[COLOR_MESSAGE_BOX_BORDER] = (RGBAColor){80,80,80,255};
-	skinConfColors[COLOR_MESSAGE_BOX_SELECTION] = (RGBAColor){160,160,160,255};
-	skinConfColors[COLOR_FONT] = (RGBAColor){255,255,255,255};
-	skinConfColors[COLOR_FONT_OUTLINE] = (RGBAColor){0,0,0,200};
-
-	skinConfColors[COLOR_FONT_ALT] = (RGBAColor){253,1,252,0};
-	skinConfColors[COLOR_FONT_ALT_OUTLINE] = (RGBAColor){253,1,252,0};
-
-//load skin settings
-	string skinconfname = "skins/"+skin+"/skin.conf";
-	if (fileExists(skinconfname)) {
-		ifstream skinconf(skinconfname.c_str(), ios_base::in);
-		if (skinconf.is_open()) {
-			string line;
-			while (getline(skinconf, line, '\n')) {
-				line = trim(line);
-				// DEBUG("skinconf: '%s'", line.c_str());
-				string::size_type pos = line.find("=");
-				string name = trim(line.substr(0,pos));
-				string value = trim(line.substr(pos+1,line.length()));
-
-				if (value.length()>0) {
-					if (value.length()>1 && value.at(0)=='"' && value.at(value.length()-1)=='"')
-						skinConfStr[name] = value.substr(1,value.length()-2);
-					else if (value.at(0) == '#') {
-						// skinConfColor[name] = strtorgba( value.substr(1,value.length()) );
-						skinConfColors[stringToColor(name)] = strtorgba(value);
-					}
-					else
-						skinConfInt[name] = atoi(value.c_str());
-				}
-			}
-			skinconf.close();
-
-			if (setWallpaper && !skinConfStr["wallpaper"].empty() && fileExists("skins/"+skin+"/wallpapers/"+skinConfStr["wallpaper"])) {
-				confStr["wallpaper"] = "skins/"+skin+"/wallpapers/"+skinConfStr["wallpaper"];
-				sc[confStr["wallpaper"]]->blit(bg,0,0);
-			}
-		}
-	}
-
-// (poor) HACK: ensure font alt colors have a default value
-	if (skinConfColors[COLOR_FONT_ALT].r == 253 && skinConfColors[COLOR_FONT_ALT].g == 1 && skinConfColors[COLOR_FONT_ALT].b == 252 && skinConfColors[COLOR_FONT_ALT].a == 0) skinConfColors[COLOR_FONT_ALT] = skinConfColors[COLOR_FONT];
-	if (skinConfColors[COLOR_FONT_ALT_OUTLINE].r == 253 && skinConfColors[COLOR_FONT_ALT_OUTLINE].g == 1 && skinConfColors[COLOR_FONT_ALT_OUTLINE].b == 252 && skinConfColors[COLOR_FONT_ALT_OUTLINE].a == 0) skinConfColors[COLOR_FONT_ALT_OUTLINE] = skinConfColors[COLOR_FONT_OUTLINE];
-
-// prevents breaking current skin until they are updated
-	if (!skinConfInt["fontSizeTitle"] && skinConfInt["titleFontSize"] > 0) skinConfInt["fontSizeTitle"] = skinConfInt["titleFontSize"];
-
-	evalIntConf( &skinConfInt["topBarHeight"], 40, 1, resY);
-	// evalIntConf( &skinConfInt["sectionBarHeight"], 200, 32, resY);
-	evalIntConf( &skinConfInt["sectionBarSize"], 40, 1, resX);
-	// evalIntConf( &skinConfInt["linkHeight"], 40, 16, resY);
-	evalIntConf( &skinConfInt["linkItemHeight"], 40, 32, resY);
-	evalIntConf( &skinConfInt["bottomBarHeight"], 16, 1, resY);
-	evalIntConf( &skinConfInt["selectorX"], 142, 1, resX);
-	evalIntConf( &skinConfInt["selectorPreviewX"], 7, 1, resX);
-	evalIntConf( &skinConfInt["selectorPreviewY"], 56, 1, resY);
-	evalIntConf( &skinConfInt["selectorPreviewWidth"], 128, 32, resY);
-	evalIntConf( &skinConfInt["selectorPreviewHeight"], 128, 32, resX);
-	evalIntConf( &skinConfInt["fontSize"], 9, 6, 60);
-	evalIntConf( &skinConfInt["fontSizeTitle"], 14, 6, 60);
-
-//recalculate some coordinates based on the new element sizes
-	// linkRows = resY/skinConfInt["linkItemHeight"];
-	// needed until refactor menu.cpp
-	linkColumns = 1;//(resX-10)/skinConfInt["linkWidth"];
-	linkRows = resY / skinConfInt["linkItemHeight"];
-	// linkRows = linksRect.h / skinConfInt["linkItemHeight"];
-
-	if (menu != NULL && clearSC) menu->loadIcons();
-
-//font
-	initFont();
-}
-
 void GMenu2X::contextMenu() {
 	vector<MenuOption> voices;
-
-	if (menu->selLinkApp()!=NULL) {
+	if (menu->selLinkApp() != NULL) {
 		voices.push_back((MenuOption){tr.translate("Edit $1", menu->selLink()->getTitle().c_str(), NULL), MakeDelegate(this, &GMenu2X::editLink)});
 		voices.push_back((MenuOption){tr.translate("Delete $1", menu->selLink()->getTitle().c_str(), NULL), MakeDelegate(this, &GMenu2X::deleteLink)});
 	}
