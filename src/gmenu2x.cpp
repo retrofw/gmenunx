@@ -1404,7 +1404,7 @@ bool GMenu2X::powerManager(bool &inputAction) {
 	// SUSPEND NOT ACTIVE
 	input.setWakeUpInterval(1000);
 
-	while (input.isActive(POWER)) {
+	while (input[POWER]) {
 		// HOLD POWER BUTTON
 		input.update();
 		SDL_Delay(100);
