@@ -368,6 +368,7 @@ GMenu2X::GMenu2X() {
 	setDateTime();
 
 	//Screen
+	// if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_JOYSTICK)<0 ) {
 	if( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER|SDL_INIT_JOYSTICK)<0 ) {
 		ERROR("Could not initialize SDL: %s", SDL_GetError());
 		quit();
@@ -988,7 +989,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 		input.setWakeUpInterval(100);
 
-		long tickStart = SDL_GetTicks();
+		Uint32 tickStart = SDL_GetTicks();
 		while (!close) {
 			bg.blit(s,0,0);
 
@@ -1051,9 +1052,8 @@ void GMenu2X::main() {
 	bool quit = false;
 	int x = 0, y = 0; //, helpBoxHeight = fwType=="open2x" ? 154 : 139;//, offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
 	uint i;
-	long tickBattery = -4800, tickNow, tickMMC = 0; //, tickUSB = 0;
-	// tickSuspend = 0;
-	 // tickPowerOff = 0;
+	Uint32 tickBattery = -4800, tickNow, tickMMC = 0; //, tickUSB = 0;
+
 	string batteryIcon = "imgs/battery/3.png"; //, backlightIcon = "imgs/backlight.png";
 	string prevBackdrop = confStr["wallpaper"], currBackdrop = confStr["wallpaper"];
 
@@ -1410,7 +1410,7 @@ bool GMenu2X::inputCommonActions() {
 }
 
 bool GMenu2X::powerManager(bool &inputAction) {
-	long tickStart = SDL_GetTicks(), tickPower = 0;
+	Uint32 tickStart = SDL_GetTicks(), tickPower = 0;
 
 	// INFO("START: %d\tSUSPEND: %d\tPOWER: %d\tsuspendActive: %d", tickStart, tickStart - tickSuspend, tickPower, suspendActive);
 	// input.setWakeUpInterval(1000); return false;
@@ -1573,7 +1573,6 @@ void GMenu2X::settings() {
 		setBacklight(confInt["backlight"], false);
 
 		writeConfig();
-		if (prevSkinBackdrops != confInt["skinBackdrops"] && menu != NULL) restartDialog();
 
 #if defined(TARGET_RS97)
 		setTVOut();
@@ -1844,7 +1843,7 @@ void GMenu2X::contextMenu() {
 	box.y = halfY - box.h/2;
 
 	SDL_Rect selbox = {box.x+4, 0, box.w-8, h};
-	long tickStart = SDL_GetTicks();
+	Uint32 tickStart = SDL_GetTicks();
 
 	Surface bg(s);
 	input.setWakeUpInterval(40); //25FPS
@@ -2326,7 +2325,7 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 		input.setWakeUpInterval(100);
 
-		long tickStart = SDL_GetTicks();
+		Uint32 tickStart = SDL_GetTicks();
 		while (!close) {
 			bg.blit(s,0,0);
 
