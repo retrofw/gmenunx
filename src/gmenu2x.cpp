@@ -317,11 +317,11 @@ void GMenu2X::main() {
 	SDL_TimerID hwCheckTimer = SDL_AddTimer(1000, hwCheck, NULL);
 
 	button_hold = section_changed = icon_changed = SDL_GetTicks();
-	SDL_TimerID sectionChangedTimer = SDL_AddTimer(2000, input.doNothing, (void*)false);
-	SDL_TimerID iconChangedTimer = SDL_AddTimer(1000, input.doNothing, (void*)false);
+	SDL_TimerID sectionChangedTimer = SDL_AddTimer(2000, input.wakeUp, (void*)false);
+	SDL_TimerID iconChangedTimer = SDL_AddTimer(1000, input.wakeUp, (void*)false);
 
 	// recover last session
-	if (lastSelectorElement >- 1 && menu->selLinkApp() != NULL && (!menu->selLinkApp()->getSelectorDir().empty() || !lastSelectorDir.empty())) {
+	if (lastSelectorElement >= 0 && menu->selLinkApp() != NULL && (!menu->selLinkApp()->getSelectorDir().empty() || !lastSelectorDir.empty())) {
 		if (confInt["skinBackdrops"] & BD_DIALOG)
 			setBackground(bg, currBackdrop);
 		else
@@ -622,7 +622,7 @@ void GMenu2X::main() {
 			if (!skinConfInt["sectionBar"]) skinConfInt["sectionBar"]++;
 			initMenu();
 			MessageBox mb(this,tr["CHEATER! ;)"]);
-			SDL_AddTimer(200, input.doNothing, (void*)false);
+			SDL_AddTimer(200, input.wakeUp, (void*)false);
 			mb.setBgAlpha(0);
 			mb.setAutoHide(100);
 			mb.exec();
@@ -693,13 +693,13 @@ void GMenu2X::main() {
 		) {
 			icon_changed = SDL_GetTicks();
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
-			iconChangedTimer = SDL_AddTimer(1000, input.doNothing, (void*)false);
+			iconChangedTimer = SDL_AddTimer(1000, input.wakeUp, (void*)false);
 		}
 
 		if (skinConfInt["sectionLabel"] && (input[SECTION_PREV] || input[SECTION_NEXT]) ) {
 			section_changed = SDL_GetTicks();
 			SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
-			sectionChangedTimer = SDL_AddTimer(2000, input.doNothing, (void*)false);
+			sectionChangedTimer = SDL_AddTimer(2000, input.wakeUp, (void*)false);
 		}
 	}
 }
@@ -712,7 +712,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 
 		powerManager->doSuspend(0);
-		input[DO_NOTHING] = true;
+		input[WAKE_UP] = true;
 		return true;
 	}
 
