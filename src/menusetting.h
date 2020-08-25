@@ -22,13 +22,6 @@
 
 #include "buttonbox.h"
 
-#include <string>
-
-/**
-Base class for different kind of option
-
-	@author Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
-*/
 class MenuSetting {
 protected:
 	GMenu2X *gmenu2x;

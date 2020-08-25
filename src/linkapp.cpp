@@ -57,8 +57,8 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_,
 	ifstream infile (linkfile, ios_base::in);
 	while (getline(infile, line, '\n')) {
 		line = trim(line);
-		if (line=="") continue;
-		if (line[0]=='#') continue;
+		if (line == "") continue;
+		if (line[0] == '#') continue;
 
 		string::size_type position = line.find("=");
 		string name = trim(line.substr(0,position));
@@ -77,9 +77,9 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_,
 			workdir = value;
 		} else if (name == "manual") {
 			manual = value;
-		} else if (name == "wrapper" && value=="true") {
+		} else if (name == "wrapper" && value == "true") {
 			wrapper = true;
-		} else if (name == "dontleave" && value=="true") {
+		} else if (name == "dontleave" && value == "true") {
 			dontleave = true;
 		} else if (name == "clock") {
 			setClock( atoi(value.c_str()) );
@@ -90,11 +90,13 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_,
 			setVolume( atoi(value.c_str()) );
 		} else if (name == "selectordir") {
 			setSelectorDir( value );
-		} else if (name == "selectorbrowser" && value=="true") {
+		} else if (name == "selectorbrowser" && value == "true") {
 			selectorbrowser = true;
-		} else if (name == "useramtimings" && value=="true") {
+		} else if (name == "selectorbrowser" && value == "false") {
+			selectorbrowser = false;
+		} else if (name == "useramtimings" && value == "true") {
 			useRamTimings = true;
-		} else if (name == "useginge" && value=="true") {
+		} else if (name == "useginge" && value == "true") {
 			useGinge = true;
 		} else if (name == "selectorfilter") {
 			setSelectorFilter( value );
@@ -122,10 +124,10 @@ const string &LinkApp::searchIcon() {
 	string exectitle = execicon;
 	pos = execicon.rfind("/");
 	if (pos != string::npos)
-		string exectitle = execicon.substr(pos+1,execicon.length());
+		exectitle = execicon.substr(pos + 1,execicon.length());
 
-	if (!gmenu2x->sc.getSkinFilePath("icons/"+exectitle).empty())
-		iconPath = gmenu2x->sc.getSkinFilePath("icons/"+exectitle);
+	if (!gmenu2x->sc.getSkinFilePath("icons/" + exectitle).empty())
+		iconPath = gmenu2x->sc.getSkinFilePath("icons/" + exectitle);
 	else if (fileExists(execicon))
 		iconPath = execicon;
 	else
@@ -139,7 +141,9 @@ int LinkApp::clock() {
 }
 
 const string &LinkApp::clockStr(int maxClock) {
-	if (iclock>maxClock) setClock(maxClock);
+	if (iclock > maxClock){
+    setClock(maxClock);
+  }
 	return sclock;
 }
 
@@ -148,6 +152,8 @@ void LinkApp::setClock(int mhz) {
 	iclock = constrain(mhz,50,325);
 #elif defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	iclock = constrain(mhz,50,900);
+#elif defined(TARGET_RETROGAME)
+	iclock = constrain(mhz,528,750);
 #endif
 	stringstream ss;
 	sclock = "";
@@ -204,7 +210,7 @@ bool LinkApp::targetExists() {
 #endif
 
 	string target = exec;
-	if (!exec.empty() && exec[0]!='/' && !workdir.empty())
+	if (!exec.empty() && exec[0] != '/' && !workdir.empty())
 		target = workdir + "/" + exec;
 
 	return fileExists(target);
@@ -215,14 +221,14 @@ bool LinkApp::save() {
 
 	ofstream f(file.c_str());
 	if (f.is_open()) {
-		if (title!=""          ) f << "title="           << title           << endl;
-		if (description!=""    ) f << "description="     << description     << endl;
-		if (icon!=""           ) f << "icon="            << icon            << endl;
-		if (exec!=""           ) f << "exec="            << exec            << endl;
-		if (params!=""         ) f << "params="          << params          << endl;
-		if (workdir!=""        ) f << "workdir="         << workdir         << endl;
-		if (manual!=""         ) f << "manual="          << manual          << endl;
-		if (iclock!=0          ) f << "clock="           << iclock          << endl;
+		if (title != ""        ) f << "title="           << title           << endl;
+		if (description != ""  ) f << "description="     << description     << endl;
+		if (icon != ""         ) f << "icon="            << icon            << endl;
+		if (exec != ""         ) f << "exec="            << exec            << endl;
+		if (params != ""       ) f << "params="          << params          << endl;
+		if (workdir != ""      ) f << "workdir="         << workdir         << endl;
+		if (manual != ""       ) f << "manual="          << manual          << endl;
+		if (iclock != 0        ) f << "clock="           << iclock          << endl;
 		if (useRamTimings      ) f << "useramtimings=true"                  << endl;
 		if (useGinge           ) f << "useginge=true"                       << endl;
 		if (ivolume>0          ) f << "volume="          << ivolume         << endl;
@@ -267,10 +273,12 @@ void LinkApp::drawRun() {
 }
 
 void LinkApp::run() {
-	if (selectordir!="")
+	if (selectordir!="") {
 		selector();
-	else
+  }
+	else {
 		launch();
+  }
 }
 
 void LinkApp::showManual() {
@@ -343,7 +351,7 @@ void LinkApp::selector(int startSelection, const string &selectorDir) {
 	//Run selector interface
 	Selector sel(gmenu2x, this, selectorDir);
 	int selection = sel.exec(startSelection);
-	if (selection!=-1) {
+	if (selection != -1) {
 		gmenu2x->writeTmp(selection, sel.getDir());
 		launch(sel.getFile(), sel.getDir());
 	}
@@ -356,14 +364,14 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 	//delay for testing
 	SDL_Delay(1000);
 #endif
-
+  
 	//Set correct working directory
 	string wd = getRealWorkdir();
 	if (!wd.empty())
 		chdir(wd.c_str());
 
 	//selectedFile
-	if (selectedFile!="") {
+	if (selectedFile != "") {
 		string selectedFileExtension;
 		string selectedFileName;
 		string dir;
@@ -373,7 +381,7 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 			selectedFileName = selectedFile.substr(0,i);
 		}
 
-		if (selectedDir=="")
+		if (selectedDir == "")
 			dir = getSelectorDir();
 		else
 			dir = selectedDir;
@@ -389,10 +397,10 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 		}
 	}
 
-	if (useRamTimings)
-		gmenu2x->applyRamTimings();
-	if (volume()>=0)
-		gmenu2x->setVolume(volume());
+	//if (useRamTimings)
+		//gmenu2x->applyRamTimings();
+	//if (volume()>=0)
+		//gmenu2x->setVolume(volume());
 
 	INFO("Executing '%s' (%s %s)", title.c_str(), exec.c_str(), params.c_str());
 
@@ -429,8 +437,10 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 		if (selectedFile=="")
 			gmenu2x->writeTmp();
 		gmenu2x->quit();
-		if (clock()!=gmenu2x->confInt["menuClock"])
+
+		if (clock()!=gmenu2x->confInt["menuClock"]){
 			gmenu2x->setClock(clock());
+    }
 		if (gamma()!=0 && gamma()!=gmenu2x->confInt["gamma"])
 			gmenu2x->setGamma(gamma());
 		execlp("/bin/sh","/bin/sh","-c",command.c_str(),NULL);
@@ -439,7 +449,6 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 		chdir(gmenu2x->getExePath().c_str());
 		execlp("./gmenu2x", "./gmenu2x", NULL);
 	}
-
 
 	chdir(gmenu2x->getExePath().c_str());
 }
@@ -469,7 +478,7 @@ const string &LinkApp::getWorkdir() {
 const string LinkApp::getRealWorkdir() {
 	string wd = workdir;
 	if (wd.empty()) {
-		if (exec[0]!='/') {
+		if (exec[0] != '/') {
 			wd = gmenu2x->getExePath();
 		} else {
 			string::size_type pos = exec.rfind("/");

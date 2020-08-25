@@ -66,12 +66,10 @@ void IconButton::recalcSize() {
 		labelRect.h = gmenu2x->font->getHeight();
 		if (labelPosition == IconButton::DISP_LEFT || labelPosition == IconButton::DISP_RIGHT) {
 			w += margin + labelRect.w;
-			//if (labelRect.h > h) h = labelRect.h;
 			labelHAlign = HAlignLeft;
 			labelVAlign = VAlignMiddle;
 		} else {
 			h += margin + labelRect.h;
-			//if (labelRect.w > w) w = labelRect.w;
 			labelHAlign = HAlignCenter;
 			labelVAlign = VAlignTop;
 		}

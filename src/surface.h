@@ -58,9 +58,10 @@ public:
 	void enableAlpha();
 
 	SDL_Surface *raw;
+	SDL_Surface *ScreenSurface;
 
 	void free();
-	void load(const string &img, bool alpha=true, const string &skin="");
+	void load(const string &img, bool alpha = true, string skin = "");
 	void lock();
 	void unlock();
 	void flip();
@@ -93,12 +94,14 @@ public:
 	int box(SDL_Rect, Uint8, Uint8, Uint8, Uint8);
 	int box(SDL_Rect, Uint8, Uint8, Uint8);
 	int box(SDL_Rect, RGBAColor);
+
 	int rectangle(Sint16, Sint16, Sint16, Sint16, Uint8, Uint8, Uint8, Uint8);
 	int rectangle(Sint16, Sint16, Sint16, Sint16, Uint8, Uint8, Uint8);
 	int rectangle(Sint16, Sint16, Sint16, Sint16, RGBAColor);
 	int rectangle(SDL_Rect, Uint8, Uint8, Uint8, Uint8);
 	int rectangle(SDL_Rect, Uint8, Uint8, Uint8);
 	int rectangle(SDL_Rect, RGBAColor);
+	
 	int hline(Sint16, Sint16, Sint16, Uint8, Uint8, Uint8, Uint8);
 	int hline(Sint16, Sint16, Sint16, RGBAColor);
 

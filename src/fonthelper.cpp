@@ -37,7 +37,7 @@ FontHelper::~FontHelper() {
 }
 
 bool FontHelper::utf8Code(unsigned char c) {
-	return (c>=194 && c<=198) || c==208 || c==209;
+	return (c >= 194 && c <= 198) || c == 208 || c == 209;
 }
 
 FontHelper *FontHelper::setColor(RGBAColor color) {

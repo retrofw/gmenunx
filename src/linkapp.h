@@ -21,8 +21,6 @@
 #define LINKAPP_H
 
 #include <string>
-#include <iostream>
-
 #include "link.h"
 
 using std::string;
@@ -31,8 +29,7 @@ class GMenu2X;
 class InputManager;
 
 /**
-Parses links files.
-
+	Parses links files.
 	@author Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 */
 class LinkApp : public Link {

@@ -62,10 +62,10 @@ Surface::Surface(const string &img, const string &skin, bool alpha) {
 Surface::Surface(SDL_Surface *s, SDL_PixelFormat *fmt, Uint32 flags) {
 	dblbuffer = NULL;
 	this->operator =(s);
-	if (fmt!=NULL || flags!=0) {
-		if (fmt==NULL) fmt = s->format;
-		if (flags==0) flags = s->flags;
-		raw = SDL_ConvertSurface( s, fmt, flags );
+	if (fmt != NULL || flags != 0) {
+		if (fmt == NULL) fmt = s->format;
+		if (flags == 0) flags = s->flags;
+		raw = SDL_ConvertSurface(s, fmt, flags);
 	}
 }
 
@@ -113,14 +113,14 @@ void Surface::enableAlpha() {
 }
 
 void Surface::free() {
-	SDL_FreeSurface( raw );
-	SDL_FreeSurface( dblbuffer );
+	SDL_FreeSurface(raw);
+	SDL_FreeSurface(dblbuffer);
 	raw = NULL;
 	dblbuffer = NULL;
 }
 
 SDL_PixelFormat *Surface::format() {
-	if (raw==NULL)
+	if (raw == NULL)
 		return NULL;
 	else
 		return raw->format;
@@ -148,8 +148,8 @@ void Surface::load(const string &img, bool alpha, const string &skin) {
 }
 
 void Surface::lock() {
-	if ( SDL_MUSTLOCK(raw) && !locked ) {
-		if ( SDL_LockSurface(raw) < 0 ) {
+	if (SDL_MUSTLOCK(raw) && !locked) {
+		if (SDL_LockSurface(raw) < 0) {
 			ERROR("Can't lock surface: '%s'", SDL_GetError());
 			SDL_Quit();
 		}
@@ -158,7 +158,7 @@ void Surface::lock() {
 }
 
 void Surface::unlock() {
-	if ( SDL_MUSTLOCK(raw) && locked ) {
+	if (SDL_MUSTLOCK(raw) && locked) {
 		SDL_UnlockSurface(raw);
 		locked = false;
 	}
@@ -169,7 +169,12 @@ void Surface::flip() {
 		this->blit(dblbuffer,0,0);
 		SDL_Flip(dblbuffer);
 	} else {
+#if defined(TARGET_RETROGAME)
+    SDL_SoftStretch(raw, NULL, ScreenSurface, NULL);
+		SDL_Flip(ScreenSurface);
+#else
 		SDL_Flip(raw);
+#endif
 	}
 }
 
@@ -217,9 +222,9 @@ void Surface::putPixel(int x, int y, Uint32 color) {
 	//offset by y
 	pPosition += ( raw->pitch * y ) ;
 	//offset by x
-	pPosition += ( raw->format->BytesPerPixel * x ) ;
+	pPosition += (raw->format->BytesPerPixel * x);
 	//copy pixel data
-	memcpy ( pPosition , &color , raw->format->BytesPerPixel ) ;
+	memcpy(pPosition, &color, raw->format->BytesPerPixel);
 }
 
 RGBAColor Surface::pixelColor(int x, int y) {
@@ -338,7 +343,7 @@ int Surface::hline(Sint16 x, Sint16 y, Sint16 w, RGBAColor c) {
 }
 
 void Surface::clearClipRect() {
-	SDL_SetClipRect(raw,NULL);
+	SDL_SetClipRect(raw, NULL);
 }
 
 void Surface::setClipRect(int x, int y, int w, int h) {

@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 //for browsing the filesystem
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -27,7 +28,6 @@
 #include <stdio.h>
 #include <strings.h>
 #include <math.h>
-#include <unistd.h>
 
 #include <SDL.h>
 
@@ -80,23 +80,23 @@ bool rmtree(string path) {
 	DEBUG("RMTREE: '%s'", path.c_str());
 
 	if ((dirp = opendir(path.c_str())) == NULL) return false;
-	if (path[path.length()-1]!='/') path += "/";
+	if (path[path.length() - 1] != '/') path += "/";
 
 	while ((dptr = readdir(dirp))) {
 		filepath = dptr->d_name;
-		if (filepath=="." || filepath=="..") continue;
-		filepath = path+filepath;
+		if (filepath == "." || filepath == "..") continue;
+		filepath = path + filepath;
 		int statRet = stat(filepath.c_str(), &st);
 		if (statRet == -1) continue;
 		if (S_ISDIR(st.st_mode)) {
 			if (!rmtree(filepath)) return false;
 		} else {
-			if (unlink(filepath.c_str())!=0) return false;
+			if (unlink(filepath.c_str()) != 0) return false;
 		}
 	}
 
 	closedir(dirp);
-	return rmdir(path.c_str())==0;
+	return rmdir(path.c_str()) == 0;
 }
 
 int max (int a, int b) {
@@ -105,7 +105,7 @@ int max (int a, int b) {
 int min (int a, int b) {
 	return a<b ? a : b;
 }
-int constrain (int x, int imin, int imax) {
+int constrain(int x, int imin, int imax) {
 	return min( imax, max(imin,x) );
 }
 
@@ -157,13 +157,15 @@ bool split (vector<string> &vec, const string &str, const string &delim, bool de
 			break;
 		}
 
-		if (!destructive)
+		if (!destructive) {
 			j += delim.size();
+		}
 
 		vec.push_back(str.substr(i,j-i));
 
-		if (destructive)
+		if (destructive) {
 			i = j + delim.size();
+		}
 
 		if (i==str.size()) {
 			vec.push_back(std::string());
@@ -196,7 +198,7 @@ int intTransition(int from, int to, long tickStart, long duration, long tickNow)
 	if (tickNow<0) tickNow = SDL_GetTicks();
 	float elapsed = (float)(tickNow-tickStart)/duration;
 	//                    elapsed                 increments
-	return constrain(round(elapsed*(to-from)),from,to);
+	return min((int)round(elapsed*(to-from)), (int)max(from, to));
 }
 
 string exec(const char* cmd) {
@@ -205,7 +207,7 @@ string exec(const char* cmd) {
 	char buffer[128];
 	string result = "";
 	while (!feof(pipe)) {
-		if(fgets(buffer, 128, pipe) != NULL)
+		if (fgets(buffer, 128, pipe) != NULL)
 			result += buffer;
 	}
 	pclose(pipe);
