@@ -172,7 +172,7 @@ int16_t getUDCStatus(void) {
 	return UDC_ERROR;
 }
 
-int16_t tvOutPrev, tvOutConnected;
+int16_t tvOutPrev = false, tvOutConnected;
 bool getTVOutStatus() {
 	if (memdev > 0) return !(memregs[0x10300 >> 2] >> 25 & 0b1);
 	return false;
