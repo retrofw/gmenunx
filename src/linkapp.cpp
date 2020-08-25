@@ -363,14 +363,12 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 		gmenu2x->writeConfig();
 	}
 
-#if defined(TARGET_GP2X)
-	if (fwType == "open2x") gmenu2x->writeConfigOpen2x();
-#endif
 	if (selectedFile == "") gmenu2x->writeTmp();
 
 	if (clock() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(clock());
 
 #if defined(TARGET_GP2X)
+	if (fwType == "open2x") gmenu2x->writeConfigOpen2x();
 	if (gamma() != 0 && gamma() != gmenu2x->confInt["gamma"]) gmenu2x->setGamma(gamma());
 #endif
 
