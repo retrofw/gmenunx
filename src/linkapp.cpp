@@ -383,8 +383,6 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
-	if (selectedFile == "") gmenu2x->writeTmp();
-
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 
 #if defined(TARGET_GP2X)
