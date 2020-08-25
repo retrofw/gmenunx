@@ -253,7 +253,7 @@ public:
 	string TVOut = "OFF";
 	void about();
 	void viewLog();
-	void batteryLogger();
+	// void batteryLogger();
 	void contextMenu();
 	void changeWallpaper();
 
