@@ -412,20 +412,20 @@ void GMenu2X::initBG(const string &imagePath) {
 	if (confStr["sectionBarPosition"] != "OFF") {
 		// x = 0; y = 0;
 		if (confStr["sectionBarPosition"] == "Left" || confStr["sectionBarPosition"] == "Right") {
-			sectionBarRect.x = (confStr["sectionBarPosition"] == "Right")*(resX - skinConfInt["sectionBarWidth"]);
-			sectionBarRect.w = skinConfInt["sectionBarWidth"];
-			linksRect.w = resX - skinConfInt["sectionBarWidth"];
+			sectionBarRect.x = (confStr["sectionBarPosition"] == "Right")*(resX - skinConfInt["sectionBarSize"]);
+			sectionBarRect.w = skinConfInt["sectionBarSize"];
+			linksRect.w = resX - skinConfInt["sectionBarSize"];
 
 			if (confStr["sectionBarPosition"] == "Left") {
-				linksRect.x = skinConfInt["sectionBarWidth"];
+				linksRect.x = skinConfInt["sectionBarSize"];
 			}
 		} else {
-			sectionBarRect.y = (confStr["sectionBarPosition"] == "Bottom")*(resY - skinConfInt["sectionBarWidth"]);
-			sectionBarRect.h = skinConfInt["sectionBarWidth"];
-			linksRect.h = resY - skinConfInt["sectionBarWidth"];
+			sectionBarRect.y = (confStr["sectionBarPosition"] == "Bottom")*(resY - skinConfInt["sectionBarSize"]);
+			sectionBarRect.h = skinConfInt["sectionBarSize"];
+			linksRect.h = resY - skinConfInt["sectionBarSize"];
 
 			if (confStr["sectionBarPosition"] == "Top") {
-				linksRect.y = skinConfInt["sectionBarWidth"];
+				linksRect.y = skinConfInt["sectionBarSize"];
 			}
 		}
 	}
@@ -445,7 +445,7 @@ void GMenu2X::initFont() {
 	}
 
 	font = new FontHelper(sc.getSkinFilePath("font.ttf"), skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
-	titlefont = new FontHelper(sc.getSkinFilePath("font.ttf"), skinConfInt["titleFontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+	titlefont = new FontHelper(sc.getSkinFilePath("font.ttf"), skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
 }
 
 void GMenu2X::initMenu() {
@@ -965,15 +965,15 @@ void GMenu2X::main() {
 					sectionIcon = "skin:icons/section.png";
 
 				if (confStr["sectionBarPosition"] == "Left" || confStr["sectionBarPosition"] == "Right") {
-					y = (i - menu->firstDispSection()) * skinConfInt["sectionBarWidth"];
+					y = (i - menu->firstDispSection()) * skinConfInt["sectionBarSize"];
 				} else {
-					x = (i - menu->firstDispSection()) * skinConfInt["sectionBarWidth"];
+					x = (i - menu->firstDispSection()) * skinConfInt["sectionBarSize"];
 				}
 
-				if (menu->selSectionIndex()==(int)i)
-					s->box(x, y, skinConfInt["sectionBarWidth"], skinConfInt["sectionBarWidth"], skinConfColors[COLOR_SELECTION_BG]);
+				if (menu->selSectionIndex() == (int)i)
+					s->box(x, y, skinConfInt["sectionBarSize"], skinConfInt["sectionBarSize"], skinConfColors[COLOR_SELECTION_BG]);
 
-				sc[sectionIcon]->blitCenter(s, x + skinConfInt["sectionBarWidth"]/2, y + skinConfInt["sectionBarWidth"]/2, skinConfInt["sectionBarWidth"], skinConfInt["sectionBarWidth"]);
+				sc[sectionIcon]->blitCenter(s, x + skinConfInt["sectionBarSize"]/2, y + skinConfInt["sectionBarSize"]/2, skinConfInt["sectionBarSize"], skinConfInt["sectionBarSize"]);
 			}
 		}
 
@@ -1401,9 +1401,11 @@ void GMenu2X::skinMenu() {
 	bool save = false;
 
 	do {
+		setSkin(confStr["skin"], true, false);
+
 		SettingsDialog sd(this, input, ts, tr["Skin"], "skin:icons/skin.png");
-		// sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
-		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories()));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
+		// sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories()));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Top/Section Bar"], tr["Color of the top and section bar"], &skinConfColors[COLOR_TOP_BAR_BG]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["List Body"], tr["Color of the list body"], &skinConfColors[COLOR_LIST_BG]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Bottom Bar"], tr["Color of the bottom bar"], &skinConfColors[COLOR_BOTTOM_BAR_BG]));
@@ -1415,23 +1417,26 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingRGBA(this, tr["Font Outline"], tr["Color of the font's outline"], &skinConfColors[COLOR_FONT_OUTLINE]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Alt Font"], tr["Color of the alternative font"], &skinConfColors[COLOR_FONT_ALT]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Alt Font Outline"], tr["Color of the alternative font outline"], &skinConfColors[COLOR_FONT_ALT_OUTLINE]));
+		sd.addSetting(new MenuSettingInt(this, tr["Font Size"], tr["Size of text font"], &skinConfInt["fontSize"], 9, 6, 60));
+		sd.addSetting(new MenuSettingInt(this, tr["Title Font Size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 14, 6, 60));
+		sd.addSetting(new MenuSettingInt(this, tr["Top Bar Height"], tr["Height of top bar"], &skinConfInt["topBarHeight"], 40, 1, resY));
+		sd.addSetting(new MenuSettingInt(this, tr["Bottom Bar Height"], tr["Height of bottom bar"], &skinConfInt["bottomBarHeight"], 16, 1, resY));
+		sd.addSetting(new MenuSettingInt(this, tr["Link Height"], tr["Height of link item"], &skinConfInt["linkItemHeight"], 40, 16, resY));
+		sd.addSetting(new MenuSettingInt(this, tr["Section Bar Size"], tr["Size of section bar"], &skinConfInt["sectionBarSize"], 40, 1, resX));
+
 		sd.exec();
 
 		save = sd.save;
-		font->setColor(skinConfColors[COLOR_FONT])->setOutlineColor(skinConfColors[COLOR_FONT_OUTLINE]);
+		// font->setColor(skinConfColors[COLOR_FONT])->setOutlineColor(skinConfColors[COLOR_FONT_OUTLINE]);
 
 		if (save && sd.edited()) {
-			setSkin(confStr["skin"], true, true);
 			writeSkinConfig();
-			if (curSkin != confStr["skin"]) {
-				writeConfig();
-				// restart();
-			}
-			initBG();
+			writeConfig();
 		}
 		
 	} while (!save);
-
+	setSkin(confStr["skin"], true, true);
+	initBG();
 }
 
 #if defined(TARGET_RS97)
@@ -1616,10 +1621,10 @@ void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
 	if (skinConfColors[COLOR_FONT_ALT].r == 253 && skinConfColors[COLOR_FONT_ALT].g == 1 && skinConfColors[COLOR_FONT_ALT].b == 252 && skinConfColors[COLOR_FONT_ALT].a == 0) skinConfColors[COLOR_FONT_ALT] = skinConfColors[COLOR_FONT];
 	if (skinConfColors[COLOR_FONT_ALT_OUTLINE].r == 253 && skinConfColors[COLOR_FONT_ALT_OUTLINE].g == 1 && skinConfColors[COLOR_FONT_ALT_OUTLINE].b == 252 && skinConfColors[COLOR_FONT_ALT_OUTLINE].a == 0) skinConfColors[COLOR_FONT_ALT_OUTLINE] = skinConfColors[COLOR_FONT_OUTLINE];
 
-	evalIntConf( &skinConfInt["topBarHeight"], 40, 32, resY);
+	evalIntConf( &skinConfInt["topBarHeight"], 40, 1, resY);
 	// evalIntConf( &skinConfInt["sectionBarHeight"], 200, 32, resY);
-	evalIntConf( &skinConfInt["sectionBarWidth"], 40, 32, resX);
-	evalIntConf( &skinConfInt["linkHeight"], 40, 32, resY);
+	evalIntConf( &skinConfInt["sectionBarSize"], 40, 1, resX);
+	// evalIntConf( &skinConfInt["linkHeight"], 40, 16, resY);
 	evalIntConf( &skinConfInt["linkItemHeight"], 40, 32, resY);
 	evalIntConf( &skinConfInt["bottomBarHeight"], 16, 1, resY);
 	evalIntConf( &skinConfInt["selectorX"], 142, 1, resX);
@@ -1628,7 +1633,7 @@ void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
 	evalIntConf( &skinConfInt["selectorPreviewWidth"], 128, 32, resY);
 	evalIntConf( &skinConfInt["selectorPreviewHeight"], 128, 32, resX);
 	evalIntConf( &skinConfInt["fontSize"], 9, 6, 60);
-	evalIntConf( &skinConfInt["titleFontSize"], 14, 6, 60);
+	evalIntConf( &skinConfInt["fontSizeTitle"], 14, 6, 60);
 
 //recalculate some coordinates based on the new element sizes
 	// linkRows = resY/skinConfInt["linkItemHeight"];
@@ -1637,7 +1642,7 @@ void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
 	linkRows = resY / skinConfInt["linkItemHeight"];
 	// linkRows = linksRect.h / skinConfInt["linkItemHeight"];
 
-	if (menu != NULL) menu->loadIcons();
+	if (menu != NULL && clearSC) menu->loadIcons();
 
 //font
 	initFont();

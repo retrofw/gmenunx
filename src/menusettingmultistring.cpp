@@ -62,9 +62,9 @@ MenuSettingMultiString::MenuSettingMultiString(
 }
 
 uint MenuSettingMultiString::manageInput() {
-	if (gmenu2x->input[LEFT ]) { decSel(); }
-	else if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) { incSel(); }
-	return this->onChange(); // SD_ACTION_CLOSE
+	if (gmenu2x->input[LEFT ]) { decSel(); return this->onChange();}
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) { incSel(); return this->onChange();}
+	return 0; // SD_ACTION_CLOSE
 }
 
 void MenuSettingMultiString::incSel() {
