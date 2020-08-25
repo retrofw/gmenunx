@@ -76,7 +76,7 @@ private:
 	void setKeyboard(int);
 
 public:
-	InputDialog(GMenu2X *gmenu2x, /*Touchscreen &ts,*/ const string &text, const string &startvalue="", const string &title="", const string &icon="");
+	InputDialog(GMenu2X *gmenu2x, /*Touchscreen &ts,*/ const string &text, const string &startvalue = "", const string &title = "", const string &icon = "");
 	~InputDialog();
 
 	bool exec();

@@ -31,9 +31,8 @@
 using namespace std;
 extern const char *CARD_ROOT;
 
-OPKScannerDialog::OPKScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop)
-	: TextDialog(gmenu2x, title, description, icon, backdrop)
-{}
+OPKScannerDialog::OPKScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop):
+TextDialog(gmenu2x, title, description, icon, backdrop) {}
 
 void OPKScannerDialog::opkInstall(const string &path) {
 	string pkgname = base_name(path, true);
