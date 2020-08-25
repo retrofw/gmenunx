@@ -1824,6 +1824,8 @@ void GMenu2X::umountSdDialog() {
 void GMenu2X::udcDialog() {
 	udcStatus = getUDCStatus();
 	if (udcStatus == UDC_CONNECT) {
+		if (!fileExists("/lib/modules/g_cdc.ko")) return;
+
 		// if (!fileExists("/sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file")) {
 		// 	// MessageBox mb(this, tr["This device does not support USB mount."], "skin:icons/usb.png");
 		// 	// mb.setButton(CONFIRM,  tr["Charger"]);
