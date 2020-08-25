@@ -38,9 +38,7 @@ Menu::Menu(GMenu2X *gmenu2x) {
 	iFirstDispSection = 0;
 
 	DIR *dirp;
-	struct stat st;
 	struct dirent *dptr;
-	string filepath;
 
 	if ((dirp = opendir("sections")) == NULL) return;
 
@@ -74,9 +72,7 @@ void Menu::readLinks() {
 	iFirstDispRow = 0;
 
 	DIR *dirp;
-	struct stat st;
 	struct dirent *dptr;
-	string filepath;
 
 	for (uint32_t i = 0; i < links.size(); i++) {
 		links[i].clear();
