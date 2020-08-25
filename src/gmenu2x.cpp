@@ -1888,9 +1888,9 @@ void GMenu2X::udcDialog() {
 			}
 			// powerManager->resetSuspendTimer();
 		}
-	} else {
-		system("sync; rmmod /lib/modules/g_cdc.ko; rmmod /lib/modules/g_file_storage.ko");
 	}
+
+	system("sync; rmmod /lib/modules/g_cdc.ko; rmmod /lib/modules/g_file_storage.ko");
 
 	// if (getUDCStatus() == UDC_CONNECT) {
 	// 	// if (!fileExists("/sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file")) {
