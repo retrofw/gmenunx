@@ -42,7 +42,7 @@ SettingsDialog::~SettingsDialog() {
 }
 
 bool SettingsDialog::exec() {
-	bool close = false, ts_pressed = false, inputAction = false;
+	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
 	voices[selected]->adjustInput();
 
@@ -83,7 +83,7 @@ bool SettingsDialog::exec() {
 
 			action = SD_NO_ACTION;
 			if ( gmenu2x->input[SETTINGS] ) action = SD_ACTION_SAVE;
-			else if ( gmenu2x->input[CANCEL] ) action = SD_ACTION_CLOSE;
+			else if ( gmenu2x->input[CANCEL] && allowCancel) action = SD_ACTION_CLOSE;
 			else if ( gmenu2x->input[UP      ] ) action = SD_ACTION_UP;
 			else if ( gmenu2x->input[DOWN    ] ) action = SD_ACTION_DOWN;
 			else if ( gmenu2x->input[PAGEUP  ] ) action = SD_ACTION_PAGEUP;
@@ -95,8 +95,14 @@ bool SettingsDialog::exec() {
 					close = true;
 					break;
 				case SD_ACTION_CLOSE:
-					save = false;
 					close = true;
+					if (allowCancel) {
+						if (edited()) {
+							MessageBox mb(gmenu2x, gmenu2x->tr["Save changes?"], this->icon);
+							mb.setButton(CONFIRM, gmenu2x->tr["Yes"]);
+							mb.setButton(CANCEL,  gmenu2x->tr["No"]);
+							save = (mb.exec() == CONFIRM);
+						}}
 					break;
 				case SD_ACTION_UP:
 					selected -= 1;

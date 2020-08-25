@@ -1328,6 +1328,7 @@ void GMenu2X::skinColors() {
 		setSkin(confStr["skin"], false, false);
 
 		SettingsDialog sd(this, ts, tr["Skin Colors"], "skin:icons/skin.png");
+		sd.allowCancel = false;
 		sd.addSetting(new MenuSettingRGBA(this, tr["Top/Section Bar"], tr["Color of the top and section bar"], &skinConfColors[COLOR_TOP_BAR_BG]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["List Body"], tr["Color of the list body"], &skinConfColors[COLOR_LIST_BG]));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Bottom Bar"], tr["Color of the bottom bar"], &skinConfColors[COLOR_BOTTOM_BAR_BG]));
