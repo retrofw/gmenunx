@@ -974,20 +974,6 @@ void* mainThread(void* param) {
 	return NULL;
 }
 
-void GMenu2X::setSuspend(bool suspend) {
-	if (suspend) {
-		setCPU(confInt["cpuMin"]);
-		// input.setWakeUpInterval(60e3);
-		setBacklight(0);
-		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
-	} else {
-		setCPU(confInt["cpuMenu"]);
-		setBacklight(max(10, confInt["backlight"]));
-		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
-	}
-	suspendActive = suspend;
-}
-
 void GMenu2X::main() {
 	unsigned short battlevel = 0; //getBatteryLevel();
 	pthread_t thread_id;
