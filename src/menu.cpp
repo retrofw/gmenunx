@@ -235,30 +235,30 @@ bool Menu::addLink(string path, string file, string section) {
 	if (path[path.length()-1]!='/') path += "/";
 	//search for a manual
 	pos = file.rfind(".");
-	string exename = path+file.substr(0,pos);
+	string exename = path + file.substr(0,pos);
 	string manual = "";
-	if (fileExists(exename+".man.png")) {
-		manual = exename+".man.png";
-	} else if (fileExists(exename+".man.jpg")) {
-		manual = exename+".man.jpg";
-	} else if (fileExists(exename+".man.jpeg")) {
-		manual = exename+".man.jpeg";
-	} else if (fileExists(exename+".man.bmp")) {
-		manual = exename+".man.bmp";
-	} else if (fileExists(exename+".man.txt")) {
-		manual = exename+".man.txt";
+	if (fileExists(exename + ".man.png")) {
+		manual = exename + ".man.png";
+	} else if (fileExists(exename + ".man.jpg")) {
+		manual = exename + ".man.jpg";
+	} else if (fileExists(exename + ".man.jpeg")) {
+		manual = exename + ".man.jpeg";
+	} else if (fileExists(exename + ".man.bmp")) {
+		manual = exename + ".man.bmp";
+	} else if (fileExists(exename + ".man.txt")) {
+		manual = exename + ".man.txt";
 	} else {
 		//scan directory for a file like *readme*
 		FileLister fl(path, false);
 		fl.setFilter(".txt");
 		fl.browse();
 		bool found = false;
-		for (uint x=0; x<fl.size() && !found; x++) {
+		for (uint x = 0; x < fl.size() && !found; x++) {
 			string lcfilename = fl[x];
 
 			if (lcfilename.find("readme") != string::npos) {
 				found = true;
-				manual = path+fl.getFiles()[x];
+				manual = path + fl.getFiles()[x];
 			}
 		}
 	}
