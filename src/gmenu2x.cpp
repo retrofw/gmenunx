@@ -73,7 +73,6 @@
 #include "menusettingimage.h"
 #include "menusettingdir.h"
 #include "imageviewerdialog.h"
-// #include "batteryloggerdialog.h"
 // #include "linkscannerdialog.h"
 #include "menusettingdatetime.h"
 #include "debug.h"
