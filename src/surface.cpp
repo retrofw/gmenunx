@@ -467,3 +467,33 @@ void Surface::softStretch(uint16_t x, uint16_t y, bool keep_aspect, bool maximiz
 	SDL_SoftStretch(thisSurface->raw, NULL, outSurface->raw, NULL);
 	raw = outSurface->raw;
 }
+
+// Changes a surface's alpha value, by altering per-pixel alpha if necessary.
+void Surface::setAlpha(uint8_t alpha) {
+	SDL_PixelFormat* fmt = raw->format;
+
+	if (fmt->Amask == 0) { // If surface has no alpha channel, just set the surface alpha.
+		SDL_SetAlpha(raw, SDL_SRCALPHA, alpha);
+	} else { // Else change the alpha of each pixel.
+		unsigned bpp = fmt->BytesPerPixel;
+		float scale = alpha / 255.0f; // Scaling factor to clamp alpha to [0, alpha].
+
+		SDL_LockSurface(raw);
+
+		for (int y = 0; y < raw->h; ++y) {
+			for (int x = 0; x < raw->w; ++x) {
+				// Get a pointer to the current pixel.
+				Uint32* pixel_ptr = (Uint32 *)(
+						(Uint8 *)raw->pixels
+						+ y * raw->pitch
+						+ x * bpp
+						);
+
+				Uint8 r, g, b, a;
+				SDL_GetRGBA(*pixel_ptr, fmt, &r, &g, &b, &a); // Get the old pixel components.
+				*pixel_ptr = SDL_MapRGBA(fmt, r, g, b, scale * a); // Set the pixel with the new alpha.
+			}
+		}
+		SDL_UnlockSurface(raw);
+	}
+}
