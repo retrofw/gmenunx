@@ -281,7 +281,7 @@ public:
 	void renameSection();
 	void deleteSection();
 
-	void initBG(const string &wallpaper = "");
+	void setWallpaper(const string &wallpaper = "");
 
 	int drawButton(Button *btn, int x=5, int y=-10);
 	int drawButton(Surface *s, const string &btn, const string &text, int x=5, int y=-10);

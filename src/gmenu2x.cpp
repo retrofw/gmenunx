@@ -745,7 +745,7 @@ void GMenu2X::hwDeinit() {
 #endif
 }
 
-void GMenu2X::initBG(const string &wallpaper) {
+void GMenu2X::setWallpaper(const string &wallpaper) {
 	if (bg != NULL) delete bg;
 
 	bg = new Surface(s);
@@ -1288,7 +1288,7 @@ void GMenu2X::skinMenu() {
 		else if (sc.add("skins/Default/wallpapers/" + confStr["wallpaper"]) != NULL)
 			confStr["wallpaper"] = "skins/Default/wallpapers/" + confStr["wallpaper"];
 
-		initBG(confStr["wallpaper"]);
+		setWallpaper(confStr["wallpaper"]);
 
 		selected = sd.selected;
 		save = sd.save;
@@ -1389,7 +1389,8 @@ void GMenu2X::linkScanner() {
 void GMenu2X::changeWallpaper() {
 	WallpaperDialog wp(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], "skin:icons/wallpaper.png");
 	if (wp.exec() && confStr["wallpaper"] != wp.wallpaper) {
-		initBG(wp.wallpaper);
+		confStr["wallpaper"] = wp.wallpaper;
+		setWallpaper(wp.wallpaper);
 		writeConfig();
 	}
 }
