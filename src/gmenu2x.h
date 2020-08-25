@@ -234,6 +234,7 @@ public:
 	void activateRootUsb();
 	void about();
 	void viewLog();
+	void batteryLogger();
 	void contextMenu();
 	void changeWallpaper();
 	void saveScreenshot();

@@ -454,6 +454,7 @@ void GMenu2X::initMenu() {
 
 			if (fileExists(path+"log.txt"))
 				menu->addActionLink(i,tr["Log Viewer"],MakeDelegate(this,&GMenu2X::viewLog),tr["Displays last launched program's output"],"skin:icons/ebook.png");
+			menu->addActionLink(i,tr["Battery Logger"],MakeDelegate(this,&GMenu2X::batteryLogger),tr["Log battery power to battery.csv"],"skin:icons/ebook.png");
 			menu->addActionLink(i,tr["About"],MakeDelegate(this,&GMenu2X::about),tr["Info about GMenu2X"],"skin:icons/about.png");
 			// menu->addActionLink(i,"Reboot",MakeDelegate(this,&GMenu2X::reboot),tr["Reboot device"],"skin:icons/reboot.png");
 			menu->addActionLink(i,tr["Power"],MakeDelegate(this,&GMenu2X::poweroff),tr["Power options"],"skin:icons/exit.png");
@@ -564,6 +565,106 @@ void GMenu2X::viewLog() {
 		ledOff();
 	}
 }
+
+void GMenu2X::batteryLogger() {
+	long tickNow = SDL_GetTicks(), tickBatteryLogger = -1000000;
+	string logfile = path+"battery.csv";
+
+	char buf[100];
+	sprintf(buf, "echo '%d,*** NEW LOG ***' >> %s/battery.csv; sync", tickNow, cmdclean(getExePath()).c_str());
+	system(buf);
+
+	if (!fileExists(logfile)) return;
+
+	ifstream inf(logfile.c_str(), ios_base::in);
+	if (!inf.is_open()) return;
+	vector<string> log;
+
+	string line;
+	while (getline(inf, line, '\n'))
+		log.push_back(line);
+	inf.close();
+
+	initBG();
+
+	setBacklight(100);
+
+	bool close = false;
+
+	drawTopBar(bg);
+	bg->write(titlefont, "Battery Logger", 40, 4 + titlefont->getHeight()/2, HAlignLeft, VAlignMiddle);
+	bg->write(font, "Log battery power to battery.csv", 40, 38, HAlignLeft, VAlignBottom);
+	sc.skinRes("icons/ebook.png")->blit(bg, 4, 4, 32, 32);
+
+	drawBottomBar(bg);
+	drawButton(bg, "b", tr["Exit"],
+	drawButton(bg, "down", tr["Scroll"],
+	drawButton(bg, "up", "", 5)-10));
+
+	SDL_Rect rect = {0, skinConfInt["topBarHeight"], resX, resY - skinConfInt["bottomBarHeight"] - skinConfInt["topBarHeight"]};
+	bg->box(rect, skinConfColors[COLOR_LIST_BG]);
+
+	uint firstRow = 0, rowsPerPage = rect.h/font->getHeight();
+	while (!close) {
+		tickNow = SDL_GetTicks();
+		if ((tickNow - tickBatteryLogger) >= 60000) {
+			tickBatteryLogger = tickNow;
+
+			char buf[100];
+			sprintf(buf, "echo '%d,%d,%d' >> %s/battery.csv; sync", tickNow, getBatteryStatus(), getBatteryLevel(), cmdclean(getExePath()).c_str());
+			system(buf);
+
+			ifstream inf(logfile.c_str(), ios_base::in);
+			log.clear();
+
+			// string line;
+			while (getline(inf, line, '\n'))
+				log.push_back(line);
+			inf.close();
+		}
+
+		bg->blit(s,0,0);
+
+		s->setClipRect(rect);
+
+		for (uint i=firstRow; i<firstRow+rowsPerPage && i<log.size(); i++) {
+			int rowY, j = log.size() - i - 1;
+			if (log.at(j)=="----") { //draw a line
+				rowY = 42+(int)((i-firstRow+0.5)*font->getHeight());
+				s->hline(5,rowY,resX-16,255,255,255,130);
+				s->hline(5,rowY+1,resX-16,0,0,0,130);
+			} else {
+				rowY = 42+(i-firstRow)*font->getHeight();
+				font->write(s, log.at(j), 5, rowY);
+			}
+		}
+
+		s->clearClipRect();
+		drawScrollBar(rowsPerPage, log.size(), firstRow, rect.y, rect.h);
+
+		s->flip();
+
+		input.update(0);
+		if ( input[UP  ] && firstRow > 0 ) firstRow--;
+		if ( input[DOWN] && firstRow + rowsPerPage < log.size() ) firstRow++;
+		if ( input[PAGEUP] || input[LEFT]) {
+			if (firstRow >= rowsPerPage - 1)
+				firstRow -= rowsPerPage - 1;
+			else
+				firstRow = 0;
+		}
+		if ( input[PAGEDOWN] || input[RIGHT]) {
+			if (firstRow + rowsPerPage * 2 - 1 < log.size())
+				firstRow += rowsPerPage - 1;
+			else
+				firstRow = max(0,log.size()-rowsPerPage);
+		}
+		if ( input[SETTINGS] || input[CANCEL] ) close = true;
+	}
+
+	setBacklight(confInt["backlight"]);
+}
+
 
 void GMenu2X::readConfig() {
 	string conffile = path+"gmenu2x.conf";
@@ -1358,8 +1459,9 @@ void GMenu2X::main() {
 		sd.addSetting(new MenuSettingInt(this,tr["Clock for GMenu2X"],tr["Set the cpu working frequency when running GMenu2X"],&confInt["menuClock"],50,900,10));
 		sd.addSetting(new MenuSettingInt(this,tr["Maximum overclock"],tr["Set the maximum overclock for launching links"],&confInt["maxClock"],50,900,10));
 #endif
-		sd.addSetting(new MenuSettingInt(this,tr["Global Volume"],tr["Set the default volume for the gp2x soundcard"],&confInt["globalVolume"],0,1));
+		sd.addSetting(new MenuSettingInt(this,tr["Global Volume"],tr["Set the default volume for the soundcard"],&confInt["globalVolume"],0,1));
 		sd.addSetting(new MenuSettingBool(this,tr["Output logs"],tr["Logs the output of the links. Use the Log Viewer to read them."],&confInt["outputLogs"]));
+		// sd.addSetting(new MenuSettingBool(this,tr["Battery log"],tr["Logs the battery power to battery.csv."], &confInt["batteryLog"]));
 	//G
 	//sd.addSetting(new MenuSettingInt(this,tr["Gamma"],tr["Set gp2x gamma value (default: 10)"],&confInt["gamma"],1,100));
 		sd.addSetting(new MenuSettingMultiString(this,tr["Tv-Out encoding"],tr["Encoding of the tv-out signal"],&confStr["tvoutEncoding"],&encodings));
