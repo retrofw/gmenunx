@@ -153,8 +153,8 @@ private:
 	void checkUDC();
 	void umountSdDialog();
 #endif
-	void umountSd();
-	void mountSd();
+	void umountSd(bool ext);
+	void mountSd(bool ext);
 
 	// void toggleTvOut();
 	void hwDeinit();

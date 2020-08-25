@@ -361,11 +361,12 @@ void GMenu2X::main() {
 	if (udcConnectedOnBoot == UDC_CONNECT) checkUDC();
 #endif
 
-	if (curMMCStatus == MMC_INSERT) mountSd();
+	if (curMMCStatus == MMC_INSERT) mountSd(true);
 
 	while (!quit) {
 		tickNow = SDL_GetTicks();
 
+		s->box((SDL_Rect){0, 0, resX, resY}, (RGBAColor){0, 0, 0, 255});
 		sc[currBackdrop]->blit(s,0,0);
 
 		// SECTIONS
@@ -1485,10 +1486,10 @@ void GMenu2X::hwCheck() {
 			mb.exec();
 
 			if (curMMCStatus == MMC_INSERT) {
-				mountSd();
+				mountSd(true);
 				menu->addActionLink(menu->getSectionIndex("settings"), tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external SD"], "skin:icons/eject.png");
 			} else {
-				umountSd();
+				umountSd(true);
 			}
 		}
 
@@ -1624,12 +1625,14 @@ void GMenu2X::setTVOut(string TVOut) {
 #endif
 }
 
-void GMenu2X::mountSd() {
-	system("sleep 1; mount -t vfat -o rw,utf8 /dev/mmcblk$(( $(readlink /dev/root | head -c -3 | tail -c1) ^ 1 ))p1 /mnt/ext_sd");
+void GMenu2X::mountSd(bool ext) {
+	if (ext)	system("par=$(( $(readlink /tmp/.int_sd | head -c -3 | tail -c 1) ^ 1 )); par=$(ls /dev/mmcblk$par* | tail -n 1); sync; umount -fl /mnt/ext_sd; mount -t vfat -o rw,utf8 $par /mnt/ext_sd");
+	else		system("par=$(readlink /tmp/.int_sd | head -c -3 | tail -c 1); par=$(ls /dev/mmcblk$par* | tail -n 1); sync; umount -fl /mnt/int_sd; mount -t vfat -o rw,utf8 $par /mnt/int_sd");
 }
 
-void GMenu2X::umountSd() {
-	system("umount -fl /mnt/ext_sd");
+void GMenu2X::umountSd(bool ext) {
+	if (ext)	system("sync; umount -fl /mnt/ext_sd");
+	else		system("sync; umount -fl /mnt/int_sd");
 }
 
 #if defined(TARGET_RS97)
@@ -1638,7 +1641,7 @@ void GMenu2X::umountSdDialog() {
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() == CONFIRM) {
-		umountSd();
+		umountSd(true);
 		menu->deleteSelectedLink();
 		sc[confStr["wallpaper"]]->blit(s,0,0);
 		MessageBox mb(this, tr["SD card umounted"], "skin:icons/eject.png");
@@ -1653,13 +1656,13 @@ void GMenu2X::checkUDC() {
 		mb.setButton(CONFIRM, tr["USB Drive"]);
 		mb.setButton(CANCEL,  tr["Charger"]);
 		if (mb.exec() == CONFIRM) {
-			system("umount -fl /dev/mmcblk$(readlink /dev/root | head -c -3 | tail -c 1)p4");
-			system("echo \"/dev/mmcblk$(readlink /dev/root | head -c -3 | tail -c 1)p4\" > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
+			umountSd(false);
+			system("echo \"\" > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file; par=$(readlink /tmp/.int_sd | head -c -3 | tail -c 1); par=$(ls /dev/mmcblk$par* | tail -n 1); echo \"$par\" > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file");
 			INFO("%s, connect USB disk for internal SD", __func__);
 
 			if (getMMCStatus() == MMC_INSERT) {
-				umountSd();
-				system("echo '/dev/mmcblk$(( $(readlink /dev/root | head -c -3 | tail -c1) ^ 1 ))p1' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file");
+				umountSd(true);
+				system("echo \"\" > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file; par=$(( $(readlink /tmp/.int_sd | head -c -3 | tail -c 1) ^ 1 )); par=$(ls /dev/mmcblk$par* | tail -n 1); echo \"$par\" > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
 				INFO("%s, connect USB disk for external SD", __func__);
 			}
 
@@ -1677,11 +1680,11 @@ void GMenu2X::checkUDC() {
 			}
 
 			system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
-			system("mount /dev/mmcblk$(readlink /dev/root | head -c -3 | tail -c 1)p4 /mnt/int_sd -t vfat -o rw,utf8");
+			mountSd(false);
 			INFO("%s, disconnect usbdisk for internal sd", __func__);
 			if (getMMCStatus() == MMC_INSERT) {
 				system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file");
-				mountSd();
+				mountSd(true);
 				INFO("%s, disconnect USB disk for external SD", __func__);
 			}
 			powerManager->resetSuspendTimer();
