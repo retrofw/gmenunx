@@ -177,8 +177,11 @@ void Surface::flip() {
 	// } else 
 	{
 #if defined(TARGET_RS97)
-    SDL_SoftStretch(raw, NULL, ScreenSurface, NULL);
-	SDL_Flip(ScreenSurface);
+	// SDL_SoftStretch(raw, NULL, ScreenSurface, NULL);
+	// SDL_Flip(ScreenSurface);
+	uint32_t *s = (uint32_t*)raw->pixels;
+	uint32_t *d = (uint32_t*)ScreenSurface->pixels;
+	for(uint8_t y = 0; y < 240; y++, s += 160, d += 320) memmove(d, s, 1280);
 #else
 	SDL_Flip(raw);
 #endif
