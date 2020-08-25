@@ -1616,7 +1616,7 @@ void GMenu2X::poweroffDialog() {
 		mb.exec();
 		setBacklight(0);
 #if !defined(TARGET_PC)
-		system("poweroff");
+		system("sync; poweroff");
 #endif
 	}
 	else if (response == SECTION_NEXT) {
@@ -1625,7 +1625,7 @@ void GMenu2X::poweroffDialog() {
 		mb.exec();
 		setBacklight(0);
 #if !defined(TARGET_PC)
-		system("reboot");
+		system("sync; reboot");
 #endif
 	}
 }

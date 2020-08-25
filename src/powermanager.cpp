@@ -70,7 +70,7 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 
 uint32_t PowerManager::doPowerOff(uint32_t interval, void *param) {
 #if !defined(TARGET_PC)
-	system("poweroff");
+	system("sync; poweroff");
 #endif
 	return interval;
 };
