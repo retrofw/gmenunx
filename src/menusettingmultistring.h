@@ -23,16 +23,13 @@
 #include "menusettingstringbase.h"
 
 #include <vector>
-#include <functional>
 #include "debug.h"
 
 #include "FastDelegate.h"
 using namespace fastdelegate;
+using fastdelegate::MakeDelegate;
 
-typedef void (*callback_function)(void); // type for conciseness
-static void doNothing() {};
-
-typedef FastDelegate0<> cbAction, doNothingo;
+typedef FastDelegate0<uint> cbAction;
 
 class MenuSettingMultiString : public MenuSettingStringBase {
 private:
@@ -58,15 +55,13 @@ public:
 	MenuSettingMultiString(
 			GMenu2X *gmenu2x, const std::string &name,
 			const std::string &description, std::string *value,
-			const std::vector<std::string> *choices, cbAction pFunc);
+			const std::vector<std::string> *choices, cbAction cbOnChange);
 
-	void voidAction() {};
-
-
+	uint voidAction() { return 0; };
 
 
 	virtual ~MenuSettingMultiString() {};
-	virtual void manageInput();
+	virtual uint manageInput();
 };
 
 #endif

@@ -27,7 +27,6 @@
 using std::find;
 using std::string;
 using std::vector;
-using fastdelegate::MakeDelegate;
 
 MenuSettingMultiString::MenuSettingMultiString(
 		GMenu2X *gmenu2x, const string &name,
@@ -37,19 +36,17 @@ MenuSettingMultiString::MenuSettingMultiString(
 		gmenu2x, name,
 		description, value,
 		choices_, MakeDelegate(this, &MenuSettingMultiString::voidAction)
-	){
-	ERROR("NO FUNC");
-	};
+	){ };
 
 
 MenuSettingMultiString::MenuSettingMultiString(
 		GMenu2X *gmenu2x, const string &name,
 		const string &description, string *value,
-		const vector<string> *choices_, cbAction pFunc)
+		const vector<string> *choices_, cbAction cbOnChange)
 	: MenuSettingStringBase(gmenu2x, name, description, value)
 	, choices(choices_)
 {
-this->onChange = pFunc; // store
+	this->onChange = cbOnChange;
 
 	setSel(find(choices->begin(), choices->end(), *value) - choices->begin());
 
@@ -64,20 +61,18 @@ this->onChange = pFunc; // store
 	buttonBox.add(btn);
 }
 
-void MenuSettingMultiString::manageInput() {
-	if (gmenu2x->input[LEFT ]) decSel();
-	else if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) incSel();
-
+uint MenuSettingMultiString::manageInput() {
+	if (gmenu2x->input[LEFT ]) { decSel(); }
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM]) { incSel(); }
+	return this->onChange(); // SD_ACTION_CLOSE
 }
 
 void MenuSettingMultiString::incSel() {
 	setSel(selected + 1);
-		this->onChange();
 }
 
 void MenuSettingMultiString::decSel() {
 	setSel(selected - 1);
-		this->onChange();
 }
 
 
