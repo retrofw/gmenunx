@@ -65,19 +65,18 @@
 #include "menusettingfile.h"
 #include "menusettingimage.h"
 #include "menusettingdir.h"
-// #include "menusettingdelegate.h"
-
 #include "imageviewerdialog.h"
 #include "batteryloggerdialog.h"
 #include "linkscannerdialog.h"
 #include "menusettingdatetime.h"
-
 #include "debug.h"
 
 #include <sys/mman.h>
 
 #include <ctime>
 #include <sys/time.h>   /* for settimeofday() */
+
+#define sync() sync(); system("sync");
 
 const char *CARD_ROOT = "/mnt/"; //Note: Add a trailing /!
 const int CARD_ROOT_LEN = 1;
