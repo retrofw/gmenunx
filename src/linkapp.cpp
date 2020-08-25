@@ -261,6 +261,7 @@ bool LinkApp::save() {
 
 		if (selectordir != ""    ) f << "selectordir="     << selectordir     << endl;
 		if (selectorbrowser      ) f << "selectorbrowser=true"                << endl;
+		if (!selectorbrowser     ) f << "selectorbrowser=false"               << endl;
 		if (selectorfilter != "" ) f << "selectorfilter="  << selectorfilter  << endl;
 		if (selectorscreens != "") f << "selectorscreens=" << selectorscreens << endl;
 		if (aliasfile != ""      ) f << "selectoraliases=" << aliasfile       << endl;
