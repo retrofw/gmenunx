@@ -230,44 +230,12 @@ bool Menu::addLink(string path, string file, string section) {
 	INFO("Adding link: '%s'", linkpath.c_str());
 
 	if (path[path.length() - 1] != '/') path += "/";
-	//search for a manual
-	pos = file.rfind(".");
-	string exename = path + file.substr(0,pos);
-	string manual = "";
-	if (fileExists(exename + ".man.png")) {
-		manual = exename + ".man.png";
-	} else if (fileExists(exename + ".man.jpg")) {
-		manual = exename + ".man.jpg";
-	} else if (fileExists(exename + ".man.jpeg")) {
-		manual = exename + ".man.jpeg";
-	} else if (fileExists(exename + ".man.bmp")) {
-		manual = exename + ".man.bmp";
-	} else if (fileExists(exename + ".man.txt")) {
-		manual = exename + ".man.txt";
-	} else {
-		//scan directory for a file like *readme*
-		FileLister fl(path, false);
-		fl.setFilter(".txt");
-		fl.browse();
-		bool found = false;
-		for (uint32_t x = 0; x < fl.size() && !found; x++) {
-			string lcfilename = fl[x];
 
-			if (lcfilename.find("readme") != string::npos) {
-				found = true;
-				manual = path + fl.getFiles()[x];
-			}
-		}
-	}
-
-	INFO("Manual: '%s'", manual.c_str());
-
-	string shorttitle = title, exec = path+file, icon="";
-	if (fileExists(exename+".png")) icon = exename+".png";
+	string shorttitle = title, exec = path + file;
 
 	//Reduce title length to fit the link width
-	if ((int)gmenu2x->font->getTextWidth(shorttitle) > gmenu2x->linksRect.w) {
-		while ((int)gmenu2x->font->getTextWidth(shorttitle + "..") > gmenu2x->linksRect.w) {
+	if ((int)gmenu2x->font->getTextWidth(shorttitle) > gmenu2x->linkWidth) {
+		while ((int)gmenu2x->font->getTextWidth(shorttitle + "..") > gmenu2x->linkWidth) {
 			shorttitle = shorttitle.substr(0, shorttitle.length() - 1);
 		}
 		shorttitle += "..";
