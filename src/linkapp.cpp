@@ -138,6 +138,7 @@ const string &LinkApp::searchManual() {
 	string linktitle = base_name(file);
 	pos = linktitle.rfind(".");
 	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
+	linktitle += ".man.txt";
 
 	if (fileExists(linktitle))
 		manual = linktitle;
