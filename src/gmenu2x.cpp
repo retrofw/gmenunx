@@ -2222,23 +2222,6 @@ void GMenu2X::setClock(unsigned mhz) {
 	}
 }
 
-void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
-	SDL_Rect progress = {52, 32, resX-84, 8};
-	SDL_Rect box = {20, 20, resX-40, 32};
-
-	val = constrain(val, min, max);
-
-	bg.blit(s,0,0);
-	s->box(box, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-	s->rectangle(box.x+2, box.y+2, box.w-4, box.h-4, skinConfColors[COLOR_MESSAGE_BOX_BORDER]);
-
-	icon.blit(s, 28, 28);
-
-	s->box(progress, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-	s->box(progress.x + 1, progress.y + 1, val * (progress.w - 3) / max + 1, progress.h - 2, skinConfColors[COLOR_MESSAGE_BOX_SELECTION]);
-	s->flip();
-}
-
 int GMenu2X::getVolume() {
 	int vol = -1;
 	unsigned long soundDev = open("/dev/mixer", O_RDONLY);
@@ -2464,6 +2447,22 @@ void GMenu2X::drawScrollBar(uint pagesize, uint totalsize, uint pagepos, SDL_Rec
 	s->box(scrollRect.x + scrollRect.w - 4, by + 1, 2, bs - 2, skinConfColors[COLOR_SELECTION_BG]);
 }
 
+void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
+	SDL_Rect progress = {52, 32, resX-84, 8};
+	SDL_Rect box = {20, 20, resX-40, 32};
+
+	val = constrain(val, min, max);
+
+	bg.blit(s,0,0);
+	s->box(box, skinConfColors[COLOR_MESSAGE_BOX_BG]);
+	s->rectangle(box.x + 2, box.y + 2, box.w - 4, box.h - 4, skinConfColors[COLOR_MESSAGE_BOX_BORDER]);
+
+	icon.blit(s, 28, 28);
+
+	s->box(progress, skinConfColors[COLOR_MESSAGE_BOX_BG]);
+	s->box(progress.x + 1, progress.y + 1, val * (progress.w - 3) / max + 1, progress.h - 2, skinConfColors[COLOR_MESSAGE_BOX_SELECTION]);
+	s->flip();
+}
 
 #if defined(TARGET_GP2X)
 void GMenu2X::settingsOpen2x() {
