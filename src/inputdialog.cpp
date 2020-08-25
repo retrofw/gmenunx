@@ -114,8 +114,6 @@ void InputDialog::setKeyboard(int kb) {
 }
 
 bool InputDialog::exec() {
-	Surface *bg =  new Surface(gmenu2x->bg);
-
 	SDL_Rect box = {0, 60, 0, gmenu2x->font->getHeight() + 4};
 
 	uint32_t caretTick = 0, curTick;
@@ -125,21 +123,21 @@ bool InputDialog::exec() {
 	close = false;
 	ok = true;
 
-	drawTopBar(bg, title, text, icon);
-	drawBottomBar(bg);
-	gmenu2x->drawButton(bg, "a", gmenu2x->tr["Press"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Keys"],
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"]))));
+	drawTopBar(this->bg, title, text, icon);
+	drawBottomBar(this->bg);
+	gmenu2x->drawButton(this->bg, "a", gmenu2x->tr["Press"],
+	gmenu2x->drawButton(this->bg, "y", gmenu2x->tr["Keys"],
+	gmenu2x->drawButton(this->bg, "r", gmenu2x->tr["Space"],
+	gmenu2x->drawButton(this->bg, "l", gmenu2x->tr["Backspace"]))));
 
-	bg->box(gmenu2x->listRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
+	this->bg->box(gmenu2x->listRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
 
 	while (!close) {
 		bool inputAction = gmenu2x->input.update();
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 		gmenu2x->input.setWakeUpInterval(500);
 
-		bg->blit(gmenu2x->s,0,0);
+		this->bg->blit(gmenu2x->s,0,0);
 
 		box.w = gmenu2x->font->getTextWidth(input) + 18;
 		box.x = 160 - box.w / 2;
