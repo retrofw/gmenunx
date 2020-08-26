@@ -52,8 +52,8 @@ void MenuSettingFile::edit() {
 	BrowseDialog fd(gmenu2x, gmenu2x->tr["File Browser"], description);
 	fd.showDirectories = true;
 	fd.showFiles = true;
-	fd.setPath(_value);
 	fd.setFilter(filter);
+	fd.setPath(_value);
 
 	if (fd.exec())
 		setValue(real_path(fd.getPath() + "/" + fd.getFile()));
