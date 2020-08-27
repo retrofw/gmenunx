@@ -936,8 +936,8 @@ void GMenu2X::resetSettings() {
 	string tmppath = "";
 
 	SettingsDialog sd(this, ts, tr["Reset settings"], "skin:icons/configure.png");
-	sd.addSetting(new MenuSettingBool(this, tr["GMenuNext"], tr["Reset GMenuNext settings"], &reset_gmenu));
-	sd.addSetting(new MenuSettingBool(this, tr["Skin"], tr["Reset Default skin settings back to default"], &reset_skin));
+	sd.addSetting(new MenuSettingBool(this, tr["GMenuNX"], tr["Reset GMenuNX settings"], &reset_gmenu));
+	sd.addSetting(new MenuSettingBool(this, tr["Default skin"], tr["Reset Default skin settings back to default"], &reset_skin));
 	sd.addSetting(new MenuSettingBool(this, tr["Icons"], tr["Reset link's icon back to default"], &reset_icon));
 	sd.addSetting(new MenuSettingBool(this, tr["Manuals"], tr["Unset link's manual"], &reset_manual));
 	sd.addSetting(new MenuSettingBool(this, tr["Parameters"], tr["Unset link's additional parameters"], &reset_parameter));
@@ -947,8 +947,8 @@ void GMenu2X::resetSettings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Previews"], tr["Unset link's selector previews path"], &reset_preview));
 	sd.addSetting(new MenuSettingBool(this, tr["CPU speed"], tr["Reset link's custom CPU speed back to default"], &reset_cpu));
 
-	if (sd.exec() && sd.save) {
-		MessageBox mb(this, tr["Changes will be applied to ALL\napps and GMenuNext. Are you sure?"], "skin:icons/exit.png");
+	if (sd.exec() && sd.edited() && sd.save) {
+		MessageBox mb(this, tr["Changes will be applied to ALL\napps and GMenuNX. Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Cancel"]);
 		mb.setButton(SECTION_NEXT,  tr["Confirm"]);
 		if (mb.exec() != SECTION_NEXT) return;
@@ -1579,7 +1579,7 @@ bool GMenu2X::saveScreenshot() {
 
 void GMenu2X::restartDialog(bool showDialog) {
 	if (showDialog) {
-		MessageBox mb(this, tr["GMenuNext will restart to apply\nthe settings. Continue?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["GMenuNX will restart to apply\nthe settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
