@@ -1898,18 +1898,20 @@ void GMenu2X::editLink() {
 				newFileName = "sections/" + newSection + "/" + linkTitle + id;
 				x++;
 			}
-			rename(menu->selLinkApp()->getFile().c_str(),newFileName.c_str());
+			rename(menu->selLinkApp()->getFile().c_str(), newFileName.c_str());
 			menu->selLinkApp()->renameFile(newFileName);
 
-			INFO("New section index: %i.", newSectionIndex - menu->getSections().begin());
+			INFO("New section: (%i) %s", newSectionIndex - menu->getSections().begin(), newSection.c_str());
 
 			menu->linkChangeSection(menu->selLinkIndex(), menu->selSectionIndex(), newSectionIndex - menu->getSections().begin());
 		}
 		menu->selLinkApp()->save();
 		sync();
-
 		ledOff();
 	}
+	confInt["section"] = menu->selSectionIndex();
+	confInt["link"] = menu->selLinkIndex();
+	initMenu();
 }
 
 void GMenu2X::deleteLink() {
