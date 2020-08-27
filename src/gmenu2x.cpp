@@ -1095,12 +1095,10 @@ int GMenu2X::setBacklight(int val, bool popup) {
 bool GMenu2X::setSuspend(bool suspend) {
 	if(suspend) {
 		setBacklight(0);
-		printf("enter suspend mode\n");
-		printf("current backlight: %d\n", getBacklight());
+		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
 	} else{
 		setBacklight(max(10, confInt["backlight"]));
-		printf("exit from suspend mode\n");
-		printf("restore backlight: %d\n", confInt["backlight"]);
+		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
 		setClock(528);
 	}
 	return suspend;
@@ -1141,8 +1139,8 @@ void GMenu2X::main() {
 	// btnContextMenu->setAction(MakeDelegate(this, &GMenu2X::contextMenu));
 	exitMainThread = 0;
 	ret = pthread_create(&thread_id, NULL, mainThread, this);
-	if(ret) {
-		printf("%s, failed to create main thread\n", __func__);
+	if (ret) {
+		ERROR("%s, failed to create main thread\n", __func__);
 	}
 	setClock(528);
 
@@ -1167,7 +1165,7 @@ void GMenu2X::main() {
 
 		//Background
 		if (prevBackdrop != currBackdrop) {
-			WARNING("[BACKDROP] %s", currBackdrop.c_str());
+			INFO("New backdrop: %s", currBackdrop.c_str());
 			sc.del(prevBackdrop);
 			prevBackdrop = currBackdrop;
 		}
@@ -1242,14 +1240,14 @@ void GMenu2X::main() {
 			if (preMMCStatus != curMMCStatus) {
 				if (curMMCStatus == MMC_REMOVE) {
 					system("/usr/bin/umount_ext_sd.sh");
-					printf("%s, umount external sd from /mnt/ext_sd\n", __func__);
+					INFO("%s: umount external SD from /mnt/ext_sd", __func__);
 				}
 				else if(curMMCStatus == MMC_INSERT) {
 					system("/usr/bin/mount_ext_sd.sh");
-					printf("%s, mount external sd on /mnt/ext_sd\n", __func__);
+					INFO("%s: mount external SD on /mnt/ext_sd", __func__);
 				}
 				else {
-					printf("%s, unexpected mmc status !\n", __func__);
+					WARNING("%s: unexpected MMC status!", __func__);
 				}
 				preMMCStatus = curMMCStatus;
 			}
@@ -1311,30 +1309,30 @@ void GMenu2X::main() {
 				if (curUDCStatus == UDC_REMOVE) {
 					if (needUSBUmount) {
 						system("/usr/bin/usb_disconn_int_sd.sh");
-						printf("%s, disconnect usbdisk for internal sd\n", __func__);
+						INFO("%s, disconnect usbdisk for internal sd", __func__);
 						if (curMMCStatus == MMC_INSERT) {
 							system("/usr/bin/usb_disconn_ext_sd.sh");
-							printf("%s, disconnect usbdisk for external sd\n", __func__);
+							INFO("%s, disconnect USB disk for external SD", __func__);
 						}
 						needUSBUmount = 0;
 					}
 				}
 				else if(curUDCStatus == UDC_CONNECT) {
 					MessageBox mb(this, tr["Which action do you want ?"], "icons/usb.png");
-					mb.setButton(CONFIRM, tr["USBDISK"]);
+					mb.setButton(CONFIRM, tr["USB disk"]);
 					mb.setButton(CANCEL,  tr["Charge only"]);
 					if (mb.exec() == CONFIRM) {
 						needUSBUmount = 1;
 						system("/usr/bin/usb_conn_int_sd.sh");
-						printf("%s, connect usbdisk for internal sd\n", __func__);
+						INFO("%s, connect USB disk for internal SD", __func__);
 						if (curMMCStatus == MMC_INSERT) {
 							system("/usr/bin/usb_conn_ext_sd.sh");
-							printf("%s, connect usbdisk for external sd\n", __func__);
+							INFO("%s, connect USB disk for external SD", __func__);
 						}
 					}
 				}
 				else {
-					printf("%s, unexpected usb status !\n", __func__);
+					WARNING("%s, unexpected USB status!", __func__);
 				}
 				preUDCStatus = curUDCStatus;
 			}
@@ -1401,7 +1399,7 @@ void GMenu2X::main() {
 			else if ( input.isActive(MODIFIER) ) {
 				if (input.isActive(SECTION_NEXT)) {
 					if (!saveScreenshot()) { ERROR("Can't save screenshot"); continue; }
-					MessageBox mb(this, tr["Screenshot Saved"]);
+					MessageBox mb(this, tr["Screenshot saved"]);
 					mb.setAutoHide(1000);
 					mb.exec();
 				} else if (input.isActive(SECTION_PREV)) {
@@ -1661,16 +1659,16 @@ void GMenu2X::main() {
 
 	void GMenu2X::formatSd() {
 #ifdef TARGET_RS97
-		MessageBox mb(this, tr["Do you want to format internal sdcard ?"], "icons/format.png");
+		MessageBox mb(this, tr["Do you want to format internal SD card?"], "icons/format.png");
 		mb.setButton(CONFIRM, tr["Yes"]);
 		mb.setButton(CANCEL,  tr["No"]);
 		if (mb.exec() == CONFIRM) {
 			s->box(10, 80, 300, 52, skinConfColors[COLOR_MESSAGE_BOX_BG]);
 			s->rectangle( 12, 82, 296, 48, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
-			s->write( font, tr["Formatting internal sdcard ..."], 55, 90 );
+			s->write( font, tr["Formatting internal SD card..."], 55, 90 );
 			s->flip();
 			system("/usr/bin/format_int_sd.sh");
-			MessageBox mb(this,tr["Complete !"]);
+			MessageBox mb(this,tr["Complete!"]);
 			mb.exec();
 		}
 #endif
@@ -1726,16 +1724,16 @@ void GMenu2X::main() {
 		int fd = open("/mnt/game/gmenu2x/tvout", O_RDWR);
 		if(fd > 0){
 			read(fd, buf, sizeof(buf));
-			printf("current tvout value: %s\n", buf);
+			INFO("Current TV-out value: %s", buf);
 			if(memcmp(buf, "1", 1) == 0){
 				tvout = 0;
 				sprintf(buf, "0");
-				printf("turn off tvout\n");
+				INFO("Turn off TV-out");
 			}
 			else{
 				tvout = 1;
 				sprintf(buf, "1");
-				printf("turn on tvout\n");
+				INFO("Turn on TV-out");
 			}
 			lseek(fd, 0, SEEK_SET);
 			write(fd, buf, 1);
@@ -1747,12 +1745,12 @@ void GMenu2X::main() {
 			sprintf(buf, "1");
 			write(fd, buf, 1);
 			close(fd);
-			printf("create new tvout file\n");
+			INFO("Create new TV-out file");
 		}
 
 		sprintf(buf, "/usr/bin/tvout.sh %d %d", tvout, confStr["tvoutEncoding"] == "PAL" ? 1 : 2);
 		system(buf);
-		printf("run cmd: %s\n", buf);
+		INFO("run cmd: %s", buf);
 #endif
 	}
 
@@ -2542,7 +2540,7 @@ void GMenu2X::setClock(unsigned mhz) {
 		#define CPPCR     (0x10 >> 2)
 		unsigned long m = mhz / 6;
 		memregs[CPPCR] = (m << 24) | 0x090520;
-		printf("set cpu clock: %d\n", mhz);
+		INFO("Set CPU clock: %d", mhz);
 
 #elif defined(TARGET_GP2X)
 		unsigned v;
