@@ -295,6 +295,7 @@ GMenu2X::GMenu2X() {
 	setGamma(confInt["gamma"]);
 	applyDefaultTimings();
 #elif defined(TARGET_RS97)
+	system("ln -sf $(mount | grep int_sd | cut -f 1 -d ' ') /tmp/.int_sd");
 	tvOutConnected = getTVOutStatus();
 	preMMCStatus = curMMCStatus = getMMCStatus();
 	udcConnectedOnBoot = getUDCStatus();
