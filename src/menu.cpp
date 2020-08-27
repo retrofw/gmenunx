@@ -374,24 +374,18 @@ void Menu::pageDown() {
 }
 
 void Menu::linkLeft() {
-	if (iLink % gmenu2x->linkColumns == 0)
-		setLinkIndex(sectionLinks()->size() > iLink + gmenu2x->linkColumns - 1 ? iLink + gmenu2x->linkColumns - 1 : sectionLinks()->size() - 1 );
-	else
-		setLinkIndex(iLink - 1);
+	setLinkIndex(iLink - 1);
 }
 
 void Menu::linkRight() {
-	if (iLink % gmenu2x->linkColumns == (gmenu2x->linkColumns - 1) || iLink == (int)sectionLinks()->size() - 1)
-		setLinkIndex(iLink - iLink % gmenu2x->linkColumns);
-	else
-		setLinkIndex(iLink + 1);
+	setLinkIndex(iLink + 1);
 }
 
 void Menu::linkUp() {
 	int l = iLink - gmenu2x->linkColumns;
 	if (l < 0) {
 		uint rows = (uint)ceil(sectionLinks()->size() / (double)gmenu2x->linkColumns);
-		l = (rows * gmenu2x->linkColumns) + l;
+		l += (rows * gmenu2x->linkColumns);
 		if (l >= (int)sectionLinks()->size())
 			l -= gmenu2x->linkColumns;
 	}
@@ -399,7 +393,7 @@ void Menu::linkUp() {
 }
 
 void Menu::linkDown() {
-	uint l = iLink+gmenu2x->linkColumns;
+	uint l = iLink + gmenu2x->linkColumns;
 	if (l >= sectionLinks()->size()) {
 		uint rows = (uint)ceil(sectionLinks()->size() / (double)gmenu2x->linkColumns);
 		uint curCol = (uint)ceil((iLink+1) / (double)gmenu2x->linkColumns);
