@@ -189,11 +189,14 @@ int16_t getUDCStatus() {
 	return UDC_REMOVE;
 }
 
-int16_t tvOutPrev = false, tvOutConnected;
+int16_t tvOutPrev = false, tvOutStatus;
 bool getTVOutStatus() {
-	if (memdev > 0 && fwType == "RETROARCADE") return !(memregs[0x10300 >> 2] >> 6 & 0b1);
-	else if (memdev > 0) return !(memregs[0x10300 >> 2] >> 25 & 0b1);
-	return false;
+	if (memdev > 0 && !(memregs[0x10300 >> 2] >> 25 & 0b1)) return TV_CONNECT;
+	return TV_REMOVE;
+
+	// if (memdev > 0 && fwType == "RETROARCADE") return !(memregs[0x10300 >> 2] >> 6 & 0b1);
+	// else if (memdev > 0) return !(memregs[0x10300 >> 2] >> 25 & 0b1);
+	// return false;
 }
 
 enum vol_mode_t {
@@ -311,8 +314,8 @@ GMenu2X::GMenu2X() {
 	setGamma(confInt["gamma"]);
 	applyDefaultTimings();
 #elif defined(TARGET_RETROGAME)
-	system("ln -sf $(mount | grep 'home/retrofw' | cut -f 1 -d ' ') /tmp/.retrofw");
-	tvOutConnected = getTVOutStatus();
+	// system("ln -sf $(mount | grep 'home/retrofw' | cut -f 1 -d ' ') /tmp/.retrofw");
+	tvOutStatus = getTVOutStatus();
 	preMMCStatus = curMMCStatus = getMMCStatus();
 	udcStatus = getUDCStatus();
 #endif
@@ -737,6 +740,17 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	} else if ( input[UDC_CONNECT] || input[UDC_REMOVE] ) {
 		udcDialog();
 		return true;
+	} else if ( input[TV_CONNECT] ) {
+		tvOutDialog();
+		return true;
+	} else if ( input[TV_REMOVE] ) {
+		tvOutDialog(TV_OFF);
+		return true;
+	// } else if ( input[PHONES_CONNECT] ) {
+	// 	// tvOutDialog(TV_OFF);
+	// 	WARNING("volume mode changed");
+	// 	return true;
+
 #endif
 	}
 
@@ -1644,21 +1658,23 @@ uint32_t GMenu2X::hwCheck(unsigned int interval = 0, void *param = NULL) {
 		if (udcPrev != udcStatus) {
 			udcPrev = udcStatus;
 			tickBattery = -2e3;
-			// udcDialog();
-			InputManager::pushEvent(getUDCStatus());
+			InputManager::pushEvent(udcStatus);
 		}
 
 		curMMCStatus = getMMCStatus();
 		if (preMMCStatus != curMMCStatus) {
 			preMMCStatus = curMMCStatus;
 
-			InputManager::pushEvent(getMMCStatus());
+			InputManager::pushEvent(curMMCStatus);
 
 		}
 
+		tvOutStatus = getTVOutStatus();
+		if (tvOutPrev != tvOutStatus) {
+			tvOutPrev = tvOutStatus;
+			InputManager::pushEvent(tvOutStatus);
+		}
 
-	}
-#endif
 	return interval;
 }
 
@@ -1773,6 +1789,28 @@ void GMenu2X::umountSdDialog() {
 	bd.exec();
 }
 #if defined(TARGET_RETROGAME)
+void GMenu2X::tvOutDialog(int TVOut) {
+	if (TVOut < 0){
+		MessageBox mb(this, tr["TV-out connected. Enable?"], "skin:icons/tv.png");
+		mb.setButton(TV_NTSC, tr["NTSC"]);
+		mb.setButton(TV_PAL,  tr["PAL"]);
+		mb.setButton(TV_OFF,  tr["OFF"]);
+		TVOut = mb.exec();
+	}
+
+	setTVOut(TVOut);
+
+	switch (TVOut) {
+		case TV_NTSC:
+		case TV_PAL:
+			setBacklight(0);
+			return;
+		default:
+			setBacklight(confInt["backlight"]);
+			break;
+	}
+}
+
 void GMenu2X::udcDialog() {
 	udcStatus = getUDCStatus();
 	if (udcStatus == UDC_CONNECT) {
