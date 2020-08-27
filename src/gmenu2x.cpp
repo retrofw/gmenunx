@@ -1290,10 +1290,10 @@ void GMenu2X::main() {
 					}
 				} else if (tickPowerOff >= 2 || tickNow - tickSuspend >= confInt["suspend"] * 1000) {
 						if(!suspendActive) {
-							s->box(10, 80, 300, 62, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-							s->rectangle( 12, 82, 296, 58, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
-							s->write( font, tr["Suspend ..."], 125, 100 );
-							s->flip();
+							MessageBox mb(this, tr["Suspend..."]);
+							mb.setAutoHide(1000);
+							mb.exec();
+
 							SDL_Delay(1000);
 							suspendActive = setSuspend(true);
 							tickPowerOff = 0;
@@ -1585,24 +1585,21 @@ void GMenu2X::main() {
 		mb.setButton(CONFIRM, tr["Poweroff"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		int response = mb.exec();
+		// del(mb);
 		if (response == CONFIRM) {
-			s->box(10, 80, 300, 62, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-			s->rectangle( 12, 82, 296, 58, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
-			s->write( font, tr["Poweroff..."], 125, 100 );
-			s->flip();
-			SDL_Delay(1000);
+			MessageBox mb(this, tr["Poweroff..."]);
+			mb.setAutoHide(1000);
+			mb.exec();
 			setSuspend(true);
-			SDL_Delay(1500);
+			SDL_Delay(1000);
 			system("poweroff");
 		}
 		else if (response == SECTION_NEXT) {
-			s->box(10, 80, 300, 62, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-			s->rectangle( 12, 82, 296, 58, skinConfColors[COLOR_MESSAGE_BOX_BORDER] );
-			s->write( font, tr["Rebooting..."], 125, 100 );
-			s->flip();
-			SDL_Delay(1000);
+			MessageBox mb(this, tr["Rebooting..."]);
+			mb.setAutoHide(1000);
+			mb.exec();
 			setSuspend(true);
-			SDL_Delay(1500);
+			SDL_Delay(1000);
 			system("reboot");
 		}
 	}
