@@ -373,13 +373,10 @@ GMenu2X::GMenu2X() {
 
 void GMenu2X::main() {
 	pthread_t thread_id;
-	uint32_t sectionLinkPadding = 4;
 
 	bool quit = false;
-	int i = 0, x = 0, y = 0, ix = 0, iy = 0; //, helpBoxHeight = fwType=="open2x" ? 154 : 139;//, offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
-	int linkWidth = linksRect.w/linkColumns - 2 * sectionLinkPadding;
-	int linkHeight = linksRect.h/linkRows - 2 * sectionLinkPadding;
-	uint32_t tickBattery = -4800, tickNow, tickMMC = 0; //, tickUSB = 0;
+	int i = 0, x = 0, y = 0, ix = 0, iy = 0;
+	uint32_t tickBattery = -4800, tickNow; //, tickMMC = 0; //, tickUSB = 0;
 	string prevBackdrop = confStr["wallpaper"], currBackdrop = confStr["wallpaper"];
 
 	int8_t brightnessIcon = 5;
@@ -469,7 +466,6 @@ void GMenu2X::main() {
 			ix = linksRect.x;
 			for (y = 0; y < linkRows && i < menu->sectionLinks()->size(); y++, i++) {
 				iy = linksRect.y + y * linkHeight; // + (y + 1) * sectionLinkPadding;
-				menu->sectionLinks()->at(i)->setPosition(x,y);
 
 				if (i == (uint32_t)menu->selLinkIndex())
 					s->box(ix, iy, linksRect.w, linkHeight, skinConfColors[COLOR_SELECTION_BG]);
@@ -481,21 +477,17 @@ void GMenu2X::main() {
 		} else {
 			for (y = 0; y < linkRows; y++) {
 				for (x = 0; x < linkColumns && i < menu->sectionLinks()->size(); x++, i++) {
-					ix = linksRect.x + x * linkWidth  + (x + 1) * sectionLinkPadding;
-					iy = linksRect.y + y * linkHeight + (y + 1) * sectionLinkPadding;
+					ix = linksRect.x + x * linkWidth  + sectionLinkPadding * (x + 1);
+					iy = linksRect.y + y * linkHeight + sectionLinkPadding + (y + 1);
 
 					s->setClipRect({ix, iy, linkWidth, linkHeight});
-		
-					menu->sectionLinks()->at(i)->setPosition(x,y);
-		
+
 					if (i == (uint32_t)menu->selLinkIndex())
 						s->box(ix, iy, linkWidth, linkHeight, skinConfColors[COLOR_SELECTION_BG]);
-		
-					// sc[menu->sectionLinks()->at(i)->getIconPath()]->blitCenter(s, ix + linkWidth/2, iy + linkHeight/2, skinConfInt["linkItemHeight"] - 2 * sectionLinkPadding, skinConfInt["linkItemHeight"] - 2 * sectionLinkPadding);
-					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, linkWidth, linkHeight}, HAlignCenter | VAlignMiddle);
 
-					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getTitle()), ix + linkWidth/2, iy + linkHeight - sectionLinkPadding, HAlignCenter | VAlignBottom);
-					// s->write(font, tr.translate(menu->sectionLinks()->at(i)->getDescription()), ix + sectionLinkPadding + 36, iy + skinConfInt["linkItemHeight"] - sectionLinkPadding/2, HAlignLeft, VAlignBottom);
+					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy - sectionLinkPadding, linkWidth, linkHeight}, HAlignCenter | VAlignMiddle);
+
+					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getTitle()), ix + linkWidth/2, iy + linkHeight - 2, HAlignCenter | VAlignBottom);
 				}
 			}
 		}
@@ -896,6 +888,13 @@ void GMenu2X::initLayout() {
 	}
 
 	listRect = (SDL_Rect){0, skinConfInt["topBarHeight"], resX, resY - skinConfInt["bottomBarHeight"] - skinConfInt["topBarHeight"]};
+
+	// WIP
+	linkCols = confInt["linkCols"];
+	linkRows = confInt["linkRows"];
+
+	linkWidth  = (linksRect.w - (linkCols + 1 ) * linkSpacing) / linkCols;
+	linkHeight = (linksRect.h - (linkCols > 1) * (linkRows + 1 ) * linkSpacing) / linkRows;
 }
 
 void GMenu2X::initFont() {
@@ -1295,11 +1294,6 @@ void GMenu2X::setSkin(const string &skin, bool setWallpaper, bool clearSC) {
 	evalIntConf( &skinConfInt["fontSize"], 9, 6, 60);
 	evalIntConf( &skinConfInt["fontSizeTitle"], 14, 6, 60);
 
-
-	// WIP
-	linkColumns = 1;
-	linkRows = 4;
-
 	if (menu != NULL && clearSC) menu->loadIcons();
 
 //font
@@ -1445,7 +1439,7 @@ void GMenu2X::explorer() {
 	BrowseDialog fd(this, tr["Explorer"], tr["Select a file or application"]);
 	fd.showDirectories = true;
 	fd.showFiles = true;
-	fd.setFilter(".dge,.gpu,.gpe,.sh,");
+	fd.setFilter(".dge,.gpu,.gpe,.sh,.bin,.elf,");
 	// dd.setPath(_value);
 	// if (dd.exec()) setValue( dd.getPath() );
 	// FileDialog fd(this, tr["Select an application"], ".gpu,.gpe,.sh,", "", tr["Explorer"]);
@@ -1807,7 +1801,7 @@ void GMenu2X::addLink() {
 	BrowseDialog fd(this, tr["Add link"], tr["Select an application"]);
 	fd.showDirectories = true;
 	fd.showFiles = true;
-	fd.setFilter(".dge,.gpu,.gpe,.sh,");
+	fd.setFilter(".dge,.gpu,.gpe,.sh,.bin,.elf");
 	// FileDialog fd(this, tr["Select an application"], "", "", tr["File Dialog"]);
 	if (fd.exec()) {
 		ledOn();

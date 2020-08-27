@@ -288,7 +288,6 @@ bool Menu::addLink(string path, string file, string section) {
 			INFO("Section: '%s(%i)'", sections[isection].c_str(), isection);
 
 			LinkApp *link = new LinkApp(gmenu2x, gmenu2x->input, linkpath.c_str());
-			link->setSize(gmenu2x->linksRect.w, gmenu2x->skinConfInt["linkItemHeight"]);
 			if (link->targetExists())
 				links[isection].push_back( link );
 			else
@@ -465,7 +464,6 @@ void Menu::readLinks() {
 		sort(linkfiles.begin(), linkfiles.end(),case_less());
 		for (uint32_t x = 0; x < linkfiles.size(); x++) {
 			LinkApp *link = new LinkApp(gmenu2x, gmenu2x->input, linkfiles[x].c_str());
-			link->setSize(gmenu2x->linksRect.w, gmenu2x->skinConfInt["linkItemHeight"]);
 			if (link->targetExists())
 				links[i].push_back( link );
 			else
