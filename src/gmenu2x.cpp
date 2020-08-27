@@ -621,10 +621,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	hwCheck();
 
 	bool wasActive = false;
-	while (input[POWER]) {
+	while (input[POWER] || input[SETTINGS]) {
 		wasActive = true;
 		input.update();
-		if (input[POWER]) {
+		if (input[POWER] || input[SETTINGS]) {
 			// HOLD POWER BUTTON
 			poweroffDialog();
 			return true;
