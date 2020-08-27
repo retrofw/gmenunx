@@ -898,8 +898,6 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-
-		if (curMenuClock != confInt["cpuMenu"]) setCPU(confInt["cpuMenu"]);
 		if (curGlobalVolume != confInt["globalVolume"]) setVolume(confInt["globalVolume"]);
 
 		if (lang == "English") lang = "";
