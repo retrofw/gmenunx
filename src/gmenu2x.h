@@ -208,6 +208,7 @@ public:
 	void restartDialog(bool showDialog = false);
 	void poweroffDialog();
 	void resetSettings();
+	void cpuSettings();
 
 	/*!
 	Reads the current battery state and returns a number representing it's level of charge
