@@ -1023,9 +1023,12 @@ int GMenu2X::setBacklight(int val, bool popup) {
 				if ((SDL_GetTicks()-tickStart) >= 3000 || input[MODIFIER] || input[CONFIRM] || input[CANCEL]) close = true;
 
 				if (input[LEFT]) {
-					val = setBacklight(val - backlightStep);
+					val = setBacklight(max(1, val - backlightStep));
 					break;
 				} else if (input[RIGHT] || input[BACKLIGHT]) {
+					val = setBacklight(min(100, val + backlightStep));
+					break;
+				} else if (input[BACKLIGHT]) {
 					val = setBacklight(val + backlightStep);
 					break;
 				}
@@ -1308,6 +1311,26 @@ void GMenu2X::main() {
 				setVolume(confInt["globalVolume"]);
 				menu->selLink()->run();
 			}
+			else if ( input.isActive(MODIFIER) ) {
+				if (input.isActive(SECTION_NEXT)) {
+					saveScreenshot();
+					MessageBox mb(this, tr["Screenshot Saved"]);
+					mb.setAutoHide(1000);
+					mb.exec();
+				} else if (input.isActive(SECTION_PREV)) {
+					int vol = getVolume();
+					if (vol) {
+						vol = 0;
+						volumeMode = VOLUME_MODE_MUTE;
+					} else {
+						vol = 100;
+						volumeMode = VOLUME_MODE_NORMAL;
+					}
+					confInt["globalVolume"] = vol;
+					setVolume(vol);
+					writeConfig();
+				}
+			}
 			else if ( input[SETTINGS] ) options();
 			else if ( input[MENU]     ) contextMenu();
 			// LINK NAVIGATION
@@ -1381,21 +1404,6 @@ void GMenu2X::main() {
 
 
 
-			else if ( input.isActive(MODIFIER) ) {
-				int vol = getVolume();
-
-				if (vol) {
-					vol = 0;
-					volumeMode = VOLUME_MODE_MUTE;
-				}
-				else{
-					vol = 100;
-					volumeMode = VOLUME_MODE_NORMAL;
-				}
-				confInt["globalVolume"] = vol;
-				setVolume(vol);
-				writeConfig();
-			}
 
 			// tickSuspend = tickPowerOff = SDL_GetTicks();
 			tickSuspend = SDL_GetTicks();
