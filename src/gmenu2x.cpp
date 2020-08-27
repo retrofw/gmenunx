@@ -1680,9 +1680,11 @@ void GMenu2X::checkUDC() {
 
 			sc[confStr["wallpaper"]]->blit(s,0,0);
 
-			MessageBox mb(this, tr["USB Drive Connected"], "skin:icons/usb.png");
-			mb.setAutoHide(500);
-			mb.exec();
+			{
+				MessageBox mb(this, tr["USB Drive Connected"], "skin:icons/usb.png");
+				mb.setAutoHide(500);
+				mb.exec();
+			}
 
 			powerManager->clearTimer();
 
@@ -1690,6 +1692,14 @@ void GMenu2X::checkUDC() {
 				input.update();
 				if ( input[MENU] && input[POWER]) udcConnectedOnBoot = UDC_REMOVE;
 			}
+
+			{
+				MessageBox mb(this, tr["USB disconnected. Rebooting..."], "skin:icons/usb.png");
+				mb.setAutoHide(200);
+				mb.exec();
+			}
+
+			system("sync; reboot & sleep 1m");
 
 			system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
 			mountSd(false);
@@ -1699,7 +1709,7 @@ void GMenu2X::checkUDC() {
 				mountSd(true);
 				INFO("%s, disconnect USB disk for external SD", __func__);
 			}
-			powerManager->resetSuspendTimer();
+			// powerManager->resetSuspendTimer();
 		}
 	}
 }
