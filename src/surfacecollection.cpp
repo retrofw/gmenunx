@@ -64,10 +64,10 @@ Surface *SurfaceCollection::add(Surface *s, const string &path) {
 }
 
 Surface *SurfaceCollection::add(const string &path, bool alpha) {
+	if (path.empty()) return NULL;
+	if (exists(path)) return surfaces[path]; //del(path);
 
-	if (exists(path)) del(path);
 	string filePath = path;
-
 	if (filePath.substr(0,5)=="skin:") {
 		filePath = getSkinFilePath(filePath.substr(5,filePath.length()));
 		if (filePath.empty())
@@ -76,13 +76,14 @@ Surface *SurfaceCollection::add(const string &path, bool alpha) {
 
 	DEBUG("Adding surface: '%s'", path.c_str());
 	Surface *s = new Surface(filePath,alpha);
-	surfaces[path] = s;
+	if (s != NULL)
+		surfaces[path] = s;
 	return s;
 }
 
 Surface *SurfaceCollection::addSkinRes(const string &path, bool alpha) {
 	if (path.empty()) return NULL;
-	if (exists(path)) del(path);
+	if (exists(path)) surfaces[path]; // del(path);
 
 	string skinpath = getSkinFilePath(path);
 	if (skinpath.empty())
