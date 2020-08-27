@@ -1022,12 +1022,14 @@ void GMenu2X::main() {
 				if (curUDCStatus == UDC_REMOVE) {
 					if (needUSBUmount) {
 						// system("/usr/bin/usb_disconn_int_sd.sh");
-						system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
-						system("mount -o remount,rw /dev/mmcblk0p4");
 						// system("mount -o remount,rw /dev/mmcblk0p4");
+						system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
+						system("mount /dev/mmcblk0p4 /mnt/int_sd -t vfat -o rw,utf8");
 						INFO("%s, disconnect usbdisk for internal sd", __func__);
 						if (curMMCStatus == MMC_INSERT) {
-							system("/usr/bin/usb_disconn_ext_sd.sh");
+							// system("/usr/bin/usb_disconn_ext_sd.sh");
+							system("echo '' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file");
+							system("mount /dev/mmcblk1p1 /mnt/ext_sd -t vfat -o rw,utf8 -t vfat -o rw,utf8");
 							INFO("%s, disconnect USB disk for external SD", __func__);
 						}
 						needUSBUmount = 0;
@@ -1041,11 +1043,13 @@ void GMenu2X::main() {
 						needUSBUmount = 1;
 						// system("/usr/bin/usb_conn_int_sd.sh");
 						// system("mount -o remount,ro /dev/mmcblk0p4");
-						system("umount -l /dev/mmcblk0p4");
+						system("umount -fl /dev/mmcblk0p4");
 						system("echo '/dev/mmcblk0p4' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun0/file");
 						INFO("%s, connect USB disk for internal SD", __func__);
 						if (curMMCStatus == MMC_INSERT) {
-							system("/usr/bin/usb_conn_ext_sd.sh");
+							// system("/usr/bin/usb_conn_ext_sd.sh");
+							system("umount -fl /mnt/ext_sd");
+							system("echo '/dev/mmcblk1p1' > /sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file");
 							INFO("%s, connect USB disk for external SD", __func__);
 						}
 
