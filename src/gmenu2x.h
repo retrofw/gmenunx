@@ -100,7 +100,7 @@ class Menu;
 
 class GMenu2X {
 private:
-	int getBacklight();
+	static GMenu2X *instance;
 	int getVolume();
 
 	string path; //!< Contains the working directory of GMenu2X
@@ -132,44 +132,15 @@ private:
 
 	void initFont();
 	void initMenu();
+
 	void showManual();
-	// IconButton *btnContextMenu;
-
-#ifdef TARGET_GP2X
-	typedef struct {
-		uint16_t batt;
-		uint16_t remocon;
-	} MMSP2ADC;
-
-	int batteryHandle;
-	string ip, defaultgw;
-	
-	bool inet, //!< Represents the configuration of the basic network services. @see readCommonIni @see usbnet @see samba @see web
-		usbnet,
-		samba,
-		web;
-	volatile uint16_t *MEM_REG;
-	int cx25874; //tv-out
-	void gp2x_tvout_on(bool pal);
-	void gp2x_tvout_off();
-	void readCommonIni();
-	void initServices();
-
-#elif defined(TARGET_RETROGAME)
-	void formatSd();
-	void udcDialog();
-	void tvOutDialog(int TVOut = -1);
-#endif
 	void umountSdDialog();
-	void umountSd(bool ext);
-	void mountSd(bool ext);
 
-	// void toggleTvOut();
-	void hwDeinit();
-	void hwInit();
-	// void hwCheck();
-	static uint32_t hwCheck(unsigned int interval, void *param);
-	static GMenu2X *instance;
+	virtual void udcDialog() { };
+	virtual void tvOutDialog(int TVOut = -1) { };
+	virtual void hwDeinit() {};
+	virtual void hwInit() {};
+	virtual int getBacklight() { return -1; };
 
 public:
 	GMenu2X();
@@ -179,8 +150,7 @@ public:
 	/*
 	 * Variables needed for elements disposition
 	 */
-	uint32_t resX, resY, halfX, halfY;
-	// uint32_t bottomBarIconY, bottomBarTextY
+	uint32_t resX = 320, resY = 240, halfX, halfY;
 	uint32_t linkCols, linkRows, linkWidth, linkHeight, linkSpacing = 4;
 	SDL_Rect listRect, linksRect, sectionBarRect, bottomBarRect;
 	/*!
@@ -191,27 +161,26 @@ public:
 	*/
 	const string &getExePath();
 
-	InputManager input;
-	Touchscreen ts;
-
 	//Configuration hashes
 	ConfStrHash confStr, skinConfStr;
 	ConfIntHash confInt, skinConfInt;
 
 	RGBAColor skinConfColors[NUM_COLORS];
 
-	void setSkin(const string &skin, bool resetWallpaper = true, bool clearSC = true);
-	//gp2x type
-	bool f200 = true;
+	bool f200 = true; //gp2x type // touchscreen
 
 	SurfaceCollection sc;
 	Translator tr;
 	Surface *s, *bg, *iconInet = NULL;
 	uint8_t batteryIcon = 3;
 
-	FontHelper *font = NULL, *titlefont = NULL; //, *bottombarfont;
+	FontHelper *font = NULL, *titlefont = NULL;
 
-	//Status functions
+	PowerManager *powerManager;
+	Menu *menu;
+
+	~GMenu2X();
+	void quit();
 	void main();
 	void settings();
 	void restartDialog(bool showDialog = false);
@@ -219,13 +188,7 @@ public:
 	void resetSettings();
 	void cpuSettings();
 
-	/*!
-	Reads the current battery state and returns a number representing it's level of charge
-	@return A number representing battery charge. 0 means fully discharged. 5 means fully charged. 6 represents a gp2x using AC power.
-	*/
-	uint16_t getBatteryLevel();
-	int32_t getBatteryStatus();
-
+	void setSkin(const string &skin, bool resetWallpaper = true, bool clearSC = true);
 	void skinMenu();
 	void skinColors();
 	uint32_t onChangeSkin();
@@ -233,32 +196,6 @@ public:
 
 	bool inputCommonActions(bool &inputAction);
 
-	PowerManager *powerManager;
-
-#if defined(TARGET_GP2X)
-	void writeConfigOpen2x();
-	void readConfigOpen2x();
-	void settingsOpen2x();
-	// Open2x settings ---------------------------------------------------------
-	bool o2x_usb_net_on_boot, o2x_ftp_on_boot, o2x_telnet_on_boot, o2x_gp2xjoy_on_boot, o2x_usb_host_on_boot, o2x_usb_hid_on_boot, o2x_usb_storage_on_boot;
-	string o2x_usb_net_ip;
-	int savedVolumeMode;		//	just use the const int scale values at top of source
-
-	//  Volume scaling values to store from config files
-	int volumeScalerPhones;
-	int volumeScalerNormal;
-	//--------------------------------------------------------------------------
-	void activateSdUsb();
-	void activateNandUsb();
-	void activateRootUsb();
-	void applyRamTimings();
-	void applyDefaultTimings();
-	void setGamma(int gamma);
-	void setVolumeScaler(int scaler);
-	int getVolumeScaler();
-#endif
-
-	void setTVOut(unsigned int _TVOut);
 	unsigned int TVOut = 0;
 	void about();
 	void viewLog();
@@ -266,7 +203,6 @@ public:
 	void contextMenu();
 	void changeWallpaper();
 
-	void setCPU(uint32_t mhz);
 	const string getDateTime();
 	void setDateTime();
 
@@ -281,9 +217,6 @@ public:
 	void writeSkinConfig();
 	void writeTmp(int selelem = -1, const string &selectordir = "");
 
-	void ledOn();
-	void ledOff();
-
 	void addLink();
 	void editLink();
 	void deleteLink();
@@ -293,12 +226,21 @@ public:
 
 	void setWallpaper(const string &wallpaper = "");
 
-	int drawButton(Button *btn, int x=5, int y=-8);
-	int drawButton(Surface *s, const string &btn, const string &text = "", int x=5, int y=-8);
-	int drawButtonRight(Surface *s, const string &btn, const string &text = "", int x=5, int y=-8);
+	int drawButton(Button *btn, int x = 5, int y = -8);
+	int drawButton(Surface *s, const string &btn, const string &text = "", int x = 5, int y = -8);
+	int drawButtonRight(Surface *s, const string &btn, const string &text = "", int x = 5, int y = -8);
 	void drawScrollBar(uint32_t pagesize, uint32_t totalsize, uint32_t pagepos, SDL_Rect scrollRect);
 
-	Menu* menu;
+	/*!
+	Reads the current battery state and returns a number representing it's level of charge
+	@return A number representing battery charge. 0 means fully discharged. 5 means fully charged. 6 represents a gp2x using AC power.
+	*/
+	virtual uint16_t getBatteryLevel() { return 6; };
+	virtual int32_t getBatteryStatus() { return -1; };
+	virtual void setTVOut(unsigned int _TVOut) { };
+	virtual void setCPU(uint32_t mhz) {};
+	virtual void ledOn() {};
+	virtual void ledOff() {};
 };
 
 #endif
