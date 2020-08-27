@@ -1628,7 +1628,6 @@ void GMenu2X::setDateTime() {
 #if !defined(TARGET_PC)
 	settimeofday(&newtime, NULL);
 #endif
-	tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 }
 
 uint GMenu2X::onChangeSkin() {
