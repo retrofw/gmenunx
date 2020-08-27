@@ -1352,7 +1352,7 @@ void GMenu2X::options() {
 	sectionBarPosition.push_back("Bottom");
 	sectionBarPosition.push_back("OFF");
 
-	SettingsDialog sd(this, input, ts, tr["Settings"], "skin:icons/configure.png");
+	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 	sd.addSetting(new MenuSettingInt(this,tr["Screen timeout"], tr["Set the screen timeout and suspend delay"], &confInt["backlightTimeout"], 30, 10, 300));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Battery profile"], tr["Set the battery discharge profile"], &confStr["batteryType"], &batteryType));
@@ -1427,7 +1427,7 @@ void GMenu2X::skinMenu() {
 		sc.del("skin:imgs/buttons/right.png");
 		setSkin(confStr["skin"], true, false);
 
-		SettingsDialog sd(this, input, ts, tr["Skin"], "skin:icons/skin.png");
+		SettingsDialog sd(this, ts, tr["Skin"], "skin:icons/skin.png");
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		// sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories()));
 		sd.addSetting(new MenuSettingRGBA(this, tr["Top/Section Bar"], tr["Color of the top and section bar"], &skinConfColors[COLOR_TOP_BAR_BG]));
@@ -1878,7 +1878,7 @@ void GMenu2X::editLink() {
 	ss << DEFAULT_CPU_CLK;
 	ss >> strClock;
 
-	SettingsDialog sd(this, input, ts, diagTitle, diagIcon);
+	SettingsDialog sd(this, ts, diagTitle, diagIcon);
 	sd.addSetting(new MenuSettingString(      this, tr["Title"],                tr["Link title"], &linkTitle, diagTitle, diagIcon ));
 	sd.addSetting(new MenuSettingString(      this, tr["Description"],          tr["Link description"], &linkDescription, diagTitle, diagIcon ));
 	sd.addSetting(new MenuSettingMultiString( this, tr["Section"],              tr["The section this link belongs to"], &newSection, &menu->getSections() ));
@@ -1980,7 +1980,7 @@ void GMenu2X::deleteLink() {
 }
 
 void GMenu2X::addSection() {
-	InputDialog id(this, input, ts, tr["Insert a name for the new section"], "", tr["Add section"], "skin:icons/section.png");
+	InputDialog id(this, ts, tr["Insert a name for the new section"], "", tr["Add section"], "skin:icons/section.png");
 	if (id.exec()) {
 		//only if a section with the same name does not exist
 		if (find(menu->getSections().begin(), menu->getSections().end(), id.getInput()) == menu->getSections().end()) {
@@ -1996,7 +1996,7 @@ void GMenu2X::addSection() {
 }
 
 void GMenu2X::renameSection() {
-	InputDialog id(this, input, ts, tr["Insert a new name for this section"],menu->selSection(),tr ["Rename section"], "skin:sections/" + menu->selSection() + ".png");
+	InputDialog id(this, ts, tr["Insert a new name for this section"],menu->selSection(),tr ["Rename section"], "skin:sections/" + menu->selSection() + ".png");
 	if (id.exec()) {
 		//only if a section with the same name does not exist & !samename
 		if (menu->selSection() != id.getInput() && find(menu->getSections().begin(),menu->getSections().end(), id.getInput()) == menu->getSections().end()) {
@@ -2328,7 +2328,7 @@ void GMenu2X::drawScrollBar(uint pagesize, uint totalsize, uint pagepos, SDL_Rec
 
 #if defined(TARGET_GP2X)
 void GMenu2X::settingsOpen2x() {
-	SettingsDialog sd(this, input, ts, tr["Open2x Settings"]);
+	SettingsDialog sd(this, ts, tr["Open2x Settings"]);
 	sd.addSetting(new MenuSettingBool(this, tr["USB net on boot"], tr["Allow USB networking to be started at boot time"],&o2x_usb_net_on_boot));
 	sd.addSetting(new MenuSettingString(this, tr["USB net IP"], tr["IP address to be used for USB networking"],&o2x_usb_net_ip));
 	sd.addSetting(new MenuSettingBool(this, tr["Telnet on boot"], tr["Allow telnet to be started at boot time"],&o2x_telnet_on_boot));
