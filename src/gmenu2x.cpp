@@ -294,10 +294,9 @@ void GMenu2X::gp2x_tvout_off() {
 #endif
 
 
-GMenu2X *GMenu2X::instance = NULL;
-
+// GMenu2X *GMenu2X::instance = NULL;
 GMenu2X::GMenu2X() {
-	instance = this;
+	// instance = this;
 	//Detect firmware version and type
 	if (fileExists("/etc/open2x")) {
 		fwType = "open2x";
