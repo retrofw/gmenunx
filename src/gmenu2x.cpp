@@ -255,7 +255,7 @@ void GMenu2X::main() {
 
 	bg = new Surface(s);
 
-	setSkin(confStr["skin"], false, true);
+	setSkin(confStr["skin"], true);
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
 	MessageBox mb(this, tr["Loading"]);
@@ -1179,7 +1179,7 @@ void GMenu2X::writeSkinConfig() {
 	ledOff();
 }
 
-void GMenu2X::setSkin(const string &skin, bool resetWallpaper, bool clearSC) {
+void GMenu2X::setSkin(const string &skin, bool clearSC) {
 	confStr["skin"] = skin;
 
 	// Clear previous skin settings
@@ -1334,7 +1334,7 @@ void GMenu2X::skinMenu() {
 			prevSkin = confStr["skin"];
 			skinFontPrev = confStr["skinFont"];
 
-			setSkin(confStr["skin"], false, false);
+			setSkin(confStr["skin"], false);
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
 	
 			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(confStr["wallpaper"]) : skinConfStr["wallpaper"];
@@ -1412,7 +1412,7 @@ void GMenu2X::skinMenu() {
 void GMenu2X::skinColors() {
 	bool save = false;
 	do {
-		setSkin(confStr["skin"], false, false);
+		setSkin(confStr["skin"], false);
 
 		SettingsDialog sd(this, ts, tr["Skin Colors"], "skin:icons/skin.png");
 		sd.allowCancel = false;
