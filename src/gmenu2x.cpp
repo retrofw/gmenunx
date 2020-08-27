@@ -287,8 +287,6 @@ GMenu2X::GMenu2X() {
 
 	setBacklight(confInt["backlight"]);
 
-	initMenu();
-
 	input.init(path + "input.conf");
 	setInputSpeed();
 
@@ -302,7 +300,8 @@ GMenu2X::GMenu2X() {
 	udcConnectedOnBoot = getUDCStatus();
 #endif
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
-
+	
+	initMenu();
 	readTmp();
 	setCPU(confInt["cpuMenu"]);
 
