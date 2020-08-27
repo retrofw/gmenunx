@@ -46,8 +46,8 @@ InputManager::InputManager()
 }
 
 InputManager::~InputManager() {
-	for (uint x = 0; x < joysticks.size(); x++)
-		if(SDL_JoystickOpened(x))
+	for (uint32_t x = 0; x < joysticks.size(); x++)
+		if (SDL_JoystickOpened(x))
 			SDL_JoystickClose(joysticks[x]);
 }
 
@@ -188,8 +188,8 @@ bool InputManager::update(bool wait) {
 		events.push_back(evcopy);
 	}
 
-	long now = SDL_GetTicks();
-	for (uint x = 0; x < actions.size(); x++) {
+	int32_t now = SDL_GetTicks();
+	for (uint32_t x = 0; x < actions.size(); x++) {
 		actions[x].active = isActive(x);
 		if (actions[x].active) {
 			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); // eegg
@@ -214,7 +214,7 @@ bool InputManager::combo() { // eegg
 }
 
 void InputManager::dropEvents() {
-	for (uint x = 0; x < actions.size(); x++) {
+	for (uint32_t x = 0; x < actions.size(); x++) {
 		actions[x].active = false;
 		if (actions[x].timer != NULL) {
 			SDL_RemoveTimer(actions[x].timer);
@@ -223,7 +223,7 @@ void InputManager::dropEvents() {
 	}
 }
 
-Uint32 InputManager::checkRepeat(Uint32 interval, void *_data) {
+uint32_t InputManager::checkRepeat(uint32_t interval, void *_data) {
 	RepeatEventData *data = (RepeatEventData *)_data;
 	InputManager *im = (class InputManager*)data->im;
 	SDL_JoystickUpdate();
@@ -271,9 +271,9 @@ int InputManager::count() {
 
 void InputManager::setInterval(int ms, int action) {
 	if (action < 0)
-		for (uint x = 0; x < actions.size(); x++)
+		for (uint32_t x = 0; x < actions.size(); x++)
 			actions[x].interval = ms;
-	else if ((uint)action < actions.size())
+	else if ((uint32_t)action < actions.size())
 		actions[action].interval = ms;
 }
 
@@ -285,7 +285,7 @@ void InputManager::setWakeUpInterval(int ms) {
 		wakeUpTimer = SDL_AddTimer(ms, wakeUp, NULL);
 }
 
-Uint32 InputManager::wakeUp(Uint32 interval, void *_data) {
+uint32_t InputManager::wakeUp(uint32_t interval, void *_data) {
 	SDL_Event *event = new SDL_Event();
 	event->type = SDL_WAKEUPEVENT;
 	SDL_PushEvent( event );
@@ -315,7 +315,7 @@ bool InputManager::isActive(int action) {
 				}
 			break;
 			case InputManager::MAPPING_TYPE_KEYPRESS:
-				Uint8 *keystate = SDL_GetKeyState(NULL);
+				uint8_t *keystate = SDL_GetKeyState(NULL);
 				return keystate[map.value];
 			break;
 		}

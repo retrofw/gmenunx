@@ -3,7 +3,7 @@
 
 PowerManager *PowerManager::instance = NULL;
 
-PowerManager::PowerManager(GMenu2X *gmenu2x, unsigned int suspendTimeout, unsigned int powerTimeout) {
+PowerManager::PowerManager(GMenu2X *gmenu2x, uint32_t suspendTimeout, uint32_t powerTimeout) {
 	instance = this;
 	this->suspendTimeout = suspendTimeout;
 	this->powerTimeout = powerTimeout;
@@ -20,12 +20,12 @@ PowerManager::~PowerManager() {
 	instance = NULL;
 }
 
-void PowerManager::setSuspendTimeout(unsigned int suspendTimeout) {
+void PowerManager::setSuspendTimeout(uint32_t suspendTimeout) {
 	this->suspendTimeout = suspendTimeout;
 	resetSuspendTimer();
 };
 
-void PowerManager::setPowerTimeout(unsigned int powerTimeout) {
+void PowerManager::setPowerTimeout(uint32_t powerTimeout) {
 	this->powerTimeout = powerTimeout;
 	resetSuspendTimer();
 };
@@ -44,7 +44,7 @@ void PowerManager::resetPowerTimer() {
 	powerTimer = SDL_AddTimer(this->powerTimeout * 60e3, doPowerOff, NULL);
 };
 
-Uint32 PowerManager::doSuspend(unsigned int interval, void *param) {
+uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 	if (interval > 0) {
 		MessageBox mb(PowerManager::instance->gmenu2x, PowerManager::instance->gmenu2x->tr["Suspend"]);
 		mb.setAutoHide(500);
@@ -68,8 +68,7 @@ Uint32 PowerManager::doSuspend(unsigned int interval, void *param) {
 	return interval;
 };
 
-Uint32 PowerManager::doPowerOff(unsigned int interval, void *param) {
-	// if (interval > 0) {
+uint32_t PowerManager::doPowerOff(uint32_t interval, void *param) {
 #if !defined(TARGET_PC)
 	system("poweroff");
 #endif

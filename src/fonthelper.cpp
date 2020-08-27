@@ -42,8 +42,7 @@ void FontHelper::loadFont(const string &fontName, int fontSize) {
 	halfHeight = height/2;
 }
 
-
-bool FontHelper::utf8Code(unsigned char c) {
+bool FontHelper::utf8Code(uint8_t c) {
 	return (c >= 194 && c <= 198) || c == 208 || c == 209;
 }
 
@@ -66,13 +65,13 @@ FontHelper *FontHelper::setOutlineColor(RGBAColor color) {
 	return this;
 }
 
-uint FontHelper::getLineWidth(const string &text) {
+uint32_t FontHelper::getLineWidth(const string &text) {
 	int width = 0;
 	TTF_SizeUTF8(fontOutline, text.c_str(), &width, NULL);
 	return width;
 }
 
-uint FontHelper::getTextWidth(const string &text) {
+uint32_t FontHelper::getTextWidth(const string &text) {
 	if (text.find("\n",0) != string::npos) {
 		vector<string> textArr;
 		split(textArr,text,"\n");
@@ -81,9 +80,9 @@ uint FontHelper::getTextWidth(const string &text) {
 		return getLineWidth(text);
 }
 
-uint FontHelper::getTextWidth(vector<string> *text) {
+uint32_t FontHelper::getTextWidth(vector<string> *text) {
 	int w = 0;
-	for (uint i = 0; i < text->size(); i++)
+	for (uint32_t i = 0; i < text->size(); i++)
 		w = max( getLineWidth(text->at(i)), w );
 	return w;
 }
@@ -94,18 +93,18 @@ int FontHelper::getTextHeight(const string &text) {
 	return textArr.size();
 }
 
-void FontHelper::write(Surface *surface, vector<string> *text, int x, int y, const Uint8 align) {
+void FontHelper::write(Surface *surface, vector<string> *text, int x, int y, const uint8_t align) {
 	write(surface, text, x, y, align, textColor, outlineColor);
 }
 
-void FontHelper::write(Surface *surface, vector<string> *text, int x, int y, const Uint8 align, RGBAColor fgColor, RGBAColor bgColor) {
+void FontHelper::write(Surface *surface, vector<string> *text, int x, int y, const uint8_t align, RGBAColor fgColor, RGBAColor bgColor) {
 	if (align & VAlignMiddle) {
 		y -= getHalfHeight() * text->size();
 	} else if (align & VAlignBottom) {
 		y -= getHeight() * text->size();
 	}
 
-	for (uint i = 0; i < text->size(); i++) {
+	for (uint32_t i = 0; i < text->size(); i++) {
 		int ix = x;
 		if (align & HAlignCenter) {
 			ix -= getTextWidth(text->at(i))/2;
@@ -117,8 +116,7 @@ void FontHelper::write(Surface *surface, vector<string> *text, int x, int y, con
 	}
 }
 
-
-void FontHelper::write(Surface* surface, const string &text, int x, int y, const Uint8 align, RGBAColor fgColor, RGBAColor bgColor) {
+void FontHelper::write(Surface* surface, const string &text, int x, int y, const uint8_t align, RGBAColor fgColor, RGBAColor bgColor) {
 	if (text.find("\n", 0) != string::npos) {
 		vector<string> textArr;
 		split(textArr,text, "\n");
@@ -141,7 +139,7 @@ void FontHelper::write(Surface* surface, const string &text, int x, int y, const
 	write(surface, text, x, y, fgColor, bgColor);
 }
 
-void FontHelper::write(Surface *surface, const string &text, int x, int y, const Uint8 align) {
+void FontHelper::write(Surface *surface, const string &text, int x, int y, const uint8_t align) {
 	write(surface, text, x, y, align, textColor, outlineColor);
 }
 
