@@ -295,7 +295,7 @@ GMenu2X::GMenu2X() {
 	setGamma(confInt["gamma"]);
 	applyDefaultTimings();
 #elif defined(TARGET_RS97)
-	tvOutPrev = tvOutConnected = getTVOutStatus();
+	tvOutConnected = getTVOutStatus();
 	preMMCStatus = curMMCStatus = getMMCStatus();
 	udcConnectedOnBoot = getUDCStatus();
 #endif
@@ -999,9 +999,9 @@ void GMenu2X::readTmp() {
 		else if (name == "selectorelem") lastSelectorElement = atoi(value.c_str());
 		else if (name == "selectordir") lastSelectorDir = value;
 		else if (name == "TVOut") TVOut = value;
+		else if (name == "tvOutPrev") tvOutPrev = atoi(value.c_str());
 	}
 	if (TVOut != "NTSC" && TVOut != "PAL") TVOut = "OFF";
-
 	udcConnectedOnBoot = 0;
 	inf.close();
 	unlink("/tmp/gmenu2x.tmp");
@@ -1015,8 +1015,8 @@ void GMenu2X::writeTmp(int selelem, const string &selectordir) {
 		inf << "link=" << menu->selLinkIndex() << endl;
 		if (selelem >- 1) inf << "selectorelem=" << selelem << endl;
 		if (selectordir != "") inf << "selectordir=" << selectordir << endl;
+		inf << "tvOutPrev=" << tvOutPrev << endl;
 		inf << "TVOut=" << TVOut << endl;
-		inf << "udcConnectedOnBoot=false" << endl;
 		inf.close();
 	}
 }
