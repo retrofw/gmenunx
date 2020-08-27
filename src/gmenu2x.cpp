@@ -1656,7 +1656,6 @@ void GMenu2X::umountSdDialog() {
 	if (mb.exec() == CONFIRM) {
 		umountSd(true);
 		menu->deleteSelectedLink();
-		sc[confStr["wallpaper"]]->blit(s,0,0);
 		MessageBox mb(this, tr["SD card umounted"], "skin:icons/eject.png");
 		mb.setAutoHide(1000);
 		mb.exec();
