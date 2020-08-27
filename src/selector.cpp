@@ -78,7 +78,8 @@ void Selector::loadAliases() {
 		infile.close();
 	}
 }
-const std::string Selector::getFile(uint32_t i) {
+
+const std::string Selector::getFileName(uint32_t i) {
 	string noext, fname = at(i);
 	int pos = fname.rfind(".");
 	if (pos != string::npos && pos > 0) noext = fname.substr(0, pos);
