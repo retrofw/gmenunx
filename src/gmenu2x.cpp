@@ -1054,7 +1054,7 @@ void GMenu2X::main() {
 						}
 
 						MessageBox mb(this, tr["USB Disk Connected"], "icons/usb.png");
-						mb.setAutoHide(1);
+						mb.setAutoHide(500);
 						mb.exec();
 
 						while (getUDCStatus() == UDC_CONNECT) {
@@ -1160,7 +1160,7 @@ void GMenu2X::main() {
 			if (menu->selLinkApp()!=NULL && menu->selLinkApp()->getSelectorDir().empty()) {
 				// MessageBox mb(this, tr.translate("Launching $1", menu->selLink()->getTitle().c_str(), NULL), menu->selLinkApp()->getIconPath());
 				MessageBox mb(this, tr["Launching "] + menu->selLink()->getTitle().c_str(), menu->selLink()->getIconPath());
-				mb.setAutoHide(1);
+				mb.setAutoHide(500);
 				mb.exec();
 			}
 
@@ -1309,7 +1309,7 @@ bool GMenu2X::powerManager(bool &inputAction) {
 
 	if (tickPower >= 300 || tickStart - tickSuspend >= confInt["backlightTimeout"] * 1000) {
 		MessageBox mb(this, tr["Suspend"]);
-		mb.setAutoHide(1);
+		mb.setAutoHide(100);
 		mb.exec();
 		setSuspend(true);
 		return true;
@@ -1502,7 +1502,7 @@ void GMenu2X::formatSd() {
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() == CONFIRM) {
 		MessageBox mb(this, tr["Formatting internal SD card..."], "icons/format.png");
-		mb.setAutoHide(1);
+		mb.setAutoHide(100);
 		mb.exec();
 
 		system("/usr/bin/format_int_sd.sh");
@@ -1536,7 +1536,7 @@ void GMenu2X::poweroff() {
 	// del(mb);
 	if (response == CONFIRM) {
 		MessageBox mb(this, tr["Poweroff"]);
-		mb.setAutoHide(1000);
+		mb.setAutoHide(500);
 		mb.exec();
 		setSuspend(true);
 		SDL_Delay(500);
@@ -1547,7 +1547,7 @@ void GMenu2X::poweroff() {
 	}
 	else if (response == SECTION_NEXT) {
 		MessageBox mb(this, tr["Rebooting"]);
-		mb.setAutoHide(1000);
+		mb.setAutoHide(500);
 		mb.exec();
 		setSuspend(true);
 		SDL_Delay(500);
