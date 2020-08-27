@@ -947,6 +947,16 @@ void* mainThread(void* param) {
 	return NULL;
 }
 
+
+void printbin(int n) {
+	for(int i = 31; i >= 0; i--) {
+		printf("%d", !!(n & 1 << i));
+		if (!(i % 8)) printf(" ");
+	}
+	printf("\n");
+}
+
+
 void GMenu2X::hwCheck() {
 	if (memdev > 0) {
 		INFO("A: 0x%x 0x%x B: 0x%x 0x%x C: 0x%x 0x%x D: 0x%x 0x%x E: 0x%x 0x%x F: 0x%x 0x%x",
@@ -957,6 +967,28 @@ void GMenu2X::hwCheck() {
 			memregs[0x400 >> 2], memregs[0x410 >> 2],
 			memregs[0x500 >> 2], memregs[0x510 >> 2]
 		);
+
+		printf("A: ");
+		printbin(memregs[0x000 >> 2]);
+
+		printf("B: ");
+		printbin(memregs[0x100 >> 2]);
+
+		printf("C: ");
+		printbin(memregs[0x200 >> 2]);
+
+		printf("D: ");
+		printbin(memregs[0x300 >> 2]);
+
+		printf("E: ");
+		printbin(memregs[0x400 >> 2]);
+
+		printf("F: ");
+		printbin(memregs[0x500 >> 2]);
+
+
+
+
 
 		// DEBUG("D: 0x%x 8>0x%x 16>0x%x 24>0x%x 32>0x%x 40>0x%x 48>0x%x",
 		// 	memregs[0x300 >> 2],
@@ -1347,7 +1379,7 @@ void GMenu2X::showManual() {
 }
 
 bool GMenu2X::inputCommonActions(bool &inputAction) {
-	INFO("SDL_GetTicks(): %d\tsuspendActive: %d", SDL_GetTicks(), powerManager->suspendActive);
+	// INFO("SDL_GetTicks(): %d\tsuspendActive: %d", SDL_GetTicks(), powerManager->suspendActive);
 
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
