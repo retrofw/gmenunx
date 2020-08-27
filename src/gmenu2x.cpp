@@ -1698,7 +1698,6 @@ void GMenu2X::umountSd(bool ext) {
 	else		system("sync; umount -fl /mnt/int_sd");
 }
 
-#if defined(TARGET_RS97)
 void GMenu2X::umountSdDialog() {
 	BrowseDialog fd(this, tr["Umount"], tr["Umount external media device"], "skin:icons/eject.png");
 	fd.showDirectories = true;
@@ -1708,7 +1707,7 @@ void GMenu2X::umountSdDialog() {
 	fd.setPath("/media");
 	fd.exec();
 }
-
+#if defined(TARGET_RS97)
 void GMenu2X::checkUDC() {
 	if (getUDCStatus() == UDC_CONNECT) {
 		if (!fileExists("/sys/devices/platform/musb_hdrc.0/gadget/gadget-lun1/file")) {
