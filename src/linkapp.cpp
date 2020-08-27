@@ -41,7 +41,7 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 	file = linkfile;
 	wrapper = false;
 	dontleave = false;
-	setClock(gmenu2x->confInt["menuClock"]);
+	setCPU(gmenu2x->confInt["cpuMenu"]);
 	setVolume(-1);
 
 #if defined(TARGET_GP2X)
@@ -87,7 +87,7 @@ LinkApp::LinkApp(GMenu2X *gmenu2x_, InputManager &inputMgr_, const char* linkfil
 		} else if (name == "dontleave" && value == "true") {
 			dontleave = true;
 		} else if (name == "clock") {
-			setClock( atoi(value.c_str()) );
+			setCPU( atoi(value.c_str()) );
 
 #if defined(TARGET_GP2X)
 		//G
@@ -207,8 +207,8 @@ int LinkApp::clock() {
 	return iclock;
 }
 
-void LinkApp::setClock(int mhz) {
-	iclock = constrain(mhz, gmenu2x->confInt["minClock"], gmenu2x->confInt["maxClock"]);
+void LinkApp::setCPU(int mhz) {
+	iclock = constrain(mhz, gmenu2x->confInt["cpuMin"], gmenu2x->confInt["cpuMax"]);
 	edited = true;
 }
 
@@ -366,10 +366,8 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 		}
 	}
 
-	//if (useRamTimings)
-		//gmenu2x->applyRamTimings();
-	//if (volume()>=0)
-		//gmenu2x->setVolume(volume());
+	//if (useRamTimings) gmenu2x->applyRamTimings();
+	//if (volume()>=0) gmenu2x->setVolume(volume());
 
 	INFO("Executing '%s' (%s %s)", title.c_str(), exec.c_str(), params.c_str());
 
@@ -378,48 +376,43 @@ void LinkApp::launch(const string &selectedFile, const string &selectedDir) {
 
 	// Check to see if permissions are desirable
 	struct stat fstat;
-	if( stat( command.c_str(), &fstat ) == 0 ) {
+	if (!stat(command.c_str(), &fstat)) {
 		struct stat newstat = fstat;
-		if( S_IRUSR != ( fstat.st_mode & S_IRUSR ) )
-			newstat.st_mode |= S_IRUSR;
-		if( S_IXUSR != ( fstat.st_mode & S_IXUSR ) )
-			newstat.st_mode |= S_IXUSR;
-		if( fstat.st_mode != newstat.st_mode )
-			chmod( command.c_str(), newstat.st_mode );
+		if (S_IRUSR != (fstat.st_mode & S_IRUSR)) newstat.st_mode |= S_IRUSR;
+		if (S_IXUSR != (fstat.st_mode & S_IXUSR)) newstat.st_mode |= S_IXUSR;
+		if (fstat.st_mode != newstat.st_mode) chmod(command.c_str(), newstat.st_mode);
 	} // else, well.. we are no worse off :)
 
-	if (params!="") command += " " + params;
+	if (params != "") command += " " + params;
 	if (useGinge) {
 		string ginge_prep = gmenu2x->getExePath() + "/ginge/ginge_prep";
-		if (fileExists(ginge_prep))
-			command = cmdclean(ginge_prep) + " " + command;
+		if (fileExists(ginge_prep)) command = cmdclean(ginge_prep) + " " + command;
 	}
 	if (gmenu2x->confInt["outputLogs"]) command += " &> " + cmdclean(gmenu2x->getExePath()) + "/log.txt";
-	if (wrapper) command += "; sync & cd "+cmdclean(gmenu2x->getExePath())+"; exec ./gmenu2x";
+	if (wrapper) command += "; sync & cd " + cmdclean(gmenu2x->getExePath()) + "; exec ./gmenu2x";
 	if (dontleave) {
 		system(command.c_str());
 	} else {
-		if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"]!=gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"]!=gmenu2x->menu->selLinkIndex()))
+		if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
 			gmenu2x->writeConfig();
+		}
 
 #if defined(TARGET_GP2X)
 		if (gmenu2x->fwType == "open2x" && gmenu2x->savedVolumeMode != gmenu2x->volumeMode)
 			gmenu2x->writeConfigOpen2x();
 #endif
-		if (selectedFile == "")
-			gmenu2x->writeTmp();
+		if (selectedFile == "") gmenu2x->writeTmp();
+
 		gmenu2x->quit();
 
-		if (clock() != gmenu2x->confInt["menuClock"]) {
-			gmenu2x->setClock(clock());
-	    }
+	if (clock() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(clock());
 
 #if defined(TARGET_GP2X)
 		if (gamma() != 0 && gamma() != gmenu2x->confInt["gamma"])
 			gmenu2x->setGamma(gamma());
 #endif
 
-		execlp("/bin/sh","/bin/sh","-c",command.c_str(),NULL);
+		execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
 		//if execution continues then something went wrong and as we already called SDL_Quit we cannot continue
 		//try relaunching gmenu2x
 		chdir(gmenu2x->getExePath().c_str());

@@ -50,6 +50,7 @@
 #include "fonthelper.h"
 #include "surface.h"
 #include "filedialog.h"
+#include "powermanager.h"
 #include "gmenu2x.h"
 #include "filelister.h"
 
@@ -422,7 +423,7 @@ GMenu2X::GMenu2X() {
 
 	input.init(path + "input.conf");
 	setInputSpeed();
-	input.setWakeUpInterval(1000);
+	// input.setWakeUpInterval(1000);
 
 #if defined(TARGET_GP2X)
 	initServices();
@@ -431,8 +432,8 @@ GMenu2X::GMenu2X() {
 #endif
 
 	// setVolume(confInt["globalVolume"]);
-	setClock(confInt["menuClock"]);
-	// setClock(CPU_CLK_DEFAULT);
+	setCPU(confInt["cpuMenu"]);
+	// setCPU(CPU_CLK_DEFAULT);
 	//recover last session
 	readTmp();
 
@@ -723,15 +724,15 @@ void GMenu2X::readConfig() {
 	evalIntConf( &confInt["powerTimeout"], 10, 1, 300);
 	evalIntConf( &confInt["outputLogs"], 0, 0, 1 );
 // #if defined(TARGET_GP2X)
-// 	evalIntConf( &confInt["maxClock"], 300, 200, 300 );
-// 	evalIntConf( &confInt["menuClock"], 140, 50, 300 );
+// 	evalIntConf( &confInt["cpuMax"], 300, 200, 300 );
+// 	evalIntConf( &confInt["cpuMenu"], 140, 50, 300 );
 // #elif defined(TARGET_WIZ) || defined(TARGET_CAANOO)
-// 	evalIntConf( &confInt["maxClock"], 900, 200, 900 );
-// 	evalIntConf( &confInt["menuClock"], CPU_CLK_DEFAULT, 250, 300 );
+// 	evalIntConf( &confInt["cpuMax"], 900, 200, 900 );
+// 	evalIntConf( &confInt["cpuMenu"], CPU_CLK_DEFAULT, 250, 300 );
 // #elif defined(TARGET_RS97)
-	evalIntConf( &confInt["maxClock"], 642, 200, 1200 );
-	evalIntConf( &confInt["minClock"], 252, 200, 1200 );
-	evalIntConf( &confInt["menuClock"], 528, 200, 1200 );
+	evalIntConf( &confInt["cpuMax"], 642, 200, 1200 );
+	evalIntConf( &confInt["cpuMin"], 252, 200, 1200 );
+	evalIntConf( &confInt["cpuMenu"], 528, 200, 1200 );
 // #endif
 	evalIntConf( &confInt["globalVolume"], 60, 1, 100 );
 	evalIntConf( &confInt["gamma"], 10, 1, 100 );
@@ -770,7 +771,7 @@ void GMenu2X::writeConfig() {
 		}
 
 		for (ConfIntHash::iterator curr = confInt.begin(); curr != confInt.end(); curr++) {
-			if (curr->first == "batteryLog" || curr->first == "sectionBar" ) continue;
+			if (curr->first == "batteryLog" || curr->first == "sectionBar" || curr->first == "maxClock" || curr->first == "minClock" || curr->first == "menuClock") continue;
 			inf << curr->first << "=" << curr->second << endl;
 		}
 		inf.close();
@@ -973,12 +974,12 @@ void* mainThread(void* param) {
 
 void GMenu2X::setSuspend(bool suspend) {
 	if (suspend) {
-		setClock(confInt["minClock"]);
-		input.setWakeUpInterval(60e3);
+		setCPU(confInt["cpuMin"]);
+		// input.setWakeUpInterval(60e3);
 		setBacklight(0);
 		INFO("Enter suspend mode. Current backlight: %d", getBacklight());
 	} else {
-		setClock(confInt["menuClock"]);
+		setCPU(confInt["cpuMenu"]);
 		setBacklight(max(10, confInt["backlight"]));
 		INFO("Exit from suspend mode. Restore backlight to: %d", confInt["backlight"]);
 	}
@@ -1016,11 +1017,9 @@ void GMenu2X::main() {
 	}
 #endif
 
+	powerManager = new PowerManager(this, 5, 5);
+
 	while (!quit) {
-		bool inputAction = input.update();
-
-		if (powerManager(inputAction)) continue;
-
 		tickNow = SDL_GetTicks();
 
 		sc[currBackdrop]->blit(s,0,0);
@@ -1160,7 +1159,7 @@ void GMenu2X::main() {
 			INFO("New backdrop: %s", currBackdrop.c_str());
 			sc.del(prevBackdrop);
 			prevBackdrop = currBackdrop;
-			input.setWakeUpInterval(1);
+			// input.setWakeUpInterval(1);
 			continue;
 		}
 
@@ -1234,7 +1233,8 @@ void GMenu2X::main() {
 
 		s->flip();
 
-		if (inputCommonActions()) continue;
+		bool inputAction = input.update();
+		if (inputCommonActions(inputAction)) continue;
 
 		if ( input[CONFIRM] && menu->selLink() != NULL ) {
 			setVolume(confInt["globalVolume"]);
@@ -1250,10 +1250,10 @@ void GMenu2X::main() {
 		else if ( input[SETTINGS] ) settings();
 		else if ( input[MENU]     ) contextMenu();
 		// LINK NAVIGATION
-		else if ( input[LEFT ]  ) menu->pageUp();
-		else if ( input[RIGHT]  ) menu->pageDown();
-		else if ( input[UP   ]  ) menu->linkUp();
-		else if ( input[DOWN ]  ) menu->linkDown();
+		else if ( input[LEFT ] ) menu->pageUp();
+		else if ( input[RIGHT] ) menu->pageDown();
+		else if ( input[UP   ] ) menu->linkUp();
+		else if ( input[DOWN ] ) menu->linkDown();
 		// SECTION
 		else if ( input[SECTION_PREV] ) menu->decSectionIndex();
 		else if ( input[SECTION_NEXT] ) menu->incSectionIndex();
@@ -1273,24 +1273,7 @@ void GMenu2X::main() {
 		}
 #endif
 		// SELLINKAPP SELECTED
-		else if (menu->selLinkApp()!=NULL) {
-			if ( input[MANUAL] ) menu->selLinkApp()->showManual();
-		// 	else if ( input.isActive(MODIFIER) ) {
-		// 		// VOLUME
-		// 		if ( input[VOLDOWN] && !input.isActive(VOLUP) )
-		// 			menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()-1,0,100) );
-		// 		if ( input[VOLUP] && !input.isActive(VOLDOWN) )
-		// 			menu->selLinkApp()->setVolume( constrain(menu->selLinkApp()->volume()+1,0,100) );
-		// 		if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setVolume(-1);
-		// 	} else {
-		// 		// CLOCK
-		// 		if ( input[VOLDOWN] && !input.isActive(VOLUP) )
-		// 			menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()-10,50,confInt["maxClock"]) );
-		// 		if ( input[VOLUP] && !input.isActive(VOLDOWN) )
-		// 			menu->selLinkApp()->setClock( constrain(menu->selLinkApp()->clock()+10,50,confInt["maxClock"]) );
-		// 		if ( input.isActive(VOLUP) && input.isActive(VOLDOWN) ) menu->selLinkApp()->setClock(CPU_CLK_DEFAULT);
-		// 	}
-		}
+		else if (input[MANUAL] && menu->selLinkApp() != NULL) menu->selLinkApp()->showManual();
 
 
 		// On Screen Help
@@ -1314,9 +1297,6 @@ void GMenu2X::main() {
 		// 		if (input[MODIFIER] || input[CONFIRM] || input[CANCEL]) close = true;
 		// 	}
 		// }
-
-		// tickSuspend = tickPowerOff = SDL_GetTicks();
-		// tickSuspend = SDL_GetTicks();
 	}
 
 	exitMainThread = true;
@@ -1325,9 +1305,43 @@ void GMenu2X::main() {
 	// btnContextMenu = NULL;
 }
 
-bool GMenu2X::inputCommonActions() {
+bool GMenu2X::inputCommonActions(bool &inputAction) {
 	bool wasActive = false;
 	bool isCombo = false;
+	Uint32 tickStart = SDL_GetTicks(), tickPower = 0;
+
+	INFO("START: %d\tSUSPEND: %d\tPOWER: %d\tsuspendActive: %d", tickStart, tickStart - tickSuspend, tickPower, suspendActive);
+	// input.setWakeUpInterval(1000); return false;
+
+
+	if (powerManager->suspendActive) {
+		// SUSPEND ACTIVE
+		while (!input[POWER]) {
+			ERROR("SUSPEND ACTIVE");
+			input.update();
+		}
+		powerManager->doSuspend(0, NULL);
+		return true;
+	}
+
+	if (inputAction) powerManager->resetSuspendTimeout();
+
+	while (input[POWER]) {
+		// HOLD POWER BUTTON
+		input.update();
+		SDL_Delay(100);
+		tickPower = SDL_GetTicks() - tickStart;
+		if (tickPower >= 1500) {
+			powerManager->doPowerOff(0, NULL);
+			// poweroffDialog();
+			return true;
+		}
+	}
+	if (tickPower) {
+		powerManager->doSuspend(1, NULL);
+		return true;
+	}
+
 	while (input[MENU]) {
 		if (input[SECTION_NEXT]) {
 			// SCREENSHOT
@@ -1343,8 +1357,10 @@ bool GMenu2X::inputCommonActions() {
 		}
 
 		SDL_Delay(50);
-		input.setWakeUpInterval(50);
+		// input.setWakeUpInterval(50);
+		WARNING("MENU HOLD");
 		input.update();
+
 		wasActive = !isCombo;
 	}
 
@@ -1358,58 +1374,10 @@ bool GMenu2X::inputCommonActions() {
 	return false;
 }
 
-bool GMenu2X::powerManager(bool &inputAction) {
-	Uint32 tickStart = SDL_GetTicks(), tickPower = 0;
-
-	// INFO("START: %d\tSUSPEND: %d\tPOWER: %d\tsuspendActive: %d", tickStart, tickStart - tickSuspend, tickPower, suspendActive);
-	// input.setWakeUpInterval(1000); return false;
-
-	if (suspendActive) {
-		// SUSPEND ACTIVE
-		if (input[POWER]) {
-			tickSuspend = tickStart;
-			setSuspend(false);
-		}
-		else if (tickStart - tickSuspend + 10 >= confInt["powerTimeout"] * 60e3) {
-			// DEBUG("SYSTEM POWEROFF");
-#if !defined(TARGET_PC)
-			system("poweroff");
-#endif
-		}
-		return true;
-	}
-
-	if (inputAction) tickSuspend = tickStart;
-
-	// SUSPEND NOT ACTIVE
-	input.setWakeUpInterval(1000);
-
-	while (input[POWER]) {
-		// HOLD POWER BUTTON
-		input.update();
-		SDL_Delay(100);
-		tickPower = SDL_GetTicks() - tickStart;
-		if (tickPower >= 1500) {
-			poweroffDialog();
-			return true;
-		}
-	}
-
-	if (tickPower || tickStart - tickSuspend >= confInt["backlightTimeout"] * 1000) {
-		MessageBox mb(this, tr["Suspend"]);
-		mb.setAutoHide(500);
-		mb.exec();
-		setSuspend(true);
-		return true;
-	}
-
-	return false;
-}
-
 void GMenu2X::explorer() {
-	FileDialog fd(this,tr["Select an application"],".gpu,.gpe,.sh,", "", tr["Explorer"]);
+	FileDialog fd(this, tr["Select an application"], ".gpu,.gpe,.sh,", "", tr["Explorer"]);
 	if (fd.exec()) {
-		if (confInt["saveSelection"] && (confInt["section"]!=menu->selSectionIndex() || confInt["link"]!=menu->selLinkIndex()))
+		if (confInt["saveSelection"] && (confInt["section"] != menu->selSectionIndex() || confInt["link"] != menu->selLinkIndex()))
 			writeConfig();
 
 #if defined(TARGET_GP2X)
@@ -1418,10 +1386,10 @@ void GMenu2X::explorer() {
 #endif
 
 	//string command = cmdclean(fd.path()+"/"+fd.file) + "; sync & cd "+cmdclean(getExePath())+"; exec ./gmenu2x";
-		string command = cmdclean(fd.getPath()+"/"+fd.getFile());
+		string command = cmdclean(fd.getPath() + "/" + fd.getFile());
 		chdir(fd.getPath().c_str());
 		quit();
-		setClock(confInt["menuClock"]);
+		setCPU(confInt["cpuMenu"]);
 		execlp("/bin/sh","/bin/sh","-c",command.c_str(),NULL);
 
 	//if execution continues then something went wrong and as we already called SDL_Quit we cannot continue
@@ -1433,7 +1401,7 @@ void GMenu2X::explorer() {
 }
 
 void GMenu2X::settings() {
-	int curMenuClock = confInt["menuClock"];
+	int curMenuClock = confInt["cpuMenu"];
 	int curGlobalVolume = confInt["globalVolume"];
 //G
 	// int prevgamma = confInt["gamma"];
@@ -1480,17 +1448,17 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the output of the links. Use the Log Viewer to read them."], &confInt["outputLogs"]));
 
 #if defined(TARGET_GP2X)
-	sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["menuClock"], 140, 50, 325));
-	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["maxClock"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX));
+	sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["cpuMenu"], 140, 50, 325));
+	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["cpuMax"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX));
 //G
 //sd.addSetting(new MenuSettingInt(this, tr["Gamma"], tr["Set gp2x gamma value (default: 10)"], &confInt["gamma"], 1, 100));
 #elif defined(TARGET_WIZ) || defined(TARGET_CAANOO)
-	sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["menuClock"], 200, 50, 900, 10));
-	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["maxClock"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX, 10));
+	sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["cpuMenu"], 200, 50, 900, 10));
+	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["cpuMax"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX, 10));
 #elif defined(TARGET_RS97)
-	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["maxClock"], 528, 528, 642, 6));
+	// sd.addSetting(new MenuSettingInt(this, tr["Maximum overclock"], tr["Set the maximum overclock for launching links"], &confInt["cpuMax"], 528, 528, 642, 6));
 	sd.addSetting(new MenuSettingMultiString(this, tr["TV-out"], tr["TV-out signal"], &confStr["TVOut"], &encodings));
-	// sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["menuClock"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX, 6));
+	// sd.addSetting(new MenuSettingInt(this, tr["Clock for GMenu2X"], tr["Set the cpu working frequency when running GMenu2X"], &confInt["cpuMenu"], CPU_CLK_DEFAULT, CPU_CLK_MIN, CPU_CLK_MAX, 6));
 #endif
 	sd.addSetting(new MenuSettingInt(this,tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Global volume"], tr["Set the default volume for the soundcard"], &confInt["globalVolume"], 60, 0, 100));
@@ -1502,7 +1470,7 @@ void GMenu2X::settings() {
 		if (prevgamma != confInt["gamma"]) setGamma(confInt["gamma"]);
 #endif
 
-		if (curMenuClock != confInt["menuClock"]) setClock(confInt["menuClock"]);
+		if (curMenuClock != confInt["cpuMenu"]) setCPU(confInt["cpuMenu"]);
 		if (curGlobalVolume != confInt["globalVolume"]) setVolume(confInt["globalVolume"]);
 		if (lang == "English") lang = "";
 		if (lang != tr.lang()) tr.setLang(lang);
@@ -1697,7 +1665,8 @@ void GMenu2X::checkUDC() {
 				system("mount /dev/mmcblk1p1 /mnt/ext_sd -t vfat -o rw,utf8 -t vfat -o rw,utf8");
 				INFO("%s, disconnect USB disk for external SD", __func__);
 			}
-			tickSuspend = SDL_GetTicks(); // prevent immediate suspend
+			powerManager->resetSuspendTimeout();
+			// tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 		}
 	}
 }
@@ -1780,7 +1749,7 @@ void GMenu2X::contextMenu() {
 	SDL_Rect box;
 	box.h = h*voices.size()+8;
 	box.w = 0;
-	for (i=0; i < voices.size(); i++) {
+	for (i = 0; i < voices.size(); i++) {
 		int w = font->getTextWidth(voices[i].text);
 		if (w > box.w) box.w = w;
 	}
@@ -1799,7 +1768,7 @@ void GMenu2X::contextMenu() {
 		bg.blit(s, 0, 0);
 
 		if (fadeAlpha < 200) fadeAlpha = intTransition(0, 200, tickStart, 500, SDL_GetTicks());
-		else input.setWakeUpInterval(1000);
+		else input.setWakeUpInterval(0);
 
 		s->box(0, 0, resX, resY, 0,0,0,fadeAlpha);
 		s->box(box.x, box.y, box.w, box.h, skinConfColors[COLOR_MESSAGE_BOX_BG]);
@@ -1841,9 +1810,9 @@ void GMenu2X::contextMenu() {
 			}
 		}
 #endif
-		input.update();
+		bool inputAction = input.update();
 
-		if (inputCommonActions()) continue;
+		if (inputCommonActions(inputAction)) continue;
 
 		if ( input[MENU] || input[CANCEL]) close = true;
 		else if ( input[UP] ) sel = (sel-1 < 0) ? (int)voices.size()-1 : sel - 1 ;
@@ -1852,8 +1821,9 @@ void GMenu2X::contextMenu() {
 		else if ( input[RIGHT] || input[PAGEDOWN] ) sel = (int)voices.size() - 1;
 		else if ( input[SETTINGS] || input[CONFIRM] ) { voices[sel].action(); close = true; }
 	}
-
-	tickSuspend = SDL_GetTicks(); // prevent immediate suspend
+	input.setWakeUpInterval(0);
+	// tickSuspend = SDL_GetTicks(); // prevent immediate suspend
+	// powerManager->resetSuspendTimeout();
 }
 
 bool GMenu2X::saveScreenshot() {
@@ -1922,8 +1892,8 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(       this, tr["Icon"],                 tr["Select an icon for the link"], &linkIcon, ".png,.bmp,.jpg,.jpeg", dir_name(linkIcon) ));
 	sd.addSetting(new MenuSettingFile(        this, tr["Manual"],               tr["Select a manual or README file"], &linkManual, ".man.png,.txt", dir_name(linkManual)));
 
-	// sd.addSetting(new MenuSettingInt(         this, tr.translate("Clock (default: $1)","528", NULL), tr["Cpu clock frequency to set when launching this link"], &linkClock, 50, confInt["maxClock"] ));
-	sd.addSetting(new MenuSettingInt(         this, tr["CPU Clock"], tr["CPU clock frequency when launching this link"], &linkClock, confInt["menuClock"], confInt["minClock"], confInt["maxClock"], 6));
+	// sd.addSetting(new MenuSettingInt(         this, tr.translate("Clock (default: $1)","528", NULL), tr["Cpu clock frequency to set when launching this link"], &linkClock, 50, confInt["cpuMax"] ));
+	sd.addSetting(new MenuSettingInt(         this, tr["CPU Clock"], tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"], 6));
 	//sd.addSetting(new MenuSettingBool(        this, tr["Tweak RAM Timings"],    tr["This usually speeds up the application at the cost of stability"], &linkUseRamTimings ));
 	//sd.addSetting(new MenuSettingInt(         this, tr["Volume"],               tr["Volume to set for this link"], &linkVolume, 0, 1 ));
 	sd.addSetting(new MenuSettingString(      this, tr["Parameters"],           tr["Parameters to pass to the application"], &linkParams, diagTitle, diagIcon ));
@@ -1965,7 +1935,7 @@ void GMenu2X::editLink() {
 		menu->selLinkApp()->setSelectorScreens(linkSelScreens);
 		menu->selLinkApp()->setAliasFile(linkSelAliases);
 		menu->selLinkApp()->setBackdrop(linkBackdrop);
-		menu->selLinkApp()->setClock(linkClock);
+		menu->selLinkApp()->setCPU(linkClock);
 		menu->selLinkApp()->setVolume(linkVolume);
 		//G
 #if defined(TARGET_GP2X)
@@ -2182,7 +2152,7 @@ void GMenu2X::setInputSpeed() {
 	input.setInterval(500, POWER);
 }
 
-void GMenu2X::setClock(unsigned mhz) {
+void GMenu2X::setCPU(unsigned mhz) {
 	// mhz = constrain(mhz, CPU_CLK_MIN, CPU_CLK_MAX);
 	if (memdev > 0) {
 		DEBUG("Setting clock to %d", mhz);
@@ -2282,7 +2252,8 @@ int GMenu2X::setVolume(int val, bool popup) {
 		}
 		confInt["globalVolume"] = val;
 		writeConfig();
-		tickSuspend = SDL_GetTicks(); // prevent immediate suspend
+		powerManager->resetSuspendTimeout();
+		// tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 	}
 
 	unsigned long soundDev = open("/dev/mixer", O_RDWR);
@@ -2334,8 +2305,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			sc.skinRes("imgs/brightness.png")
 		};
 
-		// input.setWakeUpInterval(100);
-
+		input.setWakeUpInterval(100);
 		Uint32 tickStart = SDL_GetTicks();
 		while (!close) {
 			int backlightIcon = val/20;
@@ -2354,7 +2324,8 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		}
 		confInt["backlight"] = val;
 		writeConfig();
-		tickSuspend = SDL_GetTicks(); // prevent immediate suspend
+		powerManager->resetSuspendTimeout();
+		// tickSuspend = SDL_GetTicks(); // prevent immediate suspend
 	}
 
 #if defined(TARGET_RS97)

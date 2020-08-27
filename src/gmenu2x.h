@@ -21,6 +21,13 @@
 #ifndef GMENU2X_H
 #define GMENU2X_H
 
+class PowerManager;
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <tr1/unordered_map>
+
 #include "surfacecollection.h"
 #include "iconbutton.h"
 #include "translator.h"
@@ -31,10 +38,6 @@
 #include "surface.h"
 #include "fonthelper.h"
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <tr1/unordered_map>
 
 const int MAX_VOLUME_SCALE_FACTOR = 200;
 // Default values - going to add settings adjustment, saving, loading and such
@@ -231,8 +234,9 @@ public:
 	uint onChangeSkin();
 	void initLayout();
 
-	bool inputCommonActions();
-	bool powerManager(bool &inputAction);
+	bool inputCommonActions(bool &inputAction);
+
+	PowerManager *powerManager;
 
 #if defined(TARGET_GP2X)
 	void writeConfigOpen2x();
@@ -263,7 +267,7 @@ public:
 	void contextMenu();
 	void changeWallpaper();
 
-	void setClock(unsigned mhz);
+	void setCPU(unsigned mhz);
 	const string getDateTime();
 	void setDateTime();
 

@@ -28,7 +28,6 @@ void BatteryLoggerDialog::exec() {
 	gmenu2x->bg->blit(gmenu2x->s,0,0);
 
 	gmenu2x->setBacklight(100);
-	gmenu2x->setClock(gmenu2x->confInt["maxClock"]);
 
 // // skinConfColor
 // 	int i = 0, j = 0;
@@ -63,6 +62,8 @@ void BatteryLoggerDialog::exec() {
 	ifstream inf(logfile.c_str(), ios_base::in);
 	if (!inf.is_open()) return;
 	vector<string> log;
+
+	gmenu2x->powerManager->clearTimer();
 
 	string line;
 	while (getline(inf, line, '\n'))
@@ -103,23 +104,17 @@ void BatteryLoggerDialog::exec() {
 
 		gmenu2x->s->flip();
 
-		gmenu2x->input.update(false);
-
-		if (gmenu2x->inputCommonActions()) continue;
-
+		bool inputAction = gmenu2x->input.update(false);
+		// if (gmenu2x->inputCommonActions(inputAction)) continue;
 		if ( gmenu2x->input[UP  ] && firstRow > 0 ) firstRow--;
 		else if ( gmenu2x->input[DOWN] && firstRow + rowsPerPage < log.size() ) firstRow++;
 		else if ( gmenu2x->input[PAGEUP] || gmenu2x->input[LEFT]) {
-			if (firstRow >= rowsPerPage - 1)
-				firstRow -= rowsPerPage - 1;
-			else
-				firstRow = 0;
+			firstRow -= rowsPerPage - 1;
+			if (firstRow < 0) firstRow = 0;
 		}
 		else if ( gmenu2x->input[PAGEDOWN] || gmenu2x->input[RIGHT]) {
-			if (firstRow + rowsPerPage * 2 - 1 < log.size())
-				firstRow += rowsPerPage - 1;
-			else
-				firstRow = max(0, log.size() - rowsPerPage);
+			firstRow += rowsPerPage - 1;
+			if (firstRow + rowsPerPage >= log.size()) firstRow = max(0, log.size() - rowsPerPage);
 		}
 		else if ( gmenu2x->input[SETTINGS] || gmenu2x->input[CANCEL] ) close = true;
 		else if (gmenu2x->input[MENU]) {
@@ -132,6 +127,5 @@ void BatteryLoggerDialog::exec() {
 			}
 		}
 	}
-	gmenu2x->setClock(gmenu2x->confInt["menuClock"]);
 	gmenu2x->setBacklight(gmenu2x->confInt["backlight"]);
 }

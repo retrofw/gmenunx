@@ -82,7 +82,7 @@ public:
 
 	int clock();
 	// const string &clockStr(int maxClock);
-	void setClock(int mhz);
+	void setCPU(int mhz);
 
 	int volume();
 	// const string &volumeStr();
