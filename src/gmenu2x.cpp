@@ -1076,7 +1076,7 @@ void GMenu2X::main() {
 	bool quit = false;
 	int x,y, helpBoxHeight = fwType=="open2x" ? 154 : 139;//, offset = menu->sectionLinks()->size()>linksPerPage ? 2 : 6;
 	uint i;
-	long tickSuspend = 0, tickPowerOff = 0, tickBattery = -4000, tickNow, tickMMC = 0, tickUSB = 0;
+	long tickSuspend = 0, tickPowerOff = 0, tickBattery = -4800, tickNow, tickMMC = 0, tickUSB = 0;
 	string batteryIcon = "imgs/battery/3.png"; //, backlightIcon = "imgs/backlight.png";
 	// char backlightMsg[16]={0};
 	stringstream ss;
@@ -1168,11 +1168,29 @@ void GMenu2X::main() {
 
 		// s->box(22, skinConfInt["sectionBarHeight"]+22,16,16, 255,0,0);
 
+
+		// TRAY 0,0
 		switch(volumeMode) {
 			case VOLUME_MODE_PHONES: sc.skinRes("imgs/phones.png")->blit(s,2,skinConfInt["sectionBarHeight"]+2); break;
 			case VOLUME_MODE_MUTE:   sc.skinRes("imgs/mute.png")->blit(s,2,skinConfInt["sectionBarHeight"]+2); break;
 			default: sc.skinRes("imgs/volume.png")->blit(s,2,skinConfInt["sectionBarHeight"]+2); break;
 		}
+
+
+		// TRAY 1,0
+		if (tickNow - tickBattery >= 5000) {
+			tickBattery = tickNow;
+			battlevel = getBatteryLevel();
+			if (battlevel > 5) {
+				batteryIcon = "imgs/battery/ac.png";
+			} else {
+				ss.clear();
+				ss << battlevel;
+				ss >> batteryIcon;
+				batteryIcon = "imgs/battery/"+batteryIcon+".png";
+			}
+		}
+		sc.skinRes(batteryIcon)->blit(s, 22, skinConfInt["sectionBarHeight"] + 2);
 
 
 		if(tickNow - tickMMC >= 1000) {
@@ -1194,15 +1212,50 @@ void GMenu2X::main() {
 			}
 		}
 
+		// TRAY iconTrayShift,1
+		int iconTrayShift = 0;
 		if (preMMCStatus == MMC_INSERT) {
-			sc.skinRes("imgs/sd1.png")->blit(s, 2, skinConfInt["sectionBarHeight"]+22);
+			sc.skinRes("imgs/sd1.png")->blit(s, iconTrayShift * 20 + 2, skinConfInt["sectionBarHeight"]+22);
+			iconTrayShift++;
 		}
 
+		if (menu->selLink()!=NULL) {
+			if (menu->selLinkApp()!=NULL) {
+				if (!menu->selLinkApp()->getManual().empty() && iconTrayShift < 2) {
+					// Manual indicator
+					sc.skinRes("imgs/manual.png")->blit(s, iconTrayShift * 20 + 2, skinConfInt["sectionBarHeight"]+22);
+					iconTrayShift++;
 
+				}
 
+				if (iconTrayShift < 2) {
+					// CPU indicator
+					sc.skinRes("imgs/cpu.png")->blit(s, iconTrayShift * 20 + 2, skinConfInt["sectionBarHeight"]+22);
+					iconTrayShift++;
+				}
+			}
+		}
 
+		if (iconTrayShift < 2) {
+			// menu indicator
+			sc.skinRes("imgs/menu.png")->blit(s, iconTrayShift * 20 + 2, skinConfInt["sectionBarHeight"]+22);
+			iconTrayShift++;
+		}
 
+		if (iconTrayShift < 2) {
+			int backlightLevel = confInt["backlight"]/20;
+			string backlightIcon;
+			ss.clear();
+			ss << backlightLevel;
+			ss >> backlightIcon;
+			backlightIcon = "imgs/brightness/"+backlightIcon+".png";
 
+			if (backlightLevel > 4 || sc.skinRes(backlightIcon)==NULL) 
+				backlightIcon = "imgs/brightness.png";
+
+			sc.skinRes(backlightIcon)->blit(s, iconTrayShift * 20 + 2, skinConfInt["sectionBarHeight"]+22);
+			iconTrayShift++;
+		}
 
 		if (tickNow - tickUSB >= 1000) {
 			tickUSB = tickNow;
@@ -1239,21 +1292,6 @@ void GMenu2X::main() {
 				preUDCStatus = curUDCStatus;
 			}
 		}
-
-		if (tickNow - tickBattery >= 5000) {
-			tickBattery = tickNow;
-			battlevel = getBatteryLevel();
-			if (battlevel > 5) {
-				batteryIcon = "imgs/battery/ac.png";
-			} else {
-				ss.clear();
-				ss << battlevel;
-				ss >> batteryIcon;
-				batteryIcon = "imgs/battery/"+batteryIcon+".png";
-			}
-		}
-		sc.skinRes(batteryIcon)->blit(s, 22, skinConfInt["sectionBarHeight"] + 2);
-
 		s->flip();
 
 // #if defined(TARGET_RETROGAME)
