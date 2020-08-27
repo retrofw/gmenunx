@@ -192,7 +192,7 @@ int memdev = 0;
 #endif
 
 bool getTVOutStatus() {
-	if (memdev > 0) return memregs[0x300 >> 2] >> 25 ^ 0b1;
+	if (memdev > 0) return !(memregs[0x300 >> 2] >> 25 & 0b1);//	memregs[0x300 >> 2] >> 25 ^ 0b1;
 	return false;
 }
 
