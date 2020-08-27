@@ -1047,7 +1047,7 @@ bool GMenu2X::setSuspend(bool suspend) {
 		printf("enter suspend mode\n");
 		printf("current backlight: %d\n", getBacklight());
 	} else{
-		setBacklight(min(10, confInt["backlight"]));
+		setBacklight(max(10, confInt["backlight"]));
 		printf("exit from suspend mode\n");
 		printf("restore backlight: %d\n", confInt["backlight"]);
 		setClock(528);
