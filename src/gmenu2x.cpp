@@ -995,7 +995,7 @@ void* mainThread(void* param) {
 	return NULL;
 }
 
-Uint32 GMenu2X::hwCheck(unsigned int interval = 0, void *param = NULL) {
+void GMenu2X::hwCheck() {
 	if (memdev > 0) {
 		INFO("A: 0x%x 0x%x B: 0x%x 0x%x C: 0x%x 0x%x D: 0x%x 0x%x E: 0x%x 0x%x F: 0x%x 0x%x",
 			memregs[0x000 >> 2], memregs[0x010 >> 2],
@@ -1027,7 +1027,6 @@ Uint32 GMenu2X::hwCheck(unsigned int interval = 0, void *param = NULL) {
 			tvOutToggle = 1;
 		}
 	}
-	return interval;
 }
 
 void GMenu2X::main() {
