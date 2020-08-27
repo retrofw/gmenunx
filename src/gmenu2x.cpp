@@ -743,7 +743,7 @@ void GMenu2X::writeConfig() {
 		}
 
 		for (ConfIntHash::iterator curr = confInt.begin(); curr != confInt.end(); curr++) {
-			if (curr->first == "batteryLog" || curr->first == "sectionBar" || curr->first == "maxClock" || curr->first == "minClock" || curr->first == "menuClock") continue;
+			if (curr->first == "batteryLog" || curr->first == "maxClock" || curr->first == "minClock" || curr->first == "menuClock") continue;
 			inf << curr->first << "=" << curr->second << endl;
 		}
 		inf.close();
