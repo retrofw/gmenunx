@@ -281,11 +281,11 @@ public:
 	const string getDateTime();
 	void setDateTime();
 
-	int drawSlider(int val, int min, int max, Surface &icon, Surface &bg);
 
 	// void setVolume(int vol);
 	int setVolume(int val, bool popup = false);
 	int getVolume();
+	void drawSlider(int val, int min, int max, Surface &icon, Surface &bg);
 
 	void setInputSpeed();
 	int setBacklight(int val, bool popup = false);
