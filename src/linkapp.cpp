@@ -70,11 +70,17 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 		else if (name == "selectorelement") setSelectorElement(atoi(value.c_str()));
 		else if ((name == "consoleapp") || (name == "terminal")) setTerminal(value == "true");
 		else if (name == "backdrop") setBackdrop(value);
+		else if (name == "autorun") autorun = (value == "true");
 		// else WARNING("Unrecognized option: '%s'", name.c_str());
 	}
 	f.close();
 
 	is_opk = (file_ext(exec, true) == ".opk");
+
+	if (autorun) {
+		run();
+		return;
+	}
 
 	if (iconPath.empty()) iconPath = searchIcon();
 	if (manualPath.empty()) manualPath = searchManual();

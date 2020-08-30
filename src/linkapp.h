@@ -40,6 +40,7 @@ private:
 
 	bool	selectorbrowser = true,
 			terminal = false,
+			autorun = false;
 
 	string	params = "",
 			homedir = "",
