@@ -33,7 +33,7 @@ void TerminalDialog::exec(string cmd) {
 	if (gmenu2x->sc[this->icon] == NULL)
 		this->icon = "skin:icons/terminal.png";
 
-	buttons.push_back({"skin:imgs/manual.png", gmenu2x->tr["Running.. Please wait.."]});
+	buttons.push_back({"skin:imgs/manual.png", _("Running.. Please wait..")});
 
 	drawDialog(gmenu2x->s);
 
@@ -63,7 +63,7 @@ void TerminalDialog::exec(string cmd) {
 	system("sync &");
 
 	text.push_back("----");
-	text.push_back(gmenu2x->tr["Done"]);
+	text.push_back(_("Done"));
 
 	if (text.size() >= rowsPerPage) firstRow = text.size() - rowsPerPage;
 

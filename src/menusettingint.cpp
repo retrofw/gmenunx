@@ -36,11 +36,11 @@ MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max
 	// ButtonAction actionInc = MakeDelegate(this, &MenuSettingInt::inc);
 	// ButtonAction actionDec = MakeDelegate(this, &MenuSettingInt::dec);
 
-	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
+	btn = new IconButton(gmenu2x, "select", _("Reset"));
 	// btn->setAction(MakeDelegate(this, &MenuSettingInt::setDefault));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
+	btn = new IconButton(gmenu2x, "dpad", _("Change"));
 	// btn->setAction(actionInc);
 	buttonBox.add(btn);
 }

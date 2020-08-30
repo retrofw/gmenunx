@@ -41,7 +41,7 @@ MenuSetting(gmenu2x, title, description) {
 	this->setHour(ihour);
 	this->setMinute(iminute);
 
-	btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Edit"]);
+	btn = new IconButton(gmenu2x, "a", _("Edit"));
 	buttonBox.add(btn);
 }
 
@@ -92,7 +92,7 @@ uint32_t MenuSettingDateTime::manageInput() {
 			editing = false;
 			buttonBox.remove(2);
 
-			btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Edit"]);
+			btn = new IconButton(gmenu2x, "a", _("Edit"));
 			buttonBox.add(btn);
 		}
 		return -1;
@@ -101,10 +101,10 @@ uint32_t MenuSettingDateTime::manageInput() {
 
 		buttonBox.remove(1);
 
-		btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Edit"]);
+		btn = new IconButton(gmenu2x, "dpad", _("Edit"));
 		buttonBox.add(btn);
 
-		btn = new IconButton(gmenu2x, "a", gmenu2x->tr["OK"]);
+		btn = new IconButton(gmenu2x, "a", _("OK"));
 		buttonBox.add(btn);
 	}
 

@@ -40,7 +40,7 @@ MenuSetting(gmenu2x, title, description), _value(value) {
 void MenuSettingBool::initButton() {
 	ButtonAction actionToggle = MakeDelegate(this, &MenuSettingBool::toggle);
 
-	btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
+	btn = new IconButton(gmenu2x, "dpad", _("Change"));
 	btn->setAction(actionToggle);
 	buttonBox.add(btn);
 }

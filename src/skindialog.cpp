@@ -33,9 +33,9 @@ bool SkinDialog::exec() {
 		}
 	}
 
-	buttons.push_back({"select", gmenu2x->tr["Menu"]});
-	buttons.push_back({"b", gmenu2x->tr["Cancel"]});
-	buttons.push_back({"a", gmenu2x->tr["Select"]});
+	buttons.push_back({"select", _("Menu")});
+	buttons.push_back({"b", _("Cancel")});
+	buttons.push_back({"a", _("Select")});
 
 	while (true) {
 		if (selected < 0) selected = skins.size() - 1;
@@ -48,7 +48,7 @@ bool SkinDialog::exec() {
 		drawDialog(gmenu2x->s);
 
 		if (skins.size() < 1) {
-			MessageBox mb(gmenu2x, gmenu2x->tr["No skins available"]);
+			MessageBox mb(gmenu2x, _("No skins available"));
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
 			mb.exec();

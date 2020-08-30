@@ -40,16 +40,16 @@ bool BrowseDialog::exec(string _path) {
 		bool inputAction = false;
 
 		buttons.clear();
-		buttons.push_back({"select", gmenu2x->tr["Menu"]});
-		buttons.push_back({"b", gmenu2x->tr["Cancel"]});
+		buttons.push_back({"select", _("Menu")});
+		buttons.push_back({"b", _("Cancel")});
 
 		if (!showFiles && allowSelectDirectory)
-			buttons.push_back({"start", gmenu2x->tr["Select"]});
+			buttons.push_back({"start", _("Select")});
 		else if ((allowEnterDirectory && isDirectory(selected)) || !isDirectory(selected))
-			buttons.push_back({"a", gmenu2x->tr["Select"]});
+			buttons.push_back({"a", _("Select")});
 
 		if (showDirectories && allowDirUp && path != "/")
-			buttons.push_back({"x", gmenu2x->tr["Dir up"]});
+			buttons.push_back({"x", _("Dir up")});
 
 		if (gmenu2x->confStr["previewMode"] == "Backdrop") {
 			if (!(preview.empty() || preview == "#"))
@@ -63,7 +63,7 @@ bool BrowseDialog::exec(string _path) {
 		drawDialog(gmenu2x->s);
 
 		if (!size()) {
-			MessageBox mb(gmenu2x, gmenu2x->tr["This directory is empty"]);
+			MessageBox mb(gmenu2x, _("This directory is empty"));
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
 			mb.exec();
@@ -203,7 +203,7 @@ void BrowseDialog::directoryEnter(string path) {
 
 	this->description = path;
 	buttons.clear();
-	buttons.push_back({"skin:imgs/manual.png", gmenu2x->tr["Loading.. Please wait.."]});
+	buttons.push_back({"skin:imgs/manual.png", _("Loading.. Please wait..")});
 
 	drawDialog(gmenu2x->s);
 
@@ -236,27 +236,27 @@ void BrowseDialog::contextMenu() {
 	customOptions(options);
 
 	if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
-		options.push_back((MenuOption){gmenu2x->tr["Set as wallpaper"], MakeDelegate(this, &BrowseDialog::setWallpaper)});
+		options.push_back((MenuOption){_("Set as wallpaper"), MakeDelegate(this, &BrowseDialog::setWallpaper)});
 
 	if (path == "/media" && getFile(selected) != ".." && isDirectory(selected))
-		options.push_back((MenuOption){gmenu2x->tr["Umount"], MakeDelegate(this, &BrowseDialog::umountDir)});
+		options.push_back((MenuOption){_("Umount"), MakeDelegate(this, &BrowseDialog::umountDir)});
 
 	if (path != CARD_ROOT)
-		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " " + CARD_ROOT, MakeDelegate(this, &BrowseDialog::exploreHome)});
+		options.push_back((MenuOption){_F("Go to %s", CARD_ROOT), MakeDelegate(this, &BrowseDialog::exploreHome)});
 
 	if (path != "/media")
-		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " /media", MakeDelegate(this, &BrowseDialog::exploreMedia)});
+		options.push_back((MenuOption){_F("Go to %s", "/media"), MakeDelegate(this, &BrowseDialog::exploreMedia)});
 
 	if (isFile(selected))
-		options.push_back((MenuOption){gmenu2x->tr["Delete"], MakeDelegate(this, &BrowseDialog::deleteFile)});
+		options.push_back((MenuOption){_("Delete"), MakeDelegate(this, &BrowseDialog::deleteFile)});
 
 	MessageBox mb(gmenu2x, options);
 }
 
 void BrowseDialog::deleteFile() {
-	MessageBox mb(gmenu2x, gmenu2x->tr["Delete"] + " '" +  getFile(selected) + "'\n" + gmenu2x->tr["THIS CAN'T BE UNDONE"] + "\n" + gmenu2x->tr["Are you sure?"], "explorer.png");
-	mb.setButton(MANUAL, gmenu2x->tr["Yes"]);
-	mb.setButton(CANCEL,  gmenu2x->tr["No"]);
+	MessageBox mb(gmenu2x, (string)_F("Delete %s", getFile(selected).c_str()) + "'\n" + _("THIS CAN'T BE UNDONE") + "\n" + _("Are you sure?"), "explorer.png");
+	mb.setButton(MANUAL, _("Yes"));
+	mb.setButton(CANCEL,  _("No"));
 	if (mb.exec() != MANUAL) return;
 	if (!unlink(getPath(selected).c_str())) {
 		directoryEnter(path); // refresh

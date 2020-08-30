@@ -26,11 +26,11 @@ using fastdelegate::MakeDelegate;
 
 MenuSettingString::MenuSettingString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const string &dialogTitle, const string &dialogIcon):
 MenuSettingStringBase(gmenu2x, title, description, value), dialogTitle(dialogTitle), dialogIcon(dialogIcon) {
-	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
+	btn = new IconButton(gmenu2x, "select", _("Reset"));
 	// btn->setAction(MakeDelegate(this, &MenuSettingString::clear));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Edit"]);
+	btn = new IconButton(gmenu2x, "a", _("Edit"));
 	// btn->setAction(MakeDelegate(this, &MenuSettingString::edit));
 	buttonBox.add(btn);
 }

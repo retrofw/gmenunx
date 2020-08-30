@@ -22,25 +22,72 @@
 
 #include "utilities.h"
 
+#include <libintl.h>
+#include <locale.h>
+
+
+#define _(str) gettext(str)
+// #define _F(fmt, ...) ({sprintf(tr_buf, gettext(fmt), __VA_ARGS__); tr_buf;})
+
+
+const char* _F(const char *buf, ...);
+
+
+
+
+
+
+
+
+
+
+
+
+// char* _f(const char *format, ...) {
+//   va_list args;
+//   char buffer[512];
+
+//   va_start(args, format);
+//   vsnprintf(buffer, sizeof buffer, format, args);
+//   va_end(args);
+//   FlushFunnyStream(buffer);
+// }
+
+// GCC has a feature called statement expressions
+
+// So if define macro like
+
+// #define FOO(A) ({int retval; retval = do_something(A); retval;})
+
+// then you will be able to use it like
+
+// foo = FOO(bar);
+
+
+
+
+
+
+
 /**
 Hash Map of translation strings.
 
 	@author Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
 */
-class Translator {
-private:
-	string _lang;
-	unordered_map<string, string> translations;
+// class Translator {
+// private:
+// 	string _lang;
+// 	unordered_map<string, string> translations;
 
-public:
-	Translator(const string &lang="");
-	~Translator();
+// public:
+// 	Translator(const string &lang="");
+// 	~Translator();
 
-	string lang();
-	void setLang(const string &lang);
-	bool exists(const string &term);
-	string translate(const string &term,const char *replacestr=NULL,...);
-	string operator[](const string &term);
-};
+// 	string lang();
+// 	void setLang(const string &lang);
+// 	bool exists(const string &term);
+// 	string translate(const string &term,const char *replacestr=NULL,...);
+// 	string operator[](const string &term);
+// };
 
 #endif

@@ -22,7 +22,7 @@
 
 MenuSetting::MenuSetting(GMenu2X *gmenu2x, const string &title, const string &description):
 gmenu2x(gmenu2x), buttonBox(gmenu2x), title(title), description(description) {
-	btn = new IconButton(gmenu2x, "start", gmenu2x->tr["Save"]);
+	btn = new IconButton(gmenu2x, "start", _("Save"));
 	buttonBox.add(btn);
 }
 

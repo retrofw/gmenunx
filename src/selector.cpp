@@ -151,7 +151,7 @@ const std::string Selector::getParams(uint32_t i) {
 
 void Selector::customOptions(vector<MenuOption> &options) {
 	if (isFile(selected)) {
-		options.push_back((MenuOption){gmenu2x->tr["Add to Favourites"], MakeDelegate(this, &Selector::addFavourite)});
+		options.push_back((MenuOption){_("Add to Favourites"), MakeDelegate(this, &Selector::addFavourite)});
 	}
 }
 
@@ -183,7 +183,7 @@ void Selector::addFavourite() {
 
 	gmenu2x->initMenu();
 
-	MessageBox mb(gmenu2x, gmenu2x->tr["Link created"], favicon);
+	MessageBox mb(gmenu2x, _("Link created"), favicon);
 	mb.setAutoHide(1000);
 	mb.exec();
 }

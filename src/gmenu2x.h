@@ -144,7 +144,6 @@ public:
 	RGBAColor skinConfColors[NUM_COLORS];
 	SurfaceCollection sc;
 	Surface *s, *bg, *iconInet = NULL;
-	Translator tr;
 	FontHelper *font = NULL, *titlefont = NULL;
 	PowerManager *powerManager;
 	InputManager input;

@@ -335,7 +335,7 @@ void LinkApp::selector(int startSelection, string selectorDir) {
 }
 
 void LinkApp::launch(const string &selectedFile, string dir) {
-	MessageBox mb(gmenu2x, gmenu2x->tr["Launching"] + " " + this->getTitle().c_str(), this->getIconPath());
+	MessageBox mb(gmenu2x, _F("Launching %s", this->getTitle().c_str()), this->getIconPath());
 	mb.setAutoHide(1);
 	mb.exec();
 

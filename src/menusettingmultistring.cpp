@@ -28,13 +28,13 @@ MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onC
 	setSel(find(choices->begin(), choices->end(), *value) - choices->begin());
 
 	if (choices->size() > 1) {
-		btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
+		btn = new IconButton(gmenu2x, "dpad", _("Change"));
 		// btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
 		buttonBox.add(btn);
 	}
 
 	if (this->onSelect) {
-		btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Open"]);
+		btn = new IconButton(gmenu2x, "a", _("Open"));
 		// btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
 		buttonBox.add(btn);
 	}

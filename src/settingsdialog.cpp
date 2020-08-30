@@ -87,9 +87,9 @@ bool SettingsDialog::exec() {
 				case SD_ACTION_CLOSE:
 					loop = false;
 					if (allowCancel && edited()) {
-						MessageBox mb(gmenu2x, gmenu2x->tr["Save changes?"], this->icon);
-						mb.setButton(CONFIRM, gmenu2x->tr["Yes"]);
-						mb.setButton(CANCEL,  gmenu2x->tr["No"]);
+						MessageBox mb(gmenu2x, _("Save changes?"), this->icon);
+						mb.setButton(CONFIRM, _("Yes"));
+						mb.setButton(CANCEL,  _("No"));
 						save = (mb.exec() == CONFIRM);
 					}
 					break;

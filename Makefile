@@ -23,7 +23,7 @@ CFLAGS += -DTARGET_RETROFW -DHW_TVOUT -DHW_UDC -DHW_EXT_SD -DHW_SCALER -DOPK_SUP
 CFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
 LDFLAGS = -Wl,-Bstatic -Lsrc/libopk -l:libopk.a
-LDFLAGS += -Wl,-Bdynamic -lz $(SDL_LIBS) -lSDL_image -lSDL_ttf
+LDFLAGS += -Wl,-Bdynamic -lz $(SDL_LIBS) -lSDL_image -lSDL_ttf -lintl
 LDFLAGS += -Wl,--as-needed -Wl,--gc-sections
 
 OBJDIR = /tmp/gmenunx/$(PLATFORM)
@@ -70,6 +70,7 @@ ipk: dist
 	ar r dist/gmenunx-$(PLATFORM).ipk /tmp/.gmenu-ipk/control.tar.gz /tmp/.gmenu-ipk/data.tar.gz /tmp/.gmenu-ipk/debian-binary
 
 dist: dir libopk shared
+	xgettext  --keyword=_ --from-code=UTF-8 -o /tmp/gmenunx.pot src/*.cpp src/platform/*.h
 	mkdir -p $(DISTDIR)/skins/Default
 	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING

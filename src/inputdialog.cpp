@@ -111,10 +111,10 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
-	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"]
+	gmenu2x->drawButton(bg, "r", _("Space"),
+	gmenu2x->drawButton(bg, "l", _("Backspace"),
+	gmenu2x->drawButton(bg, "y", _("Shift"),
+	gmenu2x->drawButton(bg, "start", _("Save")
 	))));
 
 	while (true) {

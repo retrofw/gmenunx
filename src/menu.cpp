@@ -498,8 +498,8 @@ void Menu::drawList() {
 		}
 
 		icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
-		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->height()/2, VAlignMiddle);
-		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+		gmenu2x->s->write(gmenu2x->titlefont, _(sectionLinks()->at(i)->getTitle().c_str()), ix + linkSpacing + 36, iy + gmenu2x->titlefont->height()/2, VAlignMiddle);
+		gmenu2x->s->write(gmenu2x->font, _(sectionLinks()->at(i)->getDescription().c_str()), ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
 	}
 
 	if (sectionLinks()->size() > linkRows) {
@@ -585,11 +585,11 @@ void Menu::drawSectionBar() {
 
 	if (gmenu2x->skinConfInt["sectionLabel"] && SDL_GetTicks() - section_changed < 1400) {
 		if (gmenu2x->skinConfInt["sectionBar"] == SB_LEFT) {
-			gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[getSectionName()], sx, sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignLeft | VAlignBottom);
+			gmenu2x->s->write(gmenu2x->font, _(getSectionName().c_str()), sx, sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignLeft | VAlignBottom);
 		} else if (gmenu2x->skinConfInt["sectionBar"] == SB_RIGHT) {
-			gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[getSectionName()], sx + gmenu2x->skinConfInt["sectionBarSize"], sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignRight | VAlignBottom);
+			gmenu2x->s->write(gmenu2x->font, _(getSectionName().c_str()), sx + gmenu2x->skinConfInt["sectionBarSize"], sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignRight | VAlignBottom);
 		} else {
-			gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[getSectionName()], sx + gmenu2x->skinConfInt["sectionBarSize"] / 2 , sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignCenter | VAlignBottom);
+			gmenu2x->s->write(gmenu2x->font, _(getSectionName().c_str()), sx + gmenu2x->skinConfInt["sectionBarSize"] / 2 , sy + gmenu2x->skinConfInt["sectionBarSize"], HAlignCenter | VAlignBottom);
 		}
 	} else {
 		SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
@@ -801,7 +801,7 @@ void Menu::exec() {
 		gmenu2x->s->clearClipRect();
 
 		if (!sectionLinks()->size()) {
-			MessageBox mb(gmenu2x, gmenu2x->tr["This section is empty"]);
+			MessageBox mb(gmenu2x, _("This section is empty"));
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
 			mb.exec();
@@ -816,7 +816,7 @@ void Menu::exec() {
 		if (gmenu2x->input.combo()) {
 			gmenu2x->skinConfInt["sectionBar"] = ((gmenu2x->skinConfInt["sectionBar"]) % 5) + 1;
 			initLayout();
-			MessageBox mb(gmenu2x, gmenu2x->tr["CHEATER! ;)"]);
+			MessageBox mb(gmenu2x, _("CHEATER! ;)"));
 			mb.setBgAlpha(0);
 			mb.setAutoHide(200);
 			mb.exec();

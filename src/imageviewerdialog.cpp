@@ -10,8 +10,8 @@ void ImageViewerDialog::exec() {
 	bool inputAction = false;
 	int offsetX = 0, offsetY = 0;
 
-	buttons.push_back({"dpad", gmenu2x->tr["Pan"]});
-	buttons.push_back({"b", gmenu2x->tr["Exit"]});
+	buttons.push_back({"dpad", _("Pan")});
+	buttons.push_back({"b", _("Exit")});
 	drawDialog(this->bg);
 
 	while (true) {
