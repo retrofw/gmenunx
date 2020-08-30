@@ -56,8 +56,10 @@ private:
 
 	SDL_TimerID sectionChangedTimer, iconChangedTimer;
 
+	void drawIcon(int i, int ix, int iy, bool selected);
 	void drawList();
 	void drawGrid();
+	void drawCoverFlow();
 	void drawSectionBar();
 	void drawStatusBar();
 	void drawIconTray();

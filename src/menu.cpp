@@ -374,19 +374,11 @@ void Menu::setLinkIndex(int i) {
 	}
 
 	int perPage = linkCols * linkRows;
-	if (linkRows == 1) {
-		if (i < firstDispLink) {
-			firstDispLink = i;
-		} else if (i >= firstDispLink + perPage) {
-			firstDispLink = i - perPage + 1;
-		}
-	} else {
-		int page = i / linkCols;
-		if (i < firstDispLink) {
-			firstDispLink = page * linkCols;
-		} else if (i >= firstDispLink + perPage) {
-			firstDispLink = page * linkCols - linkCols * (linkRows - 1);
-		}
+	int page = i / linkCols;
+	if (i < firstDispLink) {
+		firstDispLink = page * linkCols;
+	} else if (i >= firstDispLink + perPage) {
+		firstDispLink = page * linkCols - linkCols * (linkRows - 1);
 	}
 
 	if (firstDispLink < 0) {
@@ -477,11 +469,82 @@ void Menu::initLayout() {
 	linkHeight = (gmenu2x->linksRect.h - (linkCols > 1) * (linkRows + 1) * linkSpacing) / linkRows;
 }
 
-void Menu::drawList() {
-	int i = firstDispLink;
+void Menu::drawIcon(int i, int ix, int iy, bool selected) {
+	Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
 
+	if (icon == NULL) {
+		icon = gmenu2x->sc["skin:icons/generic.png"];
+	}
+
+	if (icon->width() > linkWidth || icon->height() > linkHeight) {
+		icon->softStretch(linkWidth, linkHeight, SScaleFit);
+	}
+
+	if (selected) {
+		if (iconBGon != NULL && icon->width() <= iconBGon->width() && icon->height() <= iconBGon->height()) {
+			iconBGon->blit(gmenu2x->s, ix + (linkWidth + iconPadding) / 2, iy + (linkHeight + iconPadding) / 2, HAlignCenter | VAlignMiddle, 50);
+		} else {
+			gmenu2x->s->box(ix + (linkWidth - min(linkWidth, icon->width())) / 2 - 4, iy + (linkHeight - min(linkHeight, icon->height())) / 2 - 4, min(linkWidth, icon->width()) + 8, min(linkHeight, icon->height()) + 8, gmenu2x->skinConfColor["selectionBg"]);
+		}
+
+	} else if (iconBGoff != NULL && icon->width() <= iconBGoff->width() && icon->height() <= iconBGoff->height()) {
+		iconBGoff->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
+	}
+
+	icon->blit(gmenu2x->s, {ix + iconPadding / 2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
+
+	if (gmenu2x->skinConfInt["linkLabel"]) {
+		SDL_Rect labelRect;
+		labelRect.x = ix + 2 + linkWidth / 2;
+		labelRect.y = iy + (linkHeight + min(linkHeight, icon->height())) / 2;
+		labelRect.w = linkWidth - iconPadding;
+		labelRect.h = linkHeight - iconPadding;
+		gmenu2x->s->write(gmenu2x->font, _(sectionLinks()->at(i)->getTitle().c_str()), labelRect, HAlignCenter | VAlignMiddle);
+	}
+}
+
+void Menu::drawCoverFlow() {
+	int iy = gmenu2x->linksRect.y;
+
+	for (int x = linkCols/2 - 1, i = iLinkIndex - 1; x > -1 ; x--, i--) {
+		if (sectionLinks()->size() <= 1) continue;
+
+		if (i < 0) i = sectionLinks()->size() - 1;
+		else if (i >= (int)sectionLinks()->size()) i = 0;
+
+		int ix = (gmenu2x->linksRect.w + gmenu2x->linksRect.x) / 2
+				- (linkWidth + linkSpacing) / 2
+				- ((linkCols / 2)) * (linkWidth + linkSpacing)
+				+ x * linkWidth
+				+ (x + 1) * linkSpacing;
+
+		drawIcon(i, ix, iy, false);
+	}
+
+	for (int x = 0, i = iLinkIndex; x <= linkCols/2; x++, i++) {
+		if (i < 0) i = sectionLinks()->size() - 1;
+		else if (i >= (int)sectionLinks()->size()) i = 0;
+
+		int ix = (gmenu2x->linksRect.w + gmenu2x->linksRect.x) / 2
+				- (linkWidth + linkSpacing) / 2
+				// - ((linkCols / 2)) * (linkWidth + linkSpacing)
+				+ x * linkWidth
+				+ (x + 1) * linkSpacing;
+
+		Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
+
+		drawIcon(i, ix, iy, (x == 0));
+
+		if (sectionLinks()->size() <= 1) return;
+	}
+
+	gmenu2x->drawScrollBar(1, sectionLinks()->size(), iLinkIndex, gmenu2x->linksRect, VAlignBottom);
+}
+
+void Menu::drawList() {
 	int ix = gmenu2x->linksRect.x;
-	for (int y = 0; y < linkRows && i < sectionLinks()->size(); y++, i++) {
+
+	for (int y = 0, i = firstDispLink; y < linkRows && i < sectionLinks()->size(); y++, i++) {
 		int iy = gmenu2x->linksRect.y + y * linkHeight;
 
 		if (i == iLinkIndex) {
@@ -515,44 +578,11 @@ void Menu::drawGrid() {
 			int ix = gmenu2x->linksRect.x + x * linkWidth  + (x + 1) * linkSpacing;
 			int iy = gmenu2x->linksRect.y + y * linkHeight + (y + 1) * linkSpacing;
 
-			Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
-			if (icon == NULL) {
-				icon = gmenu2x->sc["skin:icons/generic.png"];
-			}
-
-			if (icon->width() > linkWidth || icon->height() > linkHeight) {
-				icon->softStretch(linkWidth, linkHeight, SScaleFit);
-			}
-
-			if (i == (uint32_t)getLinkIndex()) {
-				if (iconBGon != NULL && icon->width() <= iconBGon->width() && icon->height() <= iconBGon->height()) {
-					iconBGon->blit(gmenu2x->s, ix + (linkWidth + iconPadding) / 2, iy + (linkHeight + iconPadding) / 2, HAlignCenter | VAlignMiddle, 50);
-				} else {
-					gmenu2x->s->box(ix + (linkWidth - min(linkWidth, icon->width())) / 2 - 4, iy + (linkHeight - min(linkHeight, icon->height())) / 2 - 4, min(linkWidth, icon->width()) + 8, min(linkHeight, icon->height()) + 8, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
-				}
-
-			} else if (iconBGoff != NULL && icon->width() <= iconBGoff->width() && icon->height() <= iconBGoff->height()) {
-				iconBGoff->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
-			}
-
-			icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
-
-			if (gmenu2x->skinConfInt["linkLabel"]) {
-				SDL_Rect labelRect;
-				labelRect.x = ix + 2 + linkWidth/2;
-				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
-				labelRect.w = linkWidth - iconPadding;
-				labelRect.h = linkHeight - iconPadding;
-				gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], labelRect, HAlignCenter | VAlignMiddle);
-			}
+			drawIcon(i, ix, iy, (i == iLinkIndex));
 		}
 	}
 
-	if (linkRows == 1 && sectionLinks()->size() > linkCols) {
-		gmenu2x->drawScrollBar(1, sectionLinks()->size(), getLinkIndex(), gmenu2x->linksRect, VAlignBottom);
-	} else if (sectionLinks()->size() > linkCols * linkRows) {
-		gmenu2x->drawScrollBar(1, sectionLinks()->size()/linkCols + 1, getLinkIndex()/linkCols, gmenu2x->linksRect, HAlignRight);
-	}
+	gmenu2x->drawScrollBar(1, sectionLinks()->size()/linkCols + 1, iLinkIndex/linkCols, gmenu2x->linksRect, HAlignRight);
 }
 
 void Menu::drawSectionBar() {
@@ -792,20 +822,20 @@ void Menu::exec() {
 
 		// LINKS
 		gmenu2x->s->setClipRect(gmenu2x->linksRect);
-		if (linkCols == 1 && linkRows > 1) {
-			drawList(); // LIST
-		} else {
-			drawGrid(); // CLASSIC
-		}
-		gmenu2x->s->clearClipRect();
-
 		gmenu2x->s->box(gmenu2x->linksRect, gmenu2x->skinConfColor["listBg"]);
 		if (!sectionLinks()->size()) {
 			MessageBox mb(gmenu2x, _("This section is empty"));
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
 			mb.exec();
+		} else if (linkCols == 1 && linkRows > 1) {
+			drawList(); // LIST
+		} else if (linkRows == 1) {
+			drawCoverFlow(); // COVER FLOW
+		} else {
+			drawGrid(); // CLASSIC
 		}
+		gmenu2x->s->clearClipRect();
 
 		if (!gmenu2x->powerManager->suspendActive && !gmenu2x->input.combo()) {
 			gmenu2x->s->flip();
