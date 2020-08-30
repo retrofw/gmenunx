@@ -107,35 +107,6 @@ const char *CARD_ROOT = getenv("HOME");
 
 #include "menu.h"
 
-// Note: Keep this in sync with the enum!
-static const char *colorNames[NUM_COLORS] = {
-	"topBarBg",
-	"listBg",
-	"bottomBarBg",
-	"selectionBg",
-	"previewBg",
-	"messageBoxBg",
-	"messageBoxBorder",
-	"messageBoxSelection",
-	"font",
-	"fontOutline",
-	"fontAlt",
-	"fontAltOutline"
-};
-
-static enum color stringToColor(const string &name) {
-	for (uint32_t i = 0; i < NUM_COLORS; i++) {
-		if (strcmp(colorNames[i], name.c_str()) == 0) {
-			return (enum color)i;
-		}
-	}
-	return (enum color)-1;
-}
-
-static const char *colorToString(enum color c) {
-	return colorNames[c];
-}
-
 GMenu2X *GMenu2X::instance = NULL;
 
 static void quit_all(int err) {
@@ -432,17 +403,17 @@ void GMenu2X::initFont() {
 	string skinFont = confStr["skinFont"] == "Default" ? dataPath + "/skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
 
 	delete font;
-	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	if (!font->font) {
 		delete font;
-		font = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+		font = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSize"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	}
 
 	delete titlefont;
-	titlefont = new FontHelper(skinFont, skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+	titlefont = new FontHelper(skinFont, skinConfInt["fontSizeTitle"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	if (!titlefont->font) {
 		delete titlefont;
-		titlefont = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSizeTitle"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
+		titlefont = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSizeTitle"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	}
 }
 
@@ -861,8 +832,25 @@ void GMenu2X::writeSkinConfig() {
 		f << curr->first << "=" << curr->second << std::endl;
 	}
 
-	for (int i = 0; i < NUM_COLORS; ++i) {
-		f << colorToString((enum color)i) << "=" << rgbatostr(skinConfColors[i]) << std::endl;
+	vector<std::string> valid {
+		"topBarBg",
+		"listBg",
+		"bottomBarBg",
+		"selectionBg",
+		"previewBg",
+		"messageBoxBg",
+		"messageBoxBorder",
+		"messageBoxSelection",
+		"font",
+		"fontOutline",
+		"fontAlt",
+		"fontAltOutline"
+	};
+
+	for (ConfColorHash::iterator curr = skinConfColor.begin(); curr != skinConfColor.end(); curr++) {
+		if (count(valid.begin(), valid.end(), curr->first)) {
+			f << curr->first << "=" << rgbatostr(curr->second) << std::endl;
+		}
 	}
 
 	f.close();
@@ -894,18 +882,18 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	sc.setSkin(skin);
 
 	// reset colors to the default values
-	skinConfColors[COLOR_TOP_BAR_BG] = (RGBAColor){44, 129, 213, 255};
-	skinConfColors[COLOR_LIST_BG] = (RGBAColor){0, 0, 48, 60};
-	skinConfColors[COLOR_BOTTOM_BAR_BG] = (RGBAColor){44, 129, 213, 255};
-	skinConfColors[COLOR_SELECTION_BG] = (RGBAColor){255, 255, 255, 204};
-	skinConfColors[COLOR_PREVIEW_BG] = (RGBAColor){253, 1, 252, 0};
-	skinConfColors[COLOR_MESSAGE_BOX_BG] = (RGBAColor){255, 255, 255, 255};
-	skinConfColors[COLOR_MESSAGE_BOX_BORDER] = (RGBAColor){80, 80, 80, 255};
-	skinConfColors[COLOR_MESSAGE_BOX_SELECTION] = (RGBAColor){160, 160, 160, 255};
-	skinConfColors[COLOR_FONT] = (RGBAColor){255, 255, 255, 255};
-	skinConfColors[COLOR_FONT_OUTLINE] = (RGBAColor){0, 0, 0, 192};
-	skinConfColors[COLOR_FONT_ALT] = (RGBAColor){253, 1, 252, 0};
-	skinConfColors[COLOR_FONT_ALT_OUTLINE] = (RGBAColor){253, 1, 252, 0};
+	skinConfColor["topBarBg"] = (RGBAColor){44, 129, 213, 255};
+	skinConfColor["listBg"] = (RGBAColor){0, 0, 48, 60};
+	skinConfColor["bottomBarBg"] = (RGBAColor){44, 129, 213, 255};
+	skinConfColor["selectionBg"] = (RGBAColor){255, 255, 255, 204};
+	skinConfColor["previewBg"] = (RGBAColor){253, 1, 252, 0};
+	skinConfColor["messageBoxBg"] = (RGBAColor){255, 255, 255, 255};
+	skinConfColor["messageBoxBorder"] = (RGBAColor){80, 80, 80, 255};
+	skinConfColor["messageBoxSelection"] = (RGBAColor){160, 160, 160, 255};
+	skinConfColor["font"] = (RGBAColor){255, 255, 255, 255};
+	skinConfColor["fontOutline"] = (RGBAColor){0, 0, 0, 192};
+	skinConfColor["fontAlt"] = (RGBAColor){253, 1, 252, 0};
+	skinConfColor["fontAltOutline"] = (RGBAColor){253, 1, 252, 0};
 
 	// load skin settings
 	skin = skin + "/skin.conf";
@@ -925,16 +913,15 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 				if (value.length() > 1 && value.at(0) == '"' && value.at(value.length() - 1) == '"') {
 					skinConfStr[name] = value.substr(1, value.length() - 2);
 				} else if (value.at(0) == '#') {
-					// skinConfColor[name] = strtorgba(value.substr(1,value.length()) );
-					skinConfColors[stringToColor(name)] = strtorgba(value);
+					skinConfColor[name] = strtorgba(value);
 				} else if (name.length() > 6 && name.substr(name.length() - 6, 5) == "Color") {
 					value += name.substr(name.length() - 1);
 					name = name.substr(0, name.length() - 6);
 					if (name == "selection" || name == "topBar" || name == "bottomBar" || name == "messageBox") name += "Bg";
-					if (value.substr(value.length() - 1) == "R") skinConfColors[stringToColor(name)].r = atoi(value.c_str());
-					if (value.substr(value.length() - 1) == "G") skinConfColors[stringToColor(name)].g = atoi(value.c_str());
-					if (value.substr(value.length() - 1) == "B") skinConfColors[stringToColor(name)].b = atoi(value.c_str());
-					if (value.substr(value.length() - 1) == "A") skinConfColors[stringToColor(name)].a = atoi(value.c_str());
+					if (value.substr(value.length() - 1) == "R") skinConfColor[name].r = atoi(value.c_str());
+					if (value.substr(value.length() - 1) == "G") skinConfColor[name].g = atoi(value.c_str());
+					if (value.substr(value.length() - 1) == "B") skinConfColor[name].b = atoi(value.c_str());
+					if (value.substr(value.length() - 1) == "A") skinConfColor[name].a = atoi(value.c_str());
 				} else {
 					skinConfInt[name] = atoi(value.c_str());
 				}
@@ -944,15 +931,15 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	}
 
 	// (poor) HACK: ensure some colors have a default value
-	if (skinConfColors[COLOR_FONT_ALT].r == 253 && skinConfColors[COLOR_FONT_ALT].g == 1 && skinConfColors[COLOR_FONT_ALT].b == 252 && skinConfColors[COLOR_FONT_ALT].a == 0) {
-		skinConfColors[COLOR_FONT_ALT] = skinConfColors[COLOR_FONT];
+	if (skinConfColor["fontAlt"].r == 253 && skinConfColor["fontAlt"].g == 1 && skinConfColor["fontAlt"].b == 252 && skinConfColor["fontAlt"].a == 0) {
+		skinConfColor["fontAlt"] = skinConfColor["font"];
 	}
-	if (skinConfColors[COLOR_FONT_ALT_OUTLINE].r == 253 && skinConfColors[COLOR_FONT_ALT_OUTLINE].g == 1 && skinConfColors[COLOR_FONT_ALT_OUTLINE].b == 252 && skinConfColors[COLOR_FONT_ALT_OUTLINE].a == 0) {
-		skinConfColors[COLOR_FONT_ALT_OUTLINE] = skinConfColors[COLOR_FONT_OUTLINE];
+	if (skinConfColor["fontAltOutline"].r == 253 && skinConfColor["fontAltOutline"].g == 1 && skinConfColor["fontAltOutline"].b == 252 && skinConfColor["fontAltOutline"].a == 0) {
+		skinConfColor["fontAltOutline"] = skinConfColor["fontOutline"];
 	}
-	if (skinConfColors[COLOR_PREVIEW_BG].r == 253 && skinConfColors[COLOR_PREVIEW_BG].g == 1 && skinConfColors[COLOR_PREVIEW_BG].b == 252 && skinConfColors[COLOR_PREVIEW_BG].a == 0) {
-		skinConfColors[COLOR_PREVIEW_BG] = skinConfColors[COLOR_TOP_BAR_BG];
-		skinConfColors[COLOR_PREVIEW_BG].a == 170;
+	if (skinConfColor["previewBg"].r == 253 && skinConfColor["previewBg"].g == 1 && skinConfColor["previewBg"].b == 252 && skinConfColor["previewBg"].a == 0) {
+		skinConfColor["previewBg"] = skinConfColor["topBarBg"];
+		skinConfColor["previewBg"].a == 170;
 	}
 
 	// prevents breaking current skin until they are updated
@@ -1125,18 +1112,18 @@ void GMenu2X::skinColors() {
 
 		SettingsDialog sd(this, ts, _("Skin Colors"), "skin:icons/skin.png");
 		sd.allowCancel = false;
-		sd.addSetting(new MenuSettingRGBA(this, _("Top/Section Bar"), _("Color of the top and section bar"), &skinConfColors["topBarBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("List Body"), _("Color of the list body"), &skinConfColors["listBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Bottom Bar"), _("Color of the bottom bar"), &skinConfColors["bottomBarBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Selection"), _("Color of the selection and other interface details"), &skinConfColors["selectionBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Box Art"), _("Color of the box art background"), &skinConfColors["previewBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Message Box"), _("Background color of the message box"), &skinConfColors["messageBoxBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Border"), _("Border color of the message box"), &skinConfColors["messageBoxBorder"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Selection"), _("Color of the selection of the message box"), &skinConfColors["messageBoxSelection"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Font"), _("Color of the font"), &skinConfColors["font"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Font Outline"), _("Color of the font's outline"), &skinConfColors["fontOutline"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font"), _("Color of the alternative font"), &skinConfColors["fontAlt"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font Outline"), _("Color of the alternative font outline"), &skinConfColors["fontAltOutline"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Top/Section Bar"), _("Color of the top and section bar"), &skinConfColor["topBarBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("List Body"), _("Color of the list body"), &skinConfColor["listBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Bottom Bar"), _("Color of the bottom bar"), &skinConfColor["bottomBarBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Selection"), _("Color of the selection and other interface details"), &skinConfColor["selectionBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Box Art"), _("Color of the box art background"), &skinConfColor["previewBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Message Box"), _("Background color of the message box"), &skinConfColor["messageBoxBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Border"), _("Border color of the message box"), &skinConfColor["messageBoxBorder"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Selection"), _("Color of the selection of the message box"), &skinConfColor["messageBoxSelection"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Font"), _("Color of the font"), &skinConfColor["font"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Font Outline"), _("Color of the font's outline"), &skinConfColor["fontOutline"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font"), _("Color of the alternative font"), &skinConfColor["fontAlt"]));
+		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font Outline"), _("Color of the alternative font outline"), &skinConfColor["fontAltOutline"]));
 		sd.exec();
 		save = sd.save;
 	} while (!save);
@@ -1840,7 +1827,7 @@ int GMenu2X::drawButton(Surface *s, const string &btn, const string &text, int x
 		icon->blit(s, x, y, HAlignLeft | VAlignMiddle);
 		x += 19;
 		if (!text.empty()) {
-			s->write(font, text, x, y, VAlignMiddle, skinConfColors[COLOR_FONT_ALT], skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+			s->write(font, text, x, y, VAlignMiddle, skinConfColor["fontAlt"], skinConfColor["fontAltOutline"]);
 			x += font->getTextWidth(text);
 		}
 	}
@@ -1853,7 +1840,7 @@ int GMenu2X::drawButtonRight(Surface *s, const string &btn, const string &text, 
 	if (icon != NULL) {
 		if (!text.empty()) {
 			x -= font->getTextWidth(text);
-			s->write(font, text, x, y, HAlignLeft | VAlignMiddle, skinConfColors[COLOR_FONT_ALT], skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+			s->write(font, text, x, y, HAlignLeft | VAlignMiddle, skinConfColor["fontAlt"], skinConfColor["fontAltOutline"]);
 		}
 		x -= 19;
 		icon->blit(s, x, y, HAlignLeft | VAlignMiddle);
@@ -1901,8 +1888,8 @@ void GMenu2X::drawScrollBar(uint32_t pagesize, uint32_t totalsize, uint32_t page
 		}
 	}
 
-	s->box(bar, skinConfColors[COLOR_SELECTION_BG]);
-	s->rectangle(bar.x - 1, bar.y - 1, bar.w + 2, bar.h + 2, skinConfColors[COLOR_LIST_BG]);
+	s->box(bar, skinConfColor["selectionBg"]);
+	s->rectangle(bar.x - 1, bar.y - 1, bar.w + 2, bar.h + 2, skinConfColor["listBg"]);
 }
 
 void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
@@ -1912,13 +1899,13 @@ void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) 
 	val = constrain(val, min, max);
 
 	bg.blit(s,0,0);
-	s->box(box, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-	s->rectangle(box.x + 2, box.y + 2, box.w - 4, box.h - 4, skinConfColors[COLOR_MESSAGE_BOX_BORDER]);
+	s->box(box, skinConfColor["messageBoxBg"]);
+	s->rectangle(box.x + 2, box.y + 2, box.w - 4, box.h - 4, skinConfColor["messageBoxBorder"]);
 
 	icon.blit(s, 28, 28);
 
-	s->box(progress, skinConfColors[COLOR_MESSAGE_BOX_BG]);
-	s->box(progress.x + 1, progress.y + 1, val * (progress.w - 3) / max + 1, progress.h - 2, skinConfColors[COLOR_MESSAGE_BOX_SELECTION]);
+	s->box(progress, skinConfColor["messageBoxBg"]);
+	s->box(progress.x + 1, progress.y + 1, val * (progress.w - 3) / max + 1, progress.h - 2, skinConfColor["messageBoxSelection"]);
 	s->flip();
 }
 

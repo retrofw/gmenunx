@@ -60,7 +60,7 @@ bool SkinDialog::exec() {
 			// Files & Directories
 			iY = gmenu2x->listRect.y + 1;
 			for (i = firstElement; i < skins.size() && i <= firstElement + numRows; i++, iY += rowHeight) {
-				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
+				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColor["selectionBg"]);
 				gmenu2x->s->write(gmenu2x->font, base_name(skins[i]), gmenu2x->listRect.x + 5, iY + rowHeight/2, VAlignMiddle);
 			}
 

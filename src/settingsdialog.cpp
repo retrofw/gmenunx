@@ -36,8 +36,8 @@ bool SettingsDialog::exec() {
 
 	while (loop) {
 		gmenu2x->menu->initLayout();
-		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColors[COLOR_FONT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_OUTLINE]);
-		gmenu2x->titlefont->setSize(gmenu2x->skinConfInt["fontSizeTitle"])->setColor(gmenu2x->skinConfColors[COLOR_FONT_ALT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColor["font"])->setOutlineColor(gmenu2x->skinConfColor["fontOutline"]);
+		gmenu2x->titlefont->setSize(gmenu2x->skinConfInt["fontSizeTitle"])->setColor(gmenu2x->skinConfColor["fontAlt"])->setOutlineColor(gmenu2x->skinConfColor["fontAltOutline"]);
 		rowHeight = gmenu2x->font->height() + 1;
 		numRows = (gmenu2x->listRect.h - 2)/rowHeight - 1;
 
@@ -56,7 +56,7 @@ bool SettingsDialog::exec() {
 		iY = gmenu2x->listRect.y + 1;
 		for (i = firstElement; i < voices.size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 			if (i == selected) {
-				gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
+				gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColor["selectionBg"]);
 				voices[selected]->drawSelected(iY);
 			}
 			voices[i]->draw(iY);

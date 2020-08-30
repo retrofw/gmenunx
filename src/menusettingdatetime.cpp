@@ -75,7 +75,7 @@ void MenuSettingDateTime::drawSelected(int y) {
 				w = gmenu2x->font->getTextWidth(year);
 				break;
 		}
-		gmenu2x->s->box(x - 2, y, w + 3, gmenu2x->font->height() + 1, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
+		gmenu2x->s->box(x - 2, y, w + 3, gmenu2x->font->height() + 1, gmenu2x->skinConfColor["selectionBg"]);
 		gmenu2x->s->rectangle(x - 2, y, w + 3, gmenu2x->font->height() + 1, 0, 0, 0, 255);
 	}
 	MenuSetting::drawSelected(y);

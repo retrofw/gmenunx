@@ -40,23 +40,6 @@ class PowerManager;
 #include "fonthelper.h"
 #include "debug.h"
 
-// Note: Keep this in sync with colorNames!
-enum color {
-	COLOR_TOP_BAR_BG,
-	COLOR_LIST_BG,
-	COLOR_BOTTOM_BAR_BG,
-	COLOR_SELECTION_BG,
-	COLOR_PREVIEW_BG,
-	COLOR_MESSAGE_BOX_BG,
-	COLOR_MESSAGE_BOX_BORDER,
-	COLOR_MESSAGE_BOX_SELECTION,
-	COLOR_FONT,
-	COLOR_FONT_OUTLINE,
-	COLOR_FONT_ALT,
-	COLOR_FONT_ALT_OUTLINE,
-
-	NUM_COLORS,
-};
 
 enum sb {
 	SB_OFF,
@@ -101,6 +84,7 @@ extern string dataPath, homePath;
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;
 typedef unordered_map<string, int, hash<string> > ConfIntHash;
+typedef unordered_map<string, RGBAColor, hash<string> > ConfColorHash;
 
 struct MenuOption {
 	string text;
@@ -140,8 +124,8 @@ public:
 	//Configuration hashes
 	ConfStrHash confStr, skinConfStr;
 	ConfIntHash confInt, skinConfInt;
+	ConfColorHash skinConfColor;
 
-	RGBAColor skinConfColors[NUM_COLORS];
 	SurfaceCollection sc;
 	Surface *s, *bg, *iconInet = NULL;
 	FontHelper *font = NULL, *titlefont = NULL;

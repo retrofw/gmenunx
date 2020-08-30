@@ -484,8 +484,8 @@ void Menu::drawList() {
 	for (int y = 0; y < linkRows && i < sectionLinks()->size(); y++, i++) {
 		int iy = gmenu2x->linksRect.y + y * linkHeight;
 
-			gmenu2x->s->box(ix, iy, gmenu2x->linksRect.w, linkHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 		if (i == iLinkIndex) {
+			gmenu2x->s->box(ix, iy, gmenu2x->linksRect.w, linkHeight, gmenu2x->skinConfColor["selectionBg"]);
 		}
 
 		Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
@@ -556,7 +556,7 @@ void Menu::drawGrid() {
 }
 
 void Menu::drawSectionBar() {
-	gmenu2x->s->box(gmenu2x->sectionBarRect, gmenu2x->skinConfColors[COLOR_TOP_BAR_BG]);
+	gmenu2x->s->box(gmenu2x->sectionBarRect, gmenu2x->skinConfColor["topBarBg"]);
 
 	int ix = 0, iy = 0, sy = 0;
 	int x = gmenu2x->sectionBarRect.x;
@@ -577,7 +577,7 @@ void Menu::drawSectionBar() {
 		if (i == iSectionIndex) {
 			sx = x;
 			sy = y;
-			gmenu2x->s->box(sx, sy, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
+			gmenu2x->s->box(sx, sy, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColor["selectionBg"]);
 		}
 
 		gmenu2x->sc[getSectionIcon(i)]->blit(gmenu2x->s, {x, y, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfInt["sectionBarSize"]}, HAlignCenter | VAlignMiddle);
@@ -607,13 +607,13 @@ void Menu::drawStatusBar() {
 	const int iconWidth = 16, pctWidth = gmenu2x->font->getTextWidth("100");
 	char buf[32]; int x = 0;
 
-	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
+	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
 
 	if (!iconDescription.empty() && SDL_GetTicks() - icon_changed < 300) {
 		x = iconPadding;
 		iconManual->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+		gmenu2x->s->write(gmenu2x->font, iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 	} else {
 		SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 
@@ -623,14 +623,14 @@ void Menu::drawStatusBar() {
 		x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
 		iconVolume[volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
 		// Brightness indicator
 		{ stringstream ss; ss << gmenu2x->confInt["backlight"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
 		x += iconPadding + pctWidth;
 		iconBrightness[brightnessIcon]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
 		// // Menu indicator
 		// iconMenu->blit(gmenu2x->s, iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
@@ -665,7 +665,7 @@ void Menu::drawStatusBar() {
 					x += iconPadding + pctWidth;
 					iconCPU->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 					x += iconWidth + iconPadding;
-					gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+					gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 				}
 			}
 		}
@@ -792,7 +792,6 @@ void Menu::exec() {
 
 		// LINKS
 		gmenu2x->s->setClipRect(gmenu2x->linksRect);
-		gmenu2x->s->box(gmenu2x->linksRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
 		if (linkCols == 1 && linkRows > 1) {
 			drawList(); // LIST
 		} else {
@@ -800,6 +799,7 @@ void Menu::exec() {
 		}
 		gmenu2x->s->clearClipRect();
 
+		gmenu2x->s->box(gmenu2x->linksRect, gmenu2x->skinConfColor["listBg"]);
 		if (!sectionLinks()->size()) {
 			MessageBox mb(gmenu2x, _("This section is empty"));
 			mb.setAutoHide(1);

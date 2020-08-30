@@ -109,7 +109,7 @@ bool InputDialog::exec() {
 
 	bg->box(gmenu2x->bottomBarRect, (RGBAColor){0,0,0,255});
 
-	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
+	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
 
 	gmenu2x->drawButton(bg, "r", _("Space"),
 	gmenu2x->drawButton(bg, "l", _("Backspace"),

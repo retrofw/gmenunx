@@ -60,7 +60,7 @@ void MenuSettingRGBA::drawSelected(int y) {
 			case 0: color = (RGBAColor){255,   0,   0, 255}; break;
 			case 1: color = (RGBAColor){  0, 255,   0, 255}; break;
 			case 2: color = (RGBAColor){  0,   0, 255, 255}; break;
-			default: color = gmenu2x->skinConfColors[COLOR_SELECTION_BG]; break;
+			default: color = gmenu2x->skinConfColor["selectionBg"]; break;
 		}
 		gmenu2x->s->box(x, y, 36, gmenu2x->font->height() + 1, color);
 		gmenu2x->s->rectangle(x, y, 36, gmenu2x->font->height() + 1, 0, 0, 0,255);
