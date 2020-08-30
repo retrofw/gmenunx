@@ -128,7 +128,7 @@ void Menu::readLinks() {
 
 linklist *Menu::sectionLinks(int i) {
 	if (i < 0 || i > (int)links.size()) {
-		i = getSectionIndex();
+		i = iSectionIndex;
 	}
 
 	if (i < 0 || i > (int)links.size()) {
@@ -262,8 +262,8 @@ void Menu::deleteSelectedLink() {
 	INFO("Deleting link '%s'", getLink()->getTitle().c_str());
 
 	if (getLinkApp() != NULL) unlink(getLinkApp()->getFile().c_str());
-	sectionLinks()->erase(sectionLinks()->begin() + getLinkIndex());
-	setLinkIndex(getLinkIndex());
+	sectionLinks()->erase(sectionLinks()->begin() + iLinkIndex);
+	setLinkIndex(iLinkIndex);
 
 	for (uint32_t i = 0; i < sections.size(); i++) {
 		for (uint32_t j = 0; j < sectionLinks(i)->size(); j++) {
@@ -281,8 +281,8 @@ void Menu::deleteSelectedSection() {
 
 	string iconpath = homePath + "/sections/" + getSection() + ".png";
 
-	links.erase(links.begin() + getSectionIndex());
-	sections.erase(sections.begin() + getSectionIndex());
+	links.erase(links.begin() + iSectionIndex);
+	sections.erase(sections.begin() + iSectionIndex);
 	setSectionIndex(0); //reload sections
 
 	for (uint32_t i = 0; i < sections.size(); i++) {
@@ -484,8 +484,8 @@ void Menu::drawList() {
 	for (int y = 0; y < linkRows && i < sectionLinks()->size(); y++, i++) {
 		int iy = gmenu2x->linksRect.y + y * linkHeight;
 
-		if (i == (uint32_t)getLinkIndex()) {
 			gmenu2x->s->box(ix, iy, gmenu2x->linksRect.w, linkHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
+		if (i == iLinkIndex) {
 		}
 
 		Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
@@ -503,7 +503,7 @@ void Menu::drawList() {
 	}
 
 	if (sectionLinks()->size() > linkRows) {
-		gmenu2x->drawScrollBar(1, sectionLinks()->size(), getLinkIndex(), gmenu2x->linksRect, HAlignRight);
+		gmenu2x->drawScrollBar(1, sectionLinks()->size(), iLinkIndex, gmenu2x->linksRect, HAlignRight);
 	}
 }
 
@@ -561,7 +561,7 @@ void Menu::drawSectionBar() {
 	int ix = 0, iy = 0, sy = 0;
 	int x = gmenu2x->sectionBarRect.x;
 	int y = gmenu2x->sectionBarRect.y;
-	int sx = (getSectionIndex() - firstDispSection) * gmenu2x->skinConfInt["sectionBarSize"];
+	int sx = (iSectionIndex - firstDispSection) * gmenu2x->skinConfInt["sectionBarSize"];
 
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
 		ix = (gmenu2x->w - gmenu2x->skinConfInt["sectionBarSize"] * min(sectionNumItems(), getSections().size())) / 2;
@@ -574,7 +574,7 @@ void Menu::drawSectionBar() {
 			x = (i - firstDispSection) * gmenu2x->skinConfInt["sectionBarSize"] + ix;
 		}
 
-		if (getSectionIndex() == (int)i) {
+		if (i == iSectionIndex) {
 			sx = x;
 			sy = y;
 			gmenu2x->s->box(sx, sy, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
