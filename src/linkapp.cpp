@@ -426,9 +426,9 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		command = "HOME=" + params + " " + command;
 	}
 
-	gmenu2x->quit();
-
 	if (getTerminal()) gmenu2x->enableTerminal();
+
+	gmenu2x->quit();
 
 	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
 	execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);

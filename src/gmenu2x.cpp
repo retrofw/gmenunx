@@ -158,7 +158,7 @@ GMenu2X::~GMenu2X() {
 }
 
 void GMenu2X::quit() {
-	quit_all(0);
+	delete GMenu2X::instance;
 }
 
 void GMenu2X::main() {
@@ -1334,8 +1334,8 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, _("Poweroff"));
 			mb.setAutoHide(1);
 			mb.exec();
-			quit();
 			setVolume(0);
+			quit();
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; poweroff");
 #endif
@@ -1345,8 +1345,8 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, _("Rebooting"));
 			mb.setAutoHide(1);
 			mb.exec();
-			quit();
 			setVolume(0);
+			quit();
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; reboot");
 #endif
