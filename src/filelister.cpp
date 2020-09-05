@@ -119,7 +119,10 @@ string FileLister::getFile(uint32_t x) {
 	return files[x - directories.size()];
 }
 const string FileLister::getPath(uint32_t i) {
-	return getDir() + "/" + getFile(i);
+	string s = "";
+	s += getDir().back();
+	s = s == "/" ? "" : "/";
+	return getDir() + s + getFile(i);
 }
 const string FileLister::getExt(uint32_t i) {
 	return file_ext(getFile(i), true);

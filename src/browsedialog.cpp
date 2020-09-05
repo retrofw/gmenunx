@@ -82,7 +82,7 @@ bool BrowseDialog::exec(string _path) {
 				if (isDirectory(i)) {
 					if (getFile(i) == "..")
 						iconCur = iconGoUp;
-					else if ((path == "/" && getFileName(i) == "media") || path == "/media")
+					else if (getPath(i) == "/media" || path == "/media")
 						iconCur = iconSd;
 					else
 						iconCur = iconFolder;
