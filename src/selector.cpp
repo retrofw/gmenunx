@@ -25,6 +25,7 @@
 #include "debug.h"
 
 #include <libopk.h>
+#include <algorithm>
 
 using std::ifstream;
 using std::istringstream;
@@ -33,6 +34,7 @@ Selector::Selector(GMenu2X *gmenu2x, const string &title, const string &descript
 BrowseDialog(gmenu2x, title, description, icon), link(link) {
 	loadAliases();
 	setFilter(link->getSelectorFilter());
+	updFavs();
 }
 
 const std::string Selector::getPreview(uint32_t i) {
@@ -145,12 +147,15 @@ const std::string Selector::getParams(uint32_t i) {
 }
 
 void Selector::customOptions(vector<MenuOption> &options) {
-	if (isFile(selected)) {
-		options.push_back((MenuOption){_("Add to Favourites"), MakeDelegate(this, &Selector::addFavourite)});
+	if (isFavourite(getFile(selected))) {
+		options.push_back((MenuOption){_("Remove favourite"), MakeDelegate(this, &Selector::delFav)});
+	} else if (isFile(selected)) {
+		options.push_back((MenuOption){_("Add favourite"), MakeDelegate(this, &Selector::addFav)});
+		options.push_back((MenuOption){_("Add to home screen"), MakeDelegate(this, &Selector::addToHome)});
 	}
 }
 
-void Selector::addFavourite() {
+void Selector::addToHome() {
 	string favicon = getPreview(selected);
 	if (favicon.empty() || favicon == "#") favicon = this->icon;
 
@@ -181,4 +186,27 @@ void Selector::addFavourite() {
 	MessageBox mb(gmenu2x, _("Link created"), favicon);
 	mb.setAutoHide(1000);
 	mb.exec();
+}
+
+void Selector::addFav() {
+	link->addFavourite(getFile(selected));
+	link->save();
+	updFavs();
+	selected++;
+	directoryEnter(path); // refresh
+}
+
+void Selector::delFav() {
+	link->delFavourite(getFile(selected));
+	link->save();
+	updFavs();
+	if (selected > dirCount() + favCount()) selected--;
+	directoryEnter(path); // refresh
+}
+
+void Selector::updFavs() {
+	clearFavourites();
+	for (int i = 0; i < link->getFavourites().size(); i++) {
+		addFavourite(link->getFavourites().at(i));
+	}
 }

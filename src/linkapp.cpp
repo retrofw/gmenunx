@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
+#include <algorithm>
 
 #include "linkapp.h"
 #include "menu.h"
@@ -71,6 +72,7 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 		else if ((name == "consoleapp") || (name == "terminal")) setTerminal(value == "true");
 		else if (name == "backdrop") setBackdrop(value);
 		else if (name == "autorun") autorun = (value == "true");
+		else if (name == "favourite") addFavourite(value);
 		// else WARNING("Unrecognized option: '%s'", name.c_str());
 	}
 	f.close();
@@ -260,6 +262,10 @@ bool LinkApp::save() {
 	if (aliasfile != "")		f << "selectoraliases="	<< aliasfile		<< std::endl;
 	if (backdrop != "")			f << "backdrop="		<< backdrop			<< std::endl;
 	if (terminal)				f << "terminal=true"						<< std::endl;
+
+	for (int i = 0; i < favourites.size(); i++) {
+		f << "favourite=" << favourites.at(i) << std::endl;
+	}
 
 	f.close();
 	return true;
@@ -471,3 +477,11 @@ void LinkApp::renameFile(const string &name) {
 	file = name;
 }
 
+void LinkApp::addFavourite(const string &fav) {
+	edited = true;
+	favourites.push_back(fav);
+}
+void LinkApp::delFavourite(const string &fav) {
+	edited = true;
+	favourites.erase(std::remove(favourites.begin(), favourites.end(), fav), favourites.end());
+}

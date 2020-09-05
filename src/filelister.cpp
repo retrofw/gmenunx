@@ -36,6 +36,7 @@ void FileLister::browse(string _path) {
 
 	directories.clear();
 	files.clear();
+	favourites.clear();
 
 	if (showDirectories || showFiles) {
 		if (showDirectories && path != "/" && allowDirUp) directories.push_back("..");
@@ -83,6 +84,9 @@ void FileLister::browse(string _path) {
 
 					if (it->length() <= file.length()) {
 						if (!strcasecmp(file.substr(file.size() - it->length()).c_str(), it->c_str())) {
+							if (isFavourite(file)) {
+								favourites.push_back(file);
+							}
 							files.push_back(file);
 							break;
 						}
@@ -102,7 +106,7 @@ void FileLister::setFilter(const string &filter) {
 	this->filter = filter;
 }
 uint32_t FileLister::size() {
-	return files.size() + directories.size();
+	return files.size() + favourites.size() + directories.size();
 }
 uint32_t FileLister::dirCount() {
 	return directories.size();
@@ -110,13 +114,17 @@ uint32_t FileLister::dirCount() {
 uint32_t FileLister::fileCount() {
 	return files.size();
 }
+uint32_t FileLister::favCount() {
+	return favourites.size();
+}
 string FileLister::operator[](uint32_t x) {
 	return getFile(x);
 }
 string FileLister::getFile(uint32_t x) {
 	if (x >= size()) return "";
 	if (x < directories.size()) return directories[x];
-	return files[x - directories.size()];
+	if (x < directories.size() + favourites.size()) return favourites[x - directories.size()];
+	return files[x - favourites.size() - directories.size()];
 }
 const string FileLister::getPath(uint32_t i) {
 	string s = "";
@@ -128,7 +136,10 @@ const string FileLister::getExt(uint32_t i) {
 	return file_ext(getFile(i), true);
 }
 bool FileLister::isFile(uint32_t x) {
-	return x >= directories.size() && x < size();
+	return x >= directories.size() + favourites.size() && x < size();
+}
+bool FileLister::isFavourite(const string &file) {
+	return (find(favs.begin(), favs.end(), file) != favs.end());
 }
 bool FileLister::isDirectory(uint32_t x) {
 	return x < directories.size();
@@ -139,4 +150,10 @@ void FileLister::insertFile(const string &file) {
 void FileLister::addExclude(const string &exclude) {
 	if (exclude == "..") allowDirUp = false;
 	excludes.push_back(exclude);
+}
+void FileLister::addFavourite(const string &fav) {
+	favs.push_back(fav);
+}
+void FileLister::clearFavourites() {
+	favs.clear();
 }

@@ -29,7 +29,7 @@ using std::vector;
 
 class FileLister {
 private:
-	vector<string> directories, files, excludes;
+	vector<string> directories, files, favourites, favs, excludes;
 
 public:
 	string path, filter;
@@ -39,6 +39,7 @@ public:
 
 	uint32_t size();
 	uint32_t dirCount();
+	uint32_t favCount();
 	uint32_t fileCount();
 	string operator[](uint32_t);
 	string getFile(uint32_t);
@@ -54,6 +55,9 @@ public:
 	const vector<string> &getFiles() { return files; }
 	void insertFile(const string &file);
 	void addExclude(const string &exclude);
+	bool isFavourite(const string &file);
+	void addFavourite(const string &fav);
+	void clearFavourites();
 };
 
 #endif /*FILELISTER_H_*/

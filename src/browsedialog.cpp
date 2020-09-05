@@ -17,6 +17,7 @@ bool BrowseDialog::exec(string _path) {
 	Surface *iconFolder = gmenu2x->sc["skin:imgs/folder.png"];
 	Surface *iconFile = gmenu2x->sc["skin:imgs/file.png"];
 	Surface *iconSd = gmenu2x->sc["skin:imgs/sd.png"];
+	Surface *iconFav = gmenu2x->sc["skin:imgs/fav.png"];
 	Surface *iconCur;
 
 	uint32_t i, iY, firstElement = 0, padding = 6;
@@ -86,6 +87,8 @@ bool BrowseDialog::exec(string _path) {
 						iconCur = iconSd;
 					else
 						iconCur = iconFolder;
+				} else if (isFavourite(getFile(i))) {
+					iconCur = iconFav;
 				}
 
 				iconCur->blit(gmenu2x->s, gmenu2x->listRect.x + 10, iY + rowHeight/2, HAlignCenter | VAlignMiddle);

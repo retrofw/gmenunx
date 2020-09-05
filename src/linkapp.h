@@ -21,9 +21,12 @@
 #define LINKAPP_H
 
 #include <string>
-#include "link.h"
+#include <vector>
 
 using std::string;
+using std::vector;
+
+#include "link.h"
 
 /**
 	Parses links files.
@@ -53,6 +56,8 @@ private:
 			file = "",
 			icon_opk = "";
 
+	vector<string> favourites;
+
 public:
 	LinkApp(GMenu2X *gmenu2x, const char* file);
 	const string &getExec() { return exec; }
@@ -65,6 +70,9 @@ public:
 	const string &getManualPath() { return manualPath; }
 	void setManual(const string &manual);
 	const string &getSelectorDir() { return selectordir; }
+	void addFavourite(const string &fav);
+	void delFavourite(const string &fav);
+	vector<string> &getFavourites() { return favourites; }
 	void setSelectorDir(const string &selectordir);
 	bool getSelectorBrowser() { return selectorbrowser; }
 	void setSelectorBrowser(bool value);
