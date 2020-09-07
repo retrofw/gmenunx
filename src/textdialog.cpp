@@ -41,13 +41,13 @@ void TextDialog::preProcess() {
 		row = trim(text.at(i));
 
 		//check if this row is not too long
-		if (gmenu2x->font->getTextWidth(row) > gmenu2x->w - 15) {
+		if (gmenu2x->font->getTextWidth(row) > gmenu2x->platform->w - 15) {
 			vector<string> words;
 			split(words, row, " ");
 
 			uint32_t numWords = words.size();
 			//find the maximum number of rows that can be printed on screen
-			while (gmenu2x->font->getTextWidth(row) > gmenu2x->w - 15 && numWords > 0) {
+			while (gmenu2x->font->getTextWidth(row) > gmenu2x->platform->w - 15 && numWords > 0) {
 				numWords--;
 				row = "";
 				for (uint32_t x = 0; x < numWords; x++)
@@ -90,8 +90,8 @@ int TextDialog::drawText(vector<string> *text, int32_t firstCol, int32_t firstRo
 		mx = max(mx, gmenu2x->font->getTextWidth(text->at(i)));
 
 		if (text->at(i) == "----") { // draw a line
-			gmenu2x->s->box(5, y - 1 + fh / 2, gmenu2x->w - 10, 1, 255, 255, 255, 130);
-			gmenu2x->s->box(5, y + fh / 2, gmenu2x->w - 10, 1, 0, 0, 0, 130);
+			gmenu2x->s->box(5, y - 1 + fh / 2, gmenu2x->platform->w - 10, 1, 255, 255, 255, 130);
+			gmenu2x->s->box(5, y + fh / 2, gmenu2x->platform->w - 10, 1, 0, 0, 0, 130);
 		} else {
 			gmenu2x->font->write(gmenu2x->s, text->at(i), 5 + firstCol, y);
 		}

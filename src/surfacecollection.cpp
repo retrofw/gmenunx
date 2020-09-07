@@ -22,10 +22,7 @@
 #include "surface.h"
 #include "utilities.h"
 #include "debug.h"
-
-#if defined(OPK_SUPPORT)
 #include <libopk.h>
-#endif
 
 SurfaceCollection::SurfaceCollection() {
 }
@@ -62,7 +59,6 @@ Surface *SurfaceCollection::add(string path, string key) {
 
 	Surface *s = NULL;
 
-#if defined(OPK_SUPPORT)
 	int pos = path.find('#'); // search for "opkfile.opk#icon.png"
 	if (pos != path.npos) {
 		string iconpath = "icons/" + path.substr(pos + 1);
@@ -87,9 +83,7 @@ Surface *SurfaceCollection::add(string path, string key) {
 				s = new Surface(buf, len);
 			}
 		}
-	} else
-#endif // OPK_SUPPORT
-	{
+	} else {
 		if (path.substr(0, 5) == "skin:") {
 			path = getSkinFilePath(path.substr(5));
 		}

@@ -24,9 +24,7 @@
 #include "selector.h"
 #include "debug.h"
 
-#if defined(OPK_SUPPORT)
-	#include <libopk.h>
-#endif
+#include <libopk.h>
 
 using std::ifstream;
 using std::istringstream;
@@ -103,9 +101,7 @@ void Selector::loadAliases() {
 		ifstream f(linkAlias, std::ios_base::in);
 		parseAliases(f);
 		f.close();
-
-#if defined(OPK_SUPPORT)
-	} else if (file_ext(linkExec, true) == ".opk") {
+	} else if (!gmenu2x->platform->opk.empty() && file_ext(linkExec, true) == ".opk") {
 		void *buf; size_t len;
 		struct OPK *opk = opk_open(linkExec.c_str());
 		if (!opk) {
@@ -121,7 +117,6 @@ void Selector::loadAliases() {
 		istringstream f((char *)buf);
 
 		parseAliases(f);
-#endif // OPK_SUPPORT
 	}
 }
 

@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#if defined(OPK_SUPPORT)
 
 #include "opkscannerdialog.h"
 #include "utilities.h"
@@ -73,7 +72,7 @@ void OPKScannerDialog::opkInstall(const string &path) {
 		string linkpath = linkname.substr(0, pos);
 		linkpath = pkgname + "." + linkname + ".lnk";
 
-		if (!(any_platform || platform == PLATFORM || platform == "all")) {
+		if (!(any_platform || platform == gmenu2x->platform->opk || platform == "all")) {
 			text.push_back(" - " + linkname + ": " + _("Unsupported platform"));
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 
@@ -272,5 +271,3 @@ void OPKScannerDialog::exec(bool _any_platform) {
 
 	TextDialog::exec();
 }
-
-#endif // defined(OPK_SUPPORT)

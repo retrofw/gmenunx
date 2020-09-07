@@ -39,7 +39,7 @@ class PowerManager;
 #include "surface.h"
 #include "fonthelper.h"
 #include "debug.h"
-
+#include "platform.h"
 
 enum sb {
 	SB_OFF,
@@ -65,21 +65,6 @@ enum tvout {
 using std::string;
 using std::vector;
 using fastdelegate::FastDelegate0;
-
-extern uint16_t mmcPrev, mmcStatus;
-extern uint16_t udcPrev, udcStatus;
-extern uint16_t tvOutPrev, tvOutStatus;
-extern uint16_t volumeModePrev, volumeMode;
-extern uint16_t batteryIcon;
-extern uint8_t numJoyPrev, numJoy; // number of connected joysticks
-
-extern int CPU_MENU;
-extern int CPU_LINK;
-extern int CPU_MAX;
-extern int CPU_MIN;
-extern int CPU_STEP;
-
-extern string dataPath, homePath;
 
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;
@@ -107,18 +92,12 @@ private:
 	string ipkName(string cmd);
 	void ipkInstall(string path);
 
-	virtual void udcDialog(int udcStatus = -1) { };
-	virtual void tvOutDialog(int16_t mode = -1) { };
-	virtual void hwInit() { };
-	virtual void hwDeinit() { };
-
 public:
 	static GMenu2X *instance;
 
 	/*
 	 * Variables needed for elements disposition
 	 */
-	uint32_t w = 320, h = 240, bpp = 16;
 	SDL_Rect listRect, linksRect, sectionBarRect, bottomBarRect;
 
 	//Configuration hashes
@@ -127,9 +106,10 @@ public:
 	ConfColorHash skinConfColor;
 
 	SurfaceCollection sc;
-	Surface *s, *bg, *iconInet = NULL;
+	Surface *s, *bg, *inetIcon = NULL;
 	FontHelper *font = NULL, *titlefont = NULL;
 	PowerManager *powerManager;
+	Platform *platform;
 	InputManager input;
 	Touchscreen ts;
 	Menu *menu;
@@ -188,16 +168,8 @@ public:
 
 	static uint32_t timerFlip(uint32_t interval, void *param = NULL);
 
-	virtual void setScaleMode(unsigned int mode) { };
-	virtual void setTVOut(unsigned int mode) { };
-	virtual void setCPU(uint32_t mhz) { };
-	virtual int setVolume(int val, bool popup = false);
-	virtual int getVolume() { return 0; };
-	virtual int getBacklight() { return -1; };
-	virtual int setBacklight(int val, bool popup = false);
-	virtual string hwPreLinkLaunch() { return ""; };
-	virtual void enableTerminal() { };
-	virtual void setGamma(int value) { };
+	int setVolume(int val, bool popup = false);
+	int setBacklight(int val, bool popup = false);
 };
 
 #endif

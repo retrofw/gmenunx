@@ -159,14 +159,14 @@ const string Menu::getSectionName() {
 
 int Menu::sectionNumItems() {
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_LEFT || gmenu2x->skinConfInt["sectionBar"] == SB_RIGHT) {
-		return (gmenu2x->h - 40) / gmenu2x->skinConfInt["sectionBarSize"];
+		return (gmenu2x->platform->h - 40) / gmenu2x->skinConfInt["sectionBarSize"];
 	}
 
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_TOP || gmenu2x->skinConfInt["sectionBar"] == SB_BOTTOM) {
-		return (gmenu2x->w - 40) / gmenu2x->skinConfInt["sectionBarSize"];
+		return (gmenu2x->platform->w - 40) / gmenu2x->skinConfInt["sectionBarSize"];
 	}
 
-	return (gmenu2x->w / gmenu2x->skinConfInt["sectionBarSize"]) - 1;
+	return (gmenu2x->platform->w / gmenu2x->skinConfInt["sectionBarSize"]) - 1;
 }
 
 void Menu::setSectionIndex(int i) {
@@ -432,22 +432,22 @@ const string Menu::getSectionIcon(int i) {
 
 void Menu::initLayout() {
 	// LINKS rect
-	gmenu2x->linksRect = (SDL_Rect){0, 0, gmenu2x->w, gmenu2x->h};
-	gmenu2x->sectionBarRect = (SDL_Rect){0, 0, gmenu2x->w, gmenu2x->h};
+	gmenu2x->linksRect = (SDL_Rect){0, 0, gmenu2x->platform->w, gmenu2x->platform->h};
+	gmenu2x->sectionBarRect = (SDL_Rect){0, 0, gmenu2x->platform->w, gmenu2x->platform->h};
 
 	if (gmenu2x->skinConfInt["sectionBar"]) {
 		if (gmenu2x->skinConfInt["sectionBar"] == SB_LEFT || gmenu2x->skinConfInt["sectionBar"] == SB_RIGHT) {
-			gmenu2x->sectionBarRect.x = (gmenu2x->skinConfInt["sectionBar"] == SB_RIGHT) * (gmenu2x->w - gmenu2x->skinConfInt["sectionBarSize"]);
+			gmenu2x->sectionBarRect.x = (gmenu2x->skinConfInt["sectionBar"] == SB_RIGHT) * (gmenu2x->platform->w - gmenu2x->skinConfInt["sectionBarSize"]);
 			gmenu2x->sectionBarRect.w = gmenu2x->skinConfInt["sectionBarSize"];
-			gmenu2x->linksRect.w = gmenu2x->w - gmenu2x->skinConfInt["sectionBarSize"];
+			gmenu2x->linksRect.w = gmenu2x->platform->w - gmenu2x->skinConfInt["sectionBarSize"];
 
 			if (gmenu2x->skinConfInt["sectionBar"] == SB_LEFT) {
 				gmenu2x->linksRect.x = gmenu2x->skinConfInt["sectionBarSize"];
 			}
 		} else {
-			gmenu2x->sectionBarRect.y = (gmenu2x->skinConfInt["sectionBar"] == SB_BOTTOM) * (gmenu2x->h - gmenu2x->skinConfInt["sectionBarSize"]);
+			gmenu2x->sectionBarRect.y = (gmenu2x->skinConfInt["sectionBar"] == SB_BOTTOM) * (gmenu2x->platform->h - gmenu2x->skinConfInt["sectionBarSize"]);
 			gmenu2x->sectionBarRect.h = gmenu2x->skinConfInt["sectionBarSize"];
-			gmenu2x->linksRect.h = gmenu2x->h - gmenu2x->skinConfInt["sectionBarSize"];
+			gmenu2x->linksRect.h = gmenu2x->platform->h - gmenu2x->skinConfInt["sectionBarSize"];
 
 			if (gmenu2x->skinConfInt["sectionBar"] == SB_TOP || gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
 				gmenu2x->linksRect.y = gmenu2x->skinConfInt["sectionBarSize"];
@@ -458,8 +458,8 @@ void Menu::initLayout() {
 		}
 	}
 
-	gmenu2x->listRect = (SDL_Rect){0, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->w, gmenu2x->h - gmenu2x->skinConfInt["bottomBarHeight"] - gmenu2x->skinConfInt["sectionBarSize"]};
-	gmenu2x->bottomBarRect = (SDL_Rect){0, gmenu2x->h - gmenu2x->skinConfInt["bottomBarHeight"], gmenu2x->w, gmenu2x->skinConfInt["bottomBarHeight"]};
+	gmenu2x->listRect = (SDL_Rect){0, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->platform->w, gmenu2x->platform->h - gmenu2x->skinConfInt["bottomBarHeight"] - gmenu2x->skinConfInt["sectionBarSize"]};
+	gmenu2x->bottomBarRect = (SDL_Rect){0, gmenu2x->platform->h - gmenu2x->skinConfInt["bottomBarHeight"], gmenu2x->platform->w, gmenu2x->skinConfInt["bottomBarHeight"]};
 
 	// WIP
 	linkCols = gmenu2x->skinConfInt["linkCols"];
@@ -594,7 +594,7 @@ void Menu::drawSectionBar() {
 	int sx = (iSectionIndex - firstDispSection) * gmenu2x->skinConfInt["sectionBarSize"];
 
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
-		ix = (gmenu2x->w - gmenu2x->skinConfInt["sectionBarSize"] * min(sectionNumItems(), getSections().size())) / 2;
+		ix = (gmenu2x->platform->w - gmenu2x->skinConfInt["sectionBarSize"] * min(sectionNumItems(), getSections().size())) / 2;
 	}
 
 	for (int i = firstDispSection; i < getSections().size() && i < firstDispSection + sectionNumItems(); i++) {
@@ -627,7 +627,7 @@ void Menu::drawSectionBar() {
 
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
 		if (iconL != NULL) iconL->blit(gmenu2x->s, 0, 0, HAlignLeft | VAlignTop);
-		if (iconR != NULL) iconR->blit(gmenu2x->s, gmenu2x->w, 0, HAlignRight | VAlignTop);
+		if (iconR != NULL) iconR->blit(gmenu2x->s, gmenu2x->platform->w, 0, HAlignRight | VAlignTop);
 	}
 }
 
@@ -651,7 +651,7 @@ void Menu::drawStatusBar() {
 		// TODO: use drawButton(gmenu2x->s, iconVolume[volumeMode], confInt["globalVolume"], x);
 		{ stringstream ss; ss << gmenu2x->confInt["globalVolume"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
 		x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
-		iconVolume[volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+		iconVolume[gmenu2x->platform->volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
 		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
@@ -667,18 +667,18 @@ void Menu::drawStatusBar() {
 		// sc["skin:imgs/debug.png"]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 
 		// Battery indicator
-		iconBattery[batteryIcon]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+		iconBattery[gmenu2x->platform->batteryStatus]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 		iconTrayShift++;
 
 		// SD Card indicator
-		if (mmcStatus == MMC_INSERT) {
+		if (gmenu2x->platform->mmcStatus == MMC_INSERT) {
 			iconSD->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
 
 		// Network indicator
-		if (gmenu2x->iconInet != NULL) {
-			gmenu2x->iconInet->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+		if (gmenu2x->inetIcon != NULL) {
+			gmenu2x->inetIcon->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
 
@@ -689,7 +689,7 @@ void Menu::drawStatusBar() {
 					iconManual->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 				}
 
-				if (CPU_MAX != CPU_MIN) {
+				if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
 					// CPU indicator
 					{ stringstream ss; ss << getLinkApp()->getCPU() << "MHz"; ss.get(&buf[0], sizeof(buf)); }
 					x += iconPadding + pctWidth;
@@ -712,13 +712,13 @@ void Menu::drawIconTray() {
 	// s->box(sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38,16,16, strtorgba("ff00ffff"));
 
 	// TRAY 0,0
-	iconVolume[volumeMode]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+	iconVolume[gmenu2x->platform->volumeMode]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 
 	// TRAY 1,0
-	iconBattery[batteryIcon]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+	iconBattery[gmenu2x->platform->batteryStatus]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 
 	// TRAY iconTrayShift,1
-	if (mmcStatus == MMC_INSERT) {
+	if (gmenu2x->platform->mmcStatus == MMC_INSERT) {
 		iconSD->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 		iconTrayShift++;
 	}
@@ -731,7 +731,7 @@ void Menu::drawIconTray() {
 				iconTrayShift++;
 			}
 
-			if (CPU_MAX != CPU_MIN) {
+			if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
 				if (getLinkApp()->getCPU() != gmenu2x->confInt["cpuMenu"] && iconTrayShift < 2) {
 					// CPU indicator
 					iconCPU->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);

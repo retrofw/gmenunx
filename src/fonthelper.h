@@ -5,7 +5,7 @@
 
 #include <string>
 #include <vector>
-#include <SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 
 #ifdef _WIN32
     typedef unsigned int uint32_t;

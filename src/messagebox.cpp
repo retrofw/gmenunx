@@ -39,8 +39,8 @@ gmenu2x(gmenu2x) {
 		box.w = max(gmenu2x->font->getTextWidth(options[i].text), box.w);
 	};
 	box.w += 23;
-	box.x = (gmenu2x->w - box.w) / 2;
-	box.y = (gmenu2x->h - box.h) / 2;
+	box.x = (gmenu2x->platform->w - box.w) / 2;
+	box.y = (gmenu2x->platform->h - box.h) / 2;
 
 	uint32_t tickStart = SDL_GetTicks();
 	while (true) {
@@ -49,7 +49,7 @@ gmenu2x(gmenu2x) {
 
 		bg.blit(gmenu2x->s, 0, 0);
 
-		gmenu2x->s->box(0, 0, gmenu2x->w, gmenu2x->h, 0,0,0, fadeAlpha);
+		gmenu2x->s->box(0, 0, gmenu2x->platform->w, gmenu2x->platform->h, 0,0,0, fadeAlpha);
 		gmenu2x->s->box(box.x, box.y, box.w, box.h, gmenu2x->skinConfColor["messageBoxBg"]);
 		gmenu2x->s->rectangle(box.x + 2, box.y + 2, box.w - 4, box.h - 4, gmenu2x->skinConfColor["messageBoxBorder"]);
 
@@ -167,15 +167,15 @@ int MessageBox::exec() {
 	ix = (icn != NULL ? 42 : 0);
 
 	box.w += ix;
-	box.x = (gmenu2x->w - box.w) / 2 - 2;
-	box.y = (gmenu2x->h - box.h) / 2 - 2;
+	box.x = (gmenu2x->platform->w - box.w) / 2 - 2;
+	box.y = (gmenu2x->platform->h - box.h) / 2 - 2;
 
 	uint32_t tickStart = SDL_GetTicks();
 	do {
 		bg.blit(gmenu2x->s, 0, 0);
 
 		// Darken background
-		gmenu2x->s->box(0, 0, gmenu2x->w, gmenu2x->h, 0,0,0, fadeAlpha);
+		gmenu2x->s->box(0, 0, gmenu2x->platform->w, gmenu2x->platform->h, 0,0,0, fadeAlpha);
 
 		fadeAlpha = intTransition(0, bgalpha, tickStart, 200);
 
@@ -203,7 +203,7 @@ int MessageBox::exec() {
 			// draw buttons rectangle
 			gmenu2x->s->box(box.x, box.y+box.h, box.w, gmenu2x->font->height(), gmenu2x->skinConfColor["messageBoxBg"]);
 
-			int btnX = (gmenu2x->w + box.w) / 2 - 6;
+			int btnX = (gmenu2x->platform->w + box.w) / 2 - 6;
 			for (uint32_t i = 0; i < buttonText.size(); i++) {
 				if (!buttonText[i].empty()) {
 					buttonPosition[i].y = box.y+box.h+gmenu2x->font->height() / 2;

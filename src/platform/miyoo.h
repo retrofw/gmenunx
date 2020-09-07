@@ -1,9 +1,7 @@
-#ifndef HW_BITTBOY_H
-#define HW_BITTBOY_H
+#ifndef PLATFORM_MIYOO_H
+#define PLATFORM_MIYOO_H
 
-#include <sys/mman.h>
-
-/*	BittBoy Key Codes. pingflood, 2019
+/*	Miyoo Key Codes. pingflood, 2019
 	BUTTON     GMENU          SDL             NUMERIC   GPIO
 	-----------------------------------------------------------------------------
 	A          CONFIRM        SDLK_LCTRL      306
@@ -41,9 +39,9 @@
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
-int fb0, kbd;
+// int fb0, kbd;
 
-uint32_t oc_table[] = {
+static uint32_t oc_table[] = {
 	0x00c81802, 0x00cc1013, 0x00cc1001, 0x00d01902, 0x00d00c12, 0x00d80b23, 0x00d81101, 0x00d80833,
 	0x00d81a02, 0x00d80811, 0x00d81113, 0x00d80220, 0x00d80521, 0x00d80822, 0x00d80800, 0x00e01b02,
 	0x00e00d12, 0x00e00632, 0x00e41201, 0x00e41213, 0x00e81c02, 0x00ea0c23, 0x00f00922, 0x00f00900,
@@ -110,10 +108,7 @@ uint32_t oc_table[] = {
 // int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 // int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
-volatile uint32_t *mem;
-volatile uint8_t memdev = 0;
 
-uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 
 //   unsigned long ret;
 
@@ -166,63 +161,28 @@ uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 //       break;
 //     }
 
-	return 0;
-}
-
-uint8_t getMMCStatus() {
-	return MMC_REMOVE;
-}
-
-uint8_t getUDCStatus() {
-	return UDC_REMOVE;
-}
-
-uint8_t getTVOutStatus() {
-	return TV_REMOVE;
-}
-
-uint8_t getDevStatus() {
-	return 0;
-}
-
-int32_t getBatteryLevel() {
-	int val = -1;
-	if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
-		fscanf(f, "%i", &val);
-		fclose(f);
-	}
-	return val;
-}
-
-uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
-	if (val = -1) return 6; // charging
-
-	// bool needWriteConfig = false;
-	// if (val > max) {
-	// 	needWriteConfig = true;
-	// 	max = confInt["maxBattery"] = val;
-	// }
-	// if (val < min) {
-	// 	needWriteConfig = true;
-	// 	min = confInt["minBattery"] = val;
-	// }
-
-	// if (needWriteConfig)
-	// 	writeConfig();
-
-	if (max == min) {
-		return 3;
-	}
-
-	return 5 - 5 * (max - val) / (max - min);
-}
-
-uint8_t getVolumeMode(uint8_t vol) {
-	return VOLUME_MODE_NORMAL;
-}
-
-class GMenuNX : public GMenu2X {
+class Miyoo : public Platform {
 private:
+	volatile uint32_t *mem;
+	volatile uint8_t memdev = 0;
+
+	int16_t getBatteryLevel() {
+		int val = -1;
+		if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
+			fscanf(f, "%i", &val);
+			fclose(f);
+		}
+		return val;
+	}
+
+	uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
+		if (val = -1) return 6; // charging
+		if (max == min) {
+			return 3;
+		}
+		return 5 - 5 * (max - val) / (max - min);
+	}
+
 	void hwDeinit() {
 		if (memdev > 0) {
 			close(memdev);
@@ -230,11 +190,11 @@ private:
 	}
 
 	void hwInit() {
-		CPU_MENU = 702;
-		CPU_LINK = 702;
-		CPU_MAX = 900;
-		CPU_MIN = 200;
-		CPU_STEP = 6;
+		cpu_menu = 702;
+		cpu_link = 702;
+		cpu_max = 900;
+		cpu_min = 200;
+		cpu_step = 6;
 
 		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
@@ -251,10 +211,9 @@ private:
 		}
 		w = 320;
 		h = 240;
-		INFO("BITTBOY");
 	}
 
-	int getBacklight() {
+	int16_t getBacklight() {
 		int val = -1;
 		FILE *f = fopen("/sys/devices/platform/backlight/backlight/backlight/brightness", "r");
 		if (f) {
@@ -265,8 +224,12 @@ private:
 	}
 
 public:
+	Miyoo(GMenu2X *gmenu2x) : Platform(gmenu2x) {
+		INFO("Miyoo");
+	};
+
 	int setVolume(int val, bool popup = false) {
-		val = GMenu2X::setVolume(val, popup);
+		val = gmenu2x->setVolume(val, popup);
 
 		uint32_t snd = open("/dev/miyoo_snd", O_RDWR);
 
@@ -282,7 +245,7 @@ public:
 	}
 
 	int setBacklight(int val, bool popup = false) {
-		val = GMenu2X::setBacklight(val, popup);
+		val = gmenu2x->setBacklight(val, popup);
 		char buf[128] = {0};
 		sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
 		system(buf);

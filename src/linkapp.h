@@ -32,13 +32,14 @@ using std::string;
 class LinkApp : public Link {
 private:
 	// InputManager &input;
-	int		clock = 0,
+	int		gamma = 0,
+			clock = 0,
 			selectorelement = 0,
 			scalemode,
 			_scalemode = 0; //, ivolume = 0;
 
 	bool	selectorbrowser = true,
-			terminal = false;
+			terminal = false,
 
 	string	params = "",
 			homedir = "",
@@ -87,28 +88,8 @@ public:
 	bool targetExists();
 	void renameFile(const string &name);
 	const string &getFile() { return file; }
-
-#if defined(TARGET_GP2X)
-	// int volume();
-	// const string &volumeStr();
-	// void setVolume(int vol);
-	// bool getUseRamTimings() { return useRamTimings; }
-	// void setUseRamTimings(bool value);
-	// bool getUseGinge() { return useGinge; }
-	// void setUseGinge(bool value);
-	// const string &clockStr(int maxClock);
-	// string sgamma;
-#endif
-
-#if defined(HW_GAMMA)
-	int gamma;
 	int getGamma() { return gamma; }
 	void setGamma(int gamma);
-	// const string &gammaStr();
-	// bool &needsWrapperRef() { return wrapper; }
-	// bool &runsInBackgroundRef() { return dontleave; }
-#endif
-
 	const string searchIcon();
 	const string searchBackdrop();
 	const string searchManual();

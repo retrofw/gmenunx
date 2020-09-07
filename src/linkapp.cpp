@@ -35,18 +35,9 @@ extern char** environ;
 LinkApp::LinkApp(GMenu2X *gmenu2x, const char* file):
 Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 	setCPU(gmenu2x->confInt["cpuLink"]);
-
-#if defined(HW_GAMMA)
-	//G
 	setGamma(0);
-	// wrapper = false;
-	// dontleave = false;
-	// setVolume(-1);
-	// useRamTimings = false;
-	// useGinge = false;
-#endif
 
-	if (((float)(gmenu2x->w)/gmenu2x->h) != (4.0f/3.0f)) _scalemode = 3; // 4:3 by default
+	if (((float)(gmenu2x->platform->w)/gmenu2x->platform->h) != (4.0f/3.0f)) _scalemode = 3; // 4:3 by default
 	scalemode = _scalemode;
 
 	string line;
@@ -69,15 +60,7 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 		else if (name == "home") setHomeDir(value);
 		else if (name == "manual") setManual(value);
 		else if (name == "clock") setCPU(atoi(value.c_str()));
-
-#if defined(HW_GAMMA)
-		// else if (name == "wrapper" && value == "true") // wrapper = true;
-		// else if (name == "dontleave" && value == "true") // dontleave = true;
-		// else if (name == "volume") // setVolume(atoi(value.c_str()));
-		// else if (name == "useramtimings" && value == "true") // useRamTimings = true;
-		// else if (name == "useginge" && value == "true") // useGinge = true;
 		else if (name == "gamma") setGamma(atoi(value.c_str()));
-#endif
 		else if (name == "selectordir") setSelectorDir(value);
 		else if (name == "selectorbrowser" && value == "false") setSelectorBrowser(false);
 		else if (name == "scalemode") setScaleMode(atoi(value.c_str()));
@@ -209,11 +192,9 @@ const string LinkApp::searchIcon() {
 	iconpath = execicon + ".png";
 	if (file_exists(iconpath)) return iconpath;
 
-#if defined(OPK_SUPPORT)
-	if (isOPK()) {
+	if (!gmenu2x->platform->opk.empty() || isOPK()) {
 		return exec + "#" + icon_opk;
 	} else
-#endif
 
 	return gmenu2x->sc.getSkinFilePath("icons/generic.png");
 }
@@ -224,12 +205,10 @@ void LinkApp::setCPU(int mhz) {
 	edited = true;
 }
 
-#if defined(HW_GAMMA)
 void LinkApp::setGamma(int gamma) {
 	gamma = constrain(gamma, 0, 100);
 	edited = true;
 }
-#endif
 
 bool LinkApp::targetExists() {
 #if defined(TARGET_LINUX)
@@ -264,15 +243,8 @@ bool LinkApp::save() {
 	if (params != "")			f << "params="			<< params			<< std::endl;
 	if (homedir != "")			f << "home="			<< homedir			<< std::endl;
 	if (manual != "")			f << "manual="			<< manual			<< std::endl;
-	if (clock != 0 && clock != gmenu2x->confInt["cpuLink"])
-								f << "clock="			<< clock			<< std::endl;
-	// if (useRamTimings)		f << "useramtimings=true"					<< std::endl;
-	// if (useGinge)			f << "useginge=true"						<< std::endl;
-	// if (volume > 0)			f << "volume="			<< volume			<< std::endl;
-#if defined(HW_GAMMA)
-	if (gamma != 0)				f << "gamma="			<< gamma			<< std::endl;
-#endif
-
+	if (clock != 0 && clock != gmenu2x->confInt["cpuLink"]) f << "clock="	<< clock	<< std::endl;
+	if (gmenu2x->platform->gamma && gamma != 0)	f << "gamma="	<< gamma			<< std::endl;
 	if (selectordir != "")		f << "selectordir="		<< selectordir		<< std::endl;
 	if (!selectorbrowser)		f << "selectorbrowser=false"				<< std::endl; // selectorbrowser = true by default
 	if (scalemode != _scalemode)	f << "scalemode="	<< scalemode		<< std::endl; // scalemode = 0 by default
@@ -364,8 +336,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	INFO("Executing '%s' (%s %s)", title.c_str(), exec.c_str(), params.c_str());
 
-#if defined(OPK_SUPPORT)
-	if (isOPK()) {
+	if (!gmenu2x->platform->opk.empty() && isOPK()) {
 		string opk_mount = "umount -fl /mnt &> /dev/null; mount -o loop " + command + " /mnt";
 		system(opk_mount.c_str());
 		chdir("/mnt"); // Set correct working directory
@@ -374,7 +345,6 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		params = "";
 	}
 	else
-#endif
 	{
 		chdir(dir_name(exec).c_str()); // Set correct working directory
 	}
@@ -394,24 +364,15 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
-	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
+	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->platform->setCPU(getCPU());
 
-#if defined(TARGET_GP2X)
-	//if (useRamTimings) gmenu2x->applyRamTimings();
-	// if (useGinge) {
-		// string ginge_prep = exe_path() + "/ginge/ginge_prep";
-		// if (file_exists(ginge_prep)) command = cmdclean(ginge_prep) + " " + command;
-	// }
-	if (fwType == "open2x") gmenu2x->writeConfigOpen2x();
-#endif
+	if (getGamma() != 0 && getGamma() != gmenu2x->confInt["gamma"]) {
+		gmenu2x->platform->setGamma(getGamma());
+	}
 
-#if defined(HW_GAMMA)
-	if (gamma() != 0 && gamma() != gmenu2x->confInt["gamma"]) gmenu2x->setGamma(gamma());
-#endif
+	gmenu2x->platform->setScaleMode(scalemode);
 
-	gmenu2x->setScaleMode(scalemode);
-
-	command = gmenu2x->hwPreLinkLaunch() + command;
+	command = gmenu2x->platform->hwPreLinkLaunch() + command;
 
 	if (gmenu2x->confInt["outputLogs"]) {
 		params = "echo " + cmdclean(command) + " > " + cmdclean(homePath + "/log.txt");
@@ -426,7 +387,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		command = "HOME=" + params + " " + command;
 	}
 
-	if (getTerminal()) gmenu2x->enableTerminal();
+	if (getTerminal()) gmenu2x->platform->enableTerminal();
 
 	gmenu2x->quit();
 
@@ -504,11 +465,3 @@ void LinkApp::renameFile(const string &name) {
 	file = name;
 }
 
-// void LinkApp::setUseRamTimings(bool value) {
-// 	useRamTimings = value;
-// 	edited = true;
-// }
-// void LinkApp::setUseGinge(bool value) {
-// 	useGinge = value;
-// 	edited = true;
-// }

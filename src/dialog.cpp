@@ -19,8 +19,8 @@ void Dialog::drawTopBar(Surface *s, const std::string &title, const std::string 
 	// Surface *bar = sc[gmenu2x->confStr["skin"] + "/imgs/topbar.png"];
 	// if (bar != NULL) bar->blit(s, 0, 0);
 	// else
-	s->setClipRect({0, 0, gmenu2x->w, gmenu2x->skinConfInt["sectionBarSize"]});
-	s->box(0, 0, gmenu2x->device->w, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColor["topBarBg"]);
+	s->setClipRect({0, 0, gmenu2x->platform->w, gmenu2x->skinConfInt["sectionBarSize"]});
+	s->box(0, 0, gmenu2x->platform->w, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColor["topBarBg"]);
 
 	int iconOffset = 2;
 

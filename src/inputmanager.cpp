@@ -26,8 +26,6 @@
 #include <fstream>
 using std::ifstream;
 
-extern uint8_t numJoy; // number of connected joysticks
-
 enum InputManagerMappingTypes {
 	MAPPING_TYPE_BUTTON,
 	MAPPING_TYPE_AXIS,
