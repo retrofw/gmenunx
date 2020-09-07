@@ -23,11 +23,11 @@
 #include <algorithm>
 using std::find;
 
-MenuSettingMultiString::MenuSettingMultiString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const vector<string> *choices, msms_onchange_t onChange, msms_onselect_t onSelect, msms_formatter_t formatter):
+MenuSettingMultiString::MenuSettingMultiString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const vector<string> choices, msms_onchange_t onChange, msms_onselect_t onSelect, msms_formatter_t formatter):
 MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onChange(onChange), onSelect(onSelect), formatter(formatter) {
-	setSel(find(choices->begin(), choices->end(), *value) - choices->begin());
+	setSel(find(choices.begin(), choices.end(), *value) - choices.begin());
 
-	if (choices->size() > 1) {
+	if (choices.size() > 1) {
 		btn = new IconButton(gmenu2x, "dpad", _("Change"));
 		// btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
 		buttonBox.add(btn);
@@ -70,13 +70,13 @@ void MenuSettingMultiString::decSel() {
 
 void MenuSettingMultiString::setSel(int sel) {
 	if (sel < 0) {
-		sel = choices->size()-1;
-	} else if (sel >= (int)choices->size()) {
+		sel = choices.size() - 1;
+	} else if (sel >= (int)choices.size()) {
 		sel = 0;
 	}
 	selected = sel;
 
-	setValue((*choices)[sel]);
+	setValue(choices.at(sel));
 }
 
 void MenuSettingMultiString::draw(int y) {

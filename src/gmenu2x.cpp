@@ -445,7 +445,7 @@ void GMenu2X::settings() {
 		usbMode.push_back("Ask");
 		usbMode.push_back("Storage");
 		usbMode.push_back("Charger");
-		sd.addSetting(new MenuSettingMultiString(this, _("USB mode"), _("Define default USB mode"), &confStr["usbMode"], &usbMode));
+		sd.addSetting(new MenuSettingMultiString(this, _("USB mode"), _("Define default USB mode"), &confStr["usbMode"], usbMode));
 	}
 
 	if (platform->tvout) {
@@ -454,7 +454,7 @@ void GMenu2X::settings() {
 		tvMode.push_back("NTSC");
 		tvMode.push_back("PAL");
 		tvMode.push_back("OFF");
-		sd.addSetting(new MenuSettingMultiString(this, _("TV mode"), _("Define default TV mode"), &confStr["tvMode"], &tvMode));
+		sd.addSetting(new MenuSettingMultiString(this, _("TV mode"), _("Define default TV mode"), &confStr["tvMode"], tvMode));
 	}
 
 	sd.addSetting(new MenuSettingInt(this, _("Suspend timeout"), _("Seconds until suspend the device when inactive"), &confInt["backlightTimeout"], 30, 10, 300));
@@ -463,7 +463,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, _("Audio volume"), _("Set the default audio volume"), &confInt["globalVolume"], 60, 0, 100));
 	sd.addSetting(new MenuSettingBool(this, _("Remember selection"), _("Remember the last selected section, link and file"), &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, _("Output logs"), _("Logs the link's output to read with Log Viewer"), &confInt["outputLogs"]));
-	sd.addSetting(new MenuSettingMultiString(this, _("Reset settings"), _("Choose settings to reset back to defaults"), &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
+	sd.addSetting(new MenuSettingMultiString(this, _("Reset settings"), _("Choose settings to reset back to defaults"), &tmp, opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		// if (lang == "English") lang = "";
@@ -1012,18 +1012,18 @@ void GMenu2X::skinMenu() {
 		SettingsDialog sd(this, ts, _("Skin"), "skin:icons/skin.png");
 		sd.selected = selected;
 		sd.allowCancel = false;
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin"), _("Set the skin used by GMenuNX"), &confStr["skin"], &skins, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeSkin), MakeDelegate(this, &GMenu2X::basenameFormatter)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Wallpaper"), _("Select an image to use as a wallpaper"), &confStr["wallpaper"], &wallpapers, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeWallpaper), MakeDelegate(this, &GMenu2X::basenameFormatter)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Background"), _("How to scale wallpaper, backdrops and game art"), &confStr["bgscale"], &bgScale, MakeDelegate(this, &GMenu2X::updateSkin)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Preview mode"), _("How to show image preview and game art"), &confStr["previewMode"], &previewMode));
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin colors"), _("Customize skin colors"), &tmp, &wpLabel, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::skinColors)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin backdrops"), _("Automatic load backdrops from skin pack"), &skinBackdrops, &bdStr));
-		sd.addSetting(new MenuSettingMultiString(this, _("Font face"), _("Override the skin font face"), &confStr["skinFont"], &skinFont, MakeDelegate(this, &GMenu2X::updateSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, _("Skin"), _("Set the skin used by GMenuNX"), &confStr["skin"], skins, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeSkin), MakeDelegate(this, &GMenu2X::basenameFormatter)));
+		sd.addSetting(new MenuSettingMultiString(this, _("Wallpaper"), _("Select an image to use as a wallpaper"), &confStr["wallpaper"], wallpapers, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeWallpaper), MakeDelegate(this, &GMenu2X::basenameFormatter)));
+		sd.addSetting(new MenuSettingMultiString(this, _("Background"), _("How to scale wallpaper, backdrops and game art"), &confStr["bgscale"], bgScale, MakeDelegate(this, &GMenu2X::updateSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, _("Preview mode"), _("How to show image preview and game art"), &confStr["previewMode"], previewMode));
+		sd.addSetting(new MenuSettingMultiString(this, _("Skin colors"), _("Customize skin colors"), &tmp, wpLabel, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::skinColors)));
+		sd.addSetting(new MenuSettingMultiString(this, _("Skin backdrops"), _("Automatic load backdrops from skin pack"), &skinBackdrops, bdStr));
+		sd.addSetting(new MenuSettingMultiString(this, _("Font face"), _("Override the skin font face"), &confStr["skinFont"], skinFont, MakeDelegate(this, &GMenu2X::updateSkin)));
 		sd.addSetting(new MenuSettingInt(this, _("Font size"), _("Size of text font"), &skinConfInt["fontSize"], 12, 6, 60));
 		sd.addSetting(new MenuSettingInt(this, _("Title font size"), _("Size of title's text font"), &skinConfInt["fontSizeTitle"], 20, 6, 60));
-		sd.addSetting(new MenuSettingMultiString(this, _("Section bar layout"), _("Set the layout and position of the Section Bar"), &sectionBar, &sbStr));
-		sd.addSetting(new MenuSettingInt(this, _("Section bar size"), _("Size of section and top bar"), &skinConfInt["sectionBarSize"], 40, 1, device->w));
-		sd.addSetting(new MenuSettingInt(this, _("Bottom bar height"), _("Height of bottom bar"), &skinConfInt["bottomBarHeight"], 16, 1, device->h));
+		sd.addSetting(new MenuSettingMultiString(this, _("Section bar layout"), _("Set the layout and position of the Section Bar"), &sectionBar, sbStr));
+		sd.addSetting(new MenuSettingInt(this, _("Section bar size"), _("Size of section and top bar"), &skinConfInt["sectionBarSize"], 40, 1, platform->w));
+		sd.addSetting(new MenuSettingInt(this, _("Bottom bar height"), _("Height of bottom bar"), &skinConfInt["bottomBarHeight"], 16, 1, platform->h));
 		sd.addSetting(new MenuSettingInt(this, _("Menu columns"), _("Number of columns of links in main menu"), &skinConfInt["linkCols"], 4, 1, 8));
 		sd.addSetting(new MenuSettingInt(this, _("Menu rows"), _("Number of rows of links in main menu"), &skinConfInt["linkRows"], 4, 1, 8));
 		sd.addSetting(new MenuSettingBool(this, _("Link label"), _("Show link labels in main menu"), &skinConfInt["linkLabel"]));
@@ -1426,7 +1426,7 @@ void GMenu2X::editLink() {
 	// sd.addSetting(new MenuSettingFile(this,		_("Executable"),	_("Application this link points to"), &linkExec, ".dge,.gpu,.gpe,.sh,.bin,.opk,.elf,", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingString(this,		_("Title"),			_("Link title"), &linkTitle, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingString(this,		_("Description"),	_("Link description"), &linkDescription, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingMultiString(this,	_("Section"),		_("The section this link belongs to"), &newSection, &menu->getSections()));
+	sd.addSetting(new MenuSettingMultiString(this,	_("Section"),		_("The section this link belongs to"), &newSection, menu->getSections()));
 	sd.addSetting(new MenuSettingString(this,		_("Parameters"),	_("Command line arguments to pass to the application"), &linkParams, dialogTitle, dialogIcon));
 
 	sd.addSetting(new MenuSettingImage(this,		_("Icon"),			_("Select a custom icon for the link"), &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
@@ -1436,11 +1436,11 @@ void GMenu2X::editLink() {
 	}
 	// sd.addSetting(new MenuSettingDir(			this, tr["Home Path"],		tr["Set directory as $HOME for this link"], &linkHomeDir, CARD_ROOT, dialogTitle, dialogIcon));
 
-		sd.addSetting(new MenuSettingMultiString(this,	_("Scale Mode"),	_("Hardware scaling mode"), &linkScaleMode, &scaleMode));
 	if (platform->hw_scaler) {
+		sd.addSetting(new MenuSettingMultiString(this,	_("Scale Mode"),	_("Hardware scaling mode"), &linkScaleMode, scaleMode));
 	}
 
-	sd.addSetting(new MenuSettingMultiString(this,	_("File Selector"),	_("Use file browser selector"), &confStr["tmp_selector"], &selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
+	sd.addSetting(new MenuSettingMultiString(this,	_("File Selector"),	_("Use file browser selector"), &confStr["tmp_selector"], selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
 	sd.addSetting(new MenuSettingBool(this,			_("Show Folders"),	_("Allow the selector to change directory"), &linkSelBrowser));
 	sd.addSetting(new MenuSettingString(this,		_("File Filter"),	_("Filter by file extension (separate with commas)"), &linkSelFilter, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingDir(this,			_("Box Art"),		_("Directory of the box art for the selector"), &linkSelScreens, linkDir, dialogTitle, dialogIcon));
