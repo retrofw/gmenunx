@@ -1,0 +1,12 @@
+PLATFORM = od
+
+CROSS_COMPILE ?= /opt/gcw0-toolchain/usr/bin/mipsel-linux-
+
+export CROSS_COMPILE
+
+CFLAGS += -Os
+CFLAGS += -mhard-float -mips32r2 -mno-mips16
+
+LDFLAGS = -lintl
+
+include gmenunx.mk
