@@ -26,6 +26,18 @@
 
 extern string dataPath;
 
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define rmask 0xFF000000
+#define gmask 0x00FF0000
+#define bmask 0x0000FF00
+#define amask 0x000000FF
+#else
+#define rmask 0x000000FF
+#define gmask 0x0000FF00
+#define bmask 0x00FF0000
+#define amask 0xFF000000
+#endif
+
 RGBAColor strtorgba(const string &strColor) {
 	const int s = (strColor.at(0) == '#') ? 1 : 0;
 	RGBAColor c = {0,0,0,255};
@@ -87,19 +99,6 @@ Surface::Surface(Surface *s) {
 
 Surface::Surface(int w, int h, uint32_t flags) {
 	dblbuffer = NULL;
-	uint32_t rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	rmask = 0xff000000;
-	gmask = 0x00ff0000;
-	bmask = 0x0000ff00;
-	amask = 0x000000ff;
-#else
-	rmask = 0x000000ff;
-	gmask = 0x0000ff00;
-	bmask = 0x00ff0000;
-	amask = 0xff000000;
-#endif
-
 	SDL_Surface* _raw = SDL_CreateRGBSurface(flags, w, h, 16, rmask, gmask, bmask, amask);
 	raw = SDL_DisplayFormat(_raw);
 	SDL_FreeSurface(_raw);
@@ -153,20 +152,6 @@ void Surface::load(const string &img, bool alpha, string skin) {
 	raw = IMG_Load(skin.c_str());
 	if (raw == NULL) {
 		ERROR("Couldn't load surface '%s'", img.c_str());
-		uint32_t rmask, gmask, bmask, amask;
-
-		#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			rmask = 0xff000000;
-			gmask = 0x00ff0000;
-			bmask = 0x0000ff00;
-			amask = 0x000000ff;
-		#else
-			rmask = 0x000000ff;
-			gmask = 0x0000ff00;
-			bmask = 0x00ff0000;
-			amask = 0xff000000;
-		#endif
-
 		SDL_Surface* _raw = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, 16, 16, 16, rmask, gmask, bmask, amask);
 		raw = SDL_DisplayFormat(_raw);
 		SDL_FreeSurface(_raw);
