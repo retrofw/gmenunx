@@ -3,7 +3,6 @@
 #include "debug.h"
 #include "utilities.h"
 #include "powermanager.h"
-extern const char *CARD_ROOT;
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon):
 Dialog(gmenu2x, title, description, icon) {
@@ -244,8 +243,8 @@ void BrowseDialog::contextMenu() {
 	if (path == "/media" && getFile(selected) != ".." && isDirectory(selected))
 		options.push_back((MenuOption){_("Umount"), MakeDelegate(this, &BrowseDialog::umountDir)});
 
-	if (path != CARD_ROOT)
-		options.push_back((MenuOption){_F("Go to %s", CARD_ROOT), MakeDelegate(this, &BrowseDialog::exploreHome)});
+	if (path != home_path("../"))
+		options.push_back((MenuOption){_F("Go to %s", home_path("../").c_str()), MakeDelegate(this, &BrowseDialog::exploreHome)});
 
 	if (path != "/media")
 		options.push_back((MenuOption){_F("Go to %s", "/media"), MakeDelegate(this, &BrowseDialog::exploreMedia)});
@@ -275,7 +274,7 @@ void BrowseDialog::umountDir() {
 
 void BrowseDialog::exploreHome() {
 	selected = 0;
-	directoryEnter(CARD_ROOT);
+	directoryEnter(home_path("../"));
 }
 
 void BrowseDialog::exploreMedia() {
@@ -285,7 +284,7 @@ void BrowseDialog::exploreMedia() {
 
 void BrowseDialog::setWallpaper() {
 	string src = getPath(selected);
-	string dst = homePath + "/Wallpaper" + file_ext(src, true);
+	string dst = home_path("Wallpaper") + file_ext(src, true);
 	if (file_copy(src, dst)) {
 		gmenu2x->confStr["wallpaper"] = dst;
 		gmenu2x->writeConfig();

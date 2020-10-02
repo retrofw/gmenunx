@@ -33,6 +33,8 @@
 #include "utilities.h"
 #include "debug.h"
 
+extern string _data_path, _home_path;
+
 bool case_less::operator()(const string &left, const string &right) const {
 	return strcasecmp(left.c_str(), right.c_str()) < 0;
 }
@@ -398,6 +400,28 @@ void set_date_time(const char* timestamp) {
 
 	sync_date_time(t);
 }
+
+string home_path(string path) {
+	if (_home_path.empty()) {
+		_home_path = (string)getenv("HOME");
+	}
+	if (path == "../") {
+		return _home_path;	
+	}
+	return _home_path + "/" + ".gmenunx/" + path;
+}
+
+string data_path(string path) {
+	if (_data_path.empty()) {
+		if (dir_exists("/usr/share/gmenunx")) {
+			_data_path = "/usr/share/gmenunx";
+		} else {
+			_data_path = "./";
+		}
+	}
+	return _data_path + "/" + path;
+}
+
 
 // char *ms2hms(uint32_t t, bool mm = true, bool ss = true) {
 // 	static char buf[10];

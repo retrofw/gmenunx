@@ -71,7 +71,7 @@ void InputManager::init(string conffile) {
 
 	if (!file_exists(conffile)) {
 		INFO("File not found: %s. Using default values.", conffile.c_str());
-		conffile = dataPath + "/input.conf";
+		conffile = data_path("input.conf");
 	}
 
 	ifstream f(conffile, std::ios_base::in);

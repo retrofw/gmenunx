@@ -9,8 +9,6 @@
 #include "filelister.h"
 #include <algorithm>
 
-extern const char *CARD_ROOT;
-
 bool any_platform = false;
 
 PKGScannerDialog::PKGScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop):
@@ -133,7 +131,7 @@ void PKGScannerDialog::opkInstall(const string &path) {
 
 		gmenu2x->menu->addSection(section);
 
-		linkpath = homePath + "/sections/" + section + "/" + linkpath;
+		linkpath = home_path("sections/") + section + "/" + linkpath;
 
 		LinkApp *link = new LinkApp(gmenu2x, linkpath.c_str());
 
@@ -200,14 +198,14 @@ void PKGScannerDialog::exec(bool _any_platform) {
 		fl.showFiles = false;
 		fl.allowDirUp = false;
 
-		fl.browse(CARD_ROOT);
+		fl.browse(home_path("../"));
 		for (uint32_t j = 0; j < fl.size(); j++) {
 			if (find(paths.begin(), paths.end(), fl.getPath(j)) == paths.end()) {
 				paths.push_back(fl.getPath(j));
 			}
 		}
 
-		if (gmenu2x->confStr["homePath"] != CARD_ROOT) {
+		if (gmenu2x->confStr["homePath"] != home_path("../")) {
 			fl.browse(gmenu2x->confStr["homePath"]);
 			for (uint32_t j = 0; j < fl.size(); j++) {
 				if (find(paths.begin(), paths.end(), fl.getPath(j)) == paths.end()) {
@@ -293,7 +291,7 @@ void PKGScannerDialog::raScan(string radir) {
 
 		gmenu2x->menu->addSection(section);
 
-		linkpath = home_path("/sections/") + section + "/" + linkpath;
+		linkpath = home_path("sections/") + section + "/" + linkpath;
 
 		LinkApp *link = new LinkApp(gmenu2x, linkpath.c_str());
 

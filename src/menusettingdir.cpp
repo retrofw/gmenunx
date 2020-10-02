@@ -21,8 +21,6 @@
 #include "browsedialog.h"
 #include "debug.h"
 
-extern const char *CARD_ROOT;
-
 using std::string;
 using fastdelegate::MakeDelegate;
 
@@ -30,7 +28,7 @@ MenuSettingDir::MenuSettingDir(GMenu2X *gmenu2x, const string &title, const stri
 MenuSettingStringBase(gmenu2x, title, description, value), startPath(startPath), dialogTitle(dialogTitle), dialogIcon(dialogIcon) {
 	if (dialogTitle.empty()) this->dialogTitle = this->title;
 	if (dialogIcon.empty()) this->dialogIcon = "icons/explorer.png";
-	if (startPath.empty()) this->startPath = CARD_ROOT;
+	if (startPath.empty()) this->startPath = home_path("../");
 
 	btn = new IconButton(gmenu2x, "select", _("Reset"));
 	btn->setAction(MakeDelegate(this, &MenuSettingDir::clear));

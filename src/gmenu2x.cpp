@@ -62,12 +62,9 @@ using namespace fastdelegate;
 
 #define sync() sync(); system("sync &");
 
-string dataPath = "/usr/share/gmenunx";
-string homePath = (string)getenv("HOME") + "/.gmenunx";
+string _data_path, _home_path;
 
 string prevDateTime = "", newDateTime = "";
-
-const char *CARD_ROOT = getenv("HOME");
 
 #include "menu.h"
 
@@ -133,9 +130,9 @@ void GMenu2X::main() {
 	platform = PlatformInit(this);
 	platform->hwInit();
 
-	mkdir(homePath.c_str(), 0777);
+	mkdir(home_path().c_str(), 0777);
 
-	readConfig(homePath + "/gmenunx.conf", true);
+	readConfig(home_path("gmenunx.conf"), true);
 
 	platform->setScaleMode(0);
 
@@ -153,7 +150,7 @@ void GMenu2X::main() {
 	SDL_WM_SetCaption("gmenunx", NULL);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	input.init(homePath + "/input.conf");
+	input.init(home_path("input.conf"));
 
 	setInputSpeed();
 
@@ -340,8 +337,8 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 			fl.showDirectories = false;
 			fl.showFiles = true;
 			fl.setFilter(".png,.jpg,.jpeg,.bmp");
-			fl.browse(dataPath + "/skins/Default/wallpapers");
-			wallpaper = dataPath + "/skins/Default/wallpapers/" + fl.getFiles()[0];
+			fl.browse(data_path("skins/Default/wallpapers"));
+			wallpaper = data_path("skins/Default/wallpapers/") + fl.getFiles()[0];
 		}
 		if (sc[wallpaper] == NULL) return "";
 		if (confStr["bgscale"] == "Stretch") sc[wallpaper]->softStretch(platform->w, platform->h, SScaleStretch);
@@ -355,20 +352,20 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 }
 
 void GMenu2X::initFont() {
-	string skinFont = confStr["skinFont"] == "Default" ? dataPath + "/skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+	string skinFont = confStr["skinFont"] == "Default" ? data_path("skins/Default/font.ttf") : sc.getSkinFilePath("font.ttf");
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	if (!font->font) {
 		delete font;
-		font = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSize"], skinConfColor["font"], skinConfColor["fontOutline"]);
+		font = new FontHelper(data_path("skins/Default/font.ttf"), skinConfInt["fontSize"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	}
 
 	delete titlefont;
 	titlefont = new FontHelper(skinFont, skinConfInt["fontSizeTitle"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	if (!titlefont->font) {
 		delete titlefont;
-		titlefont = new FontHelper(dataPath + "/skins/Default/font.ttf", skinConfInt["fontSizeTitle"], skinConfColor["font"], skinConfColor["fontOutline"]);
+		titlefont = new FontHelper(data_path("skins/Default/font.ttf"), skinConfInt["fontSizeTitle"], skinConfColor["font"], skinConfColor["fontOutline"]);
 	}
 }
 
@@ -390,7 +387,7 @@ void GMenu2X::initMenu() {
 		else if (menu->getSections()[i] == "settings") {
 			menu->addActionLink(i, _("Settings"), MakeDelegate(this, &GMenu2X::settings), _("Configure system"), "configure.png");
 			menu->addActionLink(i, _("Skin"), MakeDelegate(this, &GMenu2X::skinMenu), _("Appearance & skin settings"), "skin.png");
-			if (file_exists(homePath + "/log.txt")) {
+			if (file_exists(home_path("log.txt"))) {
 				menu->addActionLink(i, _("Log Viewer"), MakeDelegate(this, &GMenu2X::viewLog), _("Displays last launched program's output"), "ebook.png");
 			}
 
@@ -406,7 +403,7 @@ void GMenu2X::settings() {
 	powerManager->clearTimer();
 
 	FileLister fl;
-	fl.browse(dataPath + "/translations");
+	fl.browse(data_path("translations"));
 	fl.insertFile("English");
 	// string lang = tr.lang();
 	// if (lang.empty()) lang = "English";
@@ -536,11 +533,11 @@ void GMenu2X::resetSettings() {
 			}
 		}
 		if (reset_skin) {
-			string tmppath = homePath + "/skins/Default/skin.conf";
+			string tmppath = home_path("skins/Default/skin.conf");
 			unlink(tmppath.c_str());
 		}
 		if (reset_gmenu) {
-			string tmppath = homePath + "/gmenunx.conf";
+			string tmppath = home_path("gmenunx.conf");
 			unlink(tmppath.c_str());
 		}
 		quit();
@@ -608,7 +605,7 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 		// Defaults *** Sync with default values in writeConfig
 		confInt["saveSelection"] = 1;
 		confInt["skinBackdrops"] = 0;
-		confStr["homePath"] = CARD_ROOT;
+		confStr["homePath"] = home_path("../");
 		confInt["globalVolume"] = 60;
 		confStr["bgscale"] = "Crop";
 		confStr["skinFont"] = "Custom";
@@ -637,7 +634,7 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 
 	// if (!confStr["lang"].empty()) tr.setLang(confStr["lang"]);
 	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
-	if (confStr["skin"].empty() || !dir_exists(confStr["skin"])) confStr["skin"] = dataPath + "/skins/Default";
+	if (confStr["skin"].empty() || !dir_exists(confStr["skin"])) confStr["skin"] = data_path("skins/Default");
 
 	evalIntConf(&confInt["backlightTimeout"], 30, 10, 300);
 	evalIntConf(&confInt["powerTimeout"], 10, 1, 300);
@@ -662,7 +659,7 @@ void GMenu2X::writeConfig() {
 		confInt["link"] = menu->getLinkIndex();
 	}
 
-	ofstream f(homePath + "/gmenunx.conf");
+	ofstream f(home_path("gmenunx.conf"));
 	if (!f.is_open()) return;
 
 	for (ConfStrHash::iterator curr = confStr.begin(); curr != confStr.end(); curr++) {
@@ -675,7 +672,7 @@ void GMenu2X::writeConfig() {
 			curr->first == "defaultDir" ||
 
 			// defaults
-			(curr->first == "homePath" && curr->second == CARD_ROOT) ||
+			(curr->first == "homePath" && curr->second == home_path("../")) ||
 			(curr->first == "skin" && curr->second == "Default") ||
 			(curr->first == "previewMode" && curr->second == "Miniature") ||
 			(curr->first == "skinFont" && curr->second == "Custom") ||
@@ -806,7 +803,7 @@ void GMenu2X::writeSkinConfig() {
 
 void GMenu2X::setSkin(string skin, bool clearSC) {
 	input.update(false);
-	if (input[SETTINGS]) skin = dataPath + "/skins/Default";
+	if (input[SETTINGS]) skin = data_path("skins/Default");
 
 	confStr["skin"] = skin;
 
@@ -919,10 +916,10 @@ void GMenu2X::skinMenu() {
 
 	fl.addExclude("..");
 
-	fl.browse(dataPath + "/skins");
+	fl.browse(data_path("skins"));
 	skins = fl.getDirectories();
 
-	fl.browse(homePath + "/skins");
+	fl.browse(home_path("skins"));
 	skins.insert(skins.end(), fl.getFiles().begin(), fl.getFiles().end());
 
 	vector<string> wpLabel;
@@ -982,12 +979,12 @@ void GMenu2X::skinMenu() {
 
 			wallpapers.clear();
 
-			if (confStr["skin"] != dataPath + "/skins/Default") {
+			if (confStr["skin"] != data_path("skins/Default")) {
 				fl.browse(confStr["skin"] + "/wallpapers");
 				wallpapers.insert(wallpapers.end(), fl.getFiles().begin(), fl.getFiles().end());
 			}
 
-			fl.browse(dataPath + "/skins/Default/wallpapers");
+			fl.browse(data_path("skins/Default/wallpapers"));
 			wallpapers.insert(wallpapers.end(), fl.getFiles().begin(), fl.getFiles().end());
 
 			sc.del("skin:icons/skin.png");
@@ -1097,7 +1094,7 @@ void GMenu2X::about() {
 }
 
 void GMenu2X::viewLog() {
-	string logfile = homePath + "/log.txt";
+	string logfile = home_path("log.txt");
 	if (!file_exists(logfile)) return;
 
 	TextDialog td(this, _("Log Viewer"), _("Last launched program's output"), "skin:icons/ebook.png");
@@ -1213,7 +1210,7 @@ void GMenu2X::explorer() {
 			string skinname = base_name(path, true).substr(13); // strip gmenu2x-skin- and .zip
 			if (skinname.size() > 1) {
 				TerminalDialog td(this, _("Skin installer"), _("Installing skin %s"), "skin:icons/skin.png");
-				string cmd = "rm -rf \"" + homePath + "/skins/" + skinname + "/\"; mkdir -p \"" + homePath + "/skins/" + skinname + "/\"; unzip \"" + path + "\" -d \"" + homePath + "/skins/" + skinname + "/\"; if [ `ls \"" + homePath + "/skins/" + skinname + "\" | wc -l` == 1 ]; then subdir=`ls \"" + homePath + "/skins/" + skinname + "\"`; mv \"" + homePath + "/skins/" + skinname + "\"/$subdir/* \"" + homePath + "/skins/" + skinname + "/\"; rmdir \"" + homePath + "/skins/" + skinname + "\"/$subdir; fi; sync";
+				string cmd = "rm -rf \"" + home_path("skins/") + skinname + "/\"; mkdir -p \"" + home_path("skins/") + skinname + "/\"; unzip \"" + path + "\" -d \"" + home_path("skins/") + skinname + "/\"; if [ `ls \"" + home_path("skins/") + skinname + "\" | wc -l` == 1 ]; then subdir=`ls \"" + home_path("skins/") + skinname + "\"`; mv \"" + home_path("skins/") + skinname + "\"/$subdir/* \"" + home_path("skins/") + skinname + "/\"; rmdir \"" + home_path("skins/") + skinname + "\"/$subdir; fi; sync";
 				td.exec(cmd);
 				setSkin(skinname, false);
 			}
@@ -1233,7 +1230,7 @@ void GMenu2X::explorer() {
 					params = "-batch -ex \"run\" -ex \"bt\" --args " + command;
 					command = "gdb";
 				}
-				params += " 2>&1 | tee " + cmdclean(homePath + + "/log.txt");
+				params += " 2>&1 | tee " + cmdclean(home_path("log.txt"));
 			}
 
 			LinkApp *link = new LinkApp(this, "explorer.lnk~");
@@ -1438,7 +1435,7 @@ void GMenu2X::editLink() {
 
 #if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	bool linkUseGinge = menu->getLinkApp()->getUseGinge();
-	string ginge_prep = dataPath + "/ginge/ginge_prep";
+	string ginge_prep = data_path("ginge/ginge_prep");
 	if (file_exists(ginge_prep))
 		sd.addSetting(new MenuSettingBool(this,		_("Use Ginge"),		_("Compatibility layer for running GP2X applications"), &linkUseGinge ));
 #endif
@@ -1482,12 +1479,12 @@ void GMenu2X::editLink() {
 		if (oldSection != newSection) {
 			vector<string>::const_iterator newSectionIndex = find(menu->getSections().begin(), menu->getSections().end(), newSection);
 			if (newSectionIndex == menu->getSections().end()) return;
-			string newFileName = homePath + "/sections/" + newSection + "/" + linkTitle;
+			string newFileName = home_path("sections/") + newSection + "/" + linkTitle;
 			uint32_t x = 2;
 			while (file_exists(newFileName)) {
 				string id = "";
 				stringstream ss; ss << x; ss >> id;
-				newFileName = homePath + "/sections/" + newSection + "/" + linkTitle + id;
+				newFileName = home_path("sections/") + newSection + "/" + linkTitle + id;
 				x++;
 			}
 			rename(menu->getLinkApp()->getFile().c_str(), newFileName.c_str());
@@ -1575,7 +1572,7 @@ void GMenu2X::deleteSection() {
 	mb.setButton(MANUAL, _("Yes"));
 	mb.setButton(CANCEL,  _("No"));
 	if (mb.exec() != MANUAL) return;
-	if (rmtree(homePath + "/sections/" + menu->getSection())) {
+	if (rmtree(home_path("sections/") + menu->getSection())) {
 		menu->deleteSelectedSection();
 		sync();
 	}

@@ -24,8 +24,6 @@
 #include "debug.h"
 #include <cassert>
 
-extern string dataPath;
-
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define rmask 0xFF000000
 #define gmask 0x00FF0000
@@ -130,7 +128,7 @@ void Surface::load(const string &img, bool alpha, string skin) {
 	if (!skin.empty() && !img.empty() && img[0] != '/') {
 		skin = skin + "/" + img;
 		if (!file_exists(skin)) {
-			skin = dataPath + "/skins/Default/" + img;
+			skin = data_path("skins/Default/") + img;
 		}
 	} else {
 		skin = img;

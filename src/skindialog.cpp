@@ -20,10 +20,10 @@ bool SkinDialog::exec() {
 	this->showFiles = false;
 	addExclude("..");
 
-	browse(dataPath + "/skins");
+	browse(data_path("skins"));
 	skins = getDirectories();
 
-	browse(homePath + "/skins");
+	browse(home_path("skins"));
 	skins.insert(skins.end(), getFiles().begin(), getFiles().end());
 
 	for (uint32_t i = 0; i < skins.size(); i++) {

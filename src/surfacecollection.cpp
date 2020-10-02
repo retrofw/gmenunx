@@ -25,6 +25,7 @@
 #include <libopk.h>
 
 SurfaceCollection::SurfaceCollection() {
+	skin = data_path("skins/Default");
 }
 
 void SurfaceCollection::debug() {
@@ -44,7 +45,7 @@ string SurfaceCollection::getSkinFilePath(const string &file, bool fallback) {
 		return ret;
 
 	if (fallback) {
-		ret = dataPath + "/skins/Default/" + file;
+		ret = data_path("skins/Default/") + file;
 		if (file_exists(ret))
 			return ret;
 	}

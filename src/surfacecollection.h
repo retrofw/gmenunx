@@ -24,8 +24,6 @@
 #include <tr1/unordered_map>
 using std::string;
 
-extern string dataPath, homePath;
-
 class Surface;
 
 typedef std::tr1::unordered_map<string, Surface *> SurfaceHash;
@@ -38,7 +36,7 @@ Hash Map of surfaces that loads surfaces not already loaded and reuses already l
 class SurfaceCollection {
 private:
 	SurfaceHash surfaces;
-	string skin = dataPath + "/skins/Default";
+	string skin;
 
 public:
 	SurfaceCollection();

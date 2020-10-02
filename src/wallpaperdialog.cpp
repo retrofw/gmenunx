@@ -43,11 +43,11 @@ bool WallpaperDialog::exec() {
 	this->showFiles = true;
 
 	setFilter(".png,.jpg,.jpeg,.bmp");
-	browse(dataPath + "/skins/Default/wallpapers");
+	browse(data_path("skins/Default/wallpapers"));
 
 	wallpapers = getFiles();
 
-	if (gmenu2x->confStr["skin"] != dataPath + "/skins/Default") {
+	if (gmenu2x->confStr["skin"] != data_path("skins/Default")) {
 		browse(gmenu2x->confStr["skin"] + "/wallpapers");
 		wallpapers.insert(wallpapers.end(), getFiles().begin(), getFiles().end());
 	}

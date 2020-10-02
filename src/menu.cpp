@@ -53,7 +53,7 @@ void Menu::readSections() {
 	DIR *dirp;
 	struct dirent *dptr;
 
-	string sectiondir = homePath + "/sections";
+	string sectiondir = home_path("sections");
 	mkdir(sectiondir.c_str(), 0777);
 
 	if ((dirp = opendir(sectiondir.c_str())) == NULL) {
@@ -194,7 +194,7 @@ string Menu::sectionPath(int section) {
 		section = iSectionIndex;
 	}
 
-	return homePath + "/sections/" + sections[section] + "/";
+	return home_path("sections/") + sections[section] + "/";
 }
 
 // LINKS MANAGEMENT
@@ -216,7 +216,7 @@ bool Menu::addActionLink(uint32_t section, const string &title, fastdelegate::Fa
 bool Menu::addLink(string exec) {
 	string section = getSection();
 	string title = base_name(exec, true);
-	string linkpath = unique_filename(homePath + "/sections/" + section + "/" + title, ".lnk");
+	string linkpath = unique_filename(home_path("sections/") + section + "/" + title, ".lnk");
 
 	// Reduce title length to fit the link width
 	if ((int)gmenu2x->font->getTextWidth(title) > linkWidth) {
@@ -243,7 +243,7 @@ bool Menu::addLink(string exec) {
 }
 
 bool Menu::addSection(const string &sectionName) {
-	string sectiondir = homePath + "/sections/" + sectionName;
+	string sectiondir = home_path("sections/") + sectionName;
 	if (mkdir(sectiondir.c_str(), 0777) == 0) {
 		sections.push_back(sectionName);
 		linklist ll;
@@ -279,7 +279,7 @@ void Menu::deleteSelectedLink() {
 void Menu::deleteSelectedSection() {
 	INFO("Deleting section '%s'", getSection().c_str());
 
-	string iconpath = homePath + "/sections/" + getSection() + ".png";
+	string iconpath = home_path("sections/") + getSection() + ".png";
 
 	links.erase(links.begin() + iSectionIndex);
 	sections.erase(sections.begin() + iSectionIndex);
@@ -390,8 +390,8 @@ void Menu::setLinkIndex(int i) {
 
 void Menu::renameSection(int index, const string &name) {
 	// section directory doesn't exists
-	string oldsection = homePath + "/sections/" + getSection();
-	string newsection = homePath + "/sections/" + name;
+	string oldsection = home_path("sections/") + getSection();
+	string newsection = home_path("sections/") + name;
 
 	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
 		sections[index] = name;

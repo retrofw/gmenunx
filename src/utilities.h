@@ -87,4 +87,7 @@ void set_date_time(const char* timestamp);
 
 bool file_copy(const string &src, const string &dst);
 
+string home_path(string path = "");
+string data_path(string path = "");
+
 #endif

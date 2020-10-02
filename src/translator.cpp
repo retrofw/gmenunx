@@ -26,8 +26,6 @@
 
 using std::ifstream;
 
-extern string dataPath, homePath;
-
 char tr_buf[512]; 
 
 const char* _F(const char *buf, ...)
