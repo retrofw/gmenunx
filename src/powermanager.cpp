@@ -36,7 +36,7 @@ void PowerManager::resetSuspendTimer() {
 
 void PowerManager::resetPowerTimer() {
 	clearTimer();
-	if (this->powerTimeout > 0)
+	if (this->powerTimeout > 0 && PowerManager::instance->gmenu2x->platform->opk != "linux")
 		powerTimer = SDL_AddTimer(this->powerTimeout * 60e3, doPowerOff, NULL);
 };
 
@@ -57,8 +57,6 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 };
 
 uint32_t PowerManager::doPowerOff(uint32_t interval, void *param) {
-#if !defined(TARGET_LINUX)
 	system("sync; poweroff");
-#endif
 	return interval;
 };

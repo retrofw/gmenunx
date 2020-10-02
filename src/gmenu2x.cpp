@@ -1284,9 +1284,7 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 			setVolume(0);
 			quit();
-#if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; poweroff");
-#endif
 			break;
 		}
 		case SECTION_NEXT: {
@@ -1295,9 +1293,7 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 			setVolume(0);
 			quit();
-#if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; reboot");
-#endif
 			break;
 		}
 	}
