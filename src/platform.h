@@ -45,7 +45,7 @@ public:
 	int cpu_max = 0;
 	int cpu_min = 0;
 	int cpu_step = 0;
-	string opk = "";
+	string opk = "linux";
 	string data_path;
 	string home_path;
 	uint32_t w = 480, h = 272, bpp = 16;

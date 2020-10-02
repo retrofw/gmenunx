@@ -195,8 +195,8 @@ private:
 		cpu_max = 900;
 		cpu_min = 200;
 		cpu_step = 6;
+		opk = "miyoo";
 
-		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
 
 		memdev = open("/dev/mem", O_RDWR);
