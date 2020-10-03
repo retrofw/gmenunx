@@ -45,7 +45,8 @@ private:
 			terminal = false,
 			autorun = false;
 
-	string	params = "",
+	string	exec = "",
+			params = "",
 			homedir = "",
 			manual = "",
 			manualPath = "",

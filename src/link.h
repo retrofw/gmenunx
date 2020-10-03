@@ -51,8 +51,7 @@ protected:
 	bool	edited = false,
 			is_opk = false;
 
-	string	exec = "",
-			title = "",
+	string	title = "",
 			description = "",
 			icon = "",
 			iconPath = "",
