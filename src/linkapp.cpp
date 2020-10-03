@@ -77,7 +77,11 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 	}
 	f.close();
 
-	is_opk = (file_ext(exec, true) == ".opk");
+	if (file_ext(exec, true) == ".opk") {
+		package_type = PKG_OPK;
+	} else if (file_ext(exec, true) == ".so") {
+		package_type = PKG_RETROARCH;
+	}
 
 	if (autorun) {
 		run();
@@ -200,7 +204,7 @@ const string LinkApp::searchIcon() {
 	iconpath = execicon + ".png";
 	if (file_exists(iconpath)) return iconpath;
 
-	if (!gmenu2x->platform->opk.empty() || isOPK()) {
+	if (!gmenu2x->platform->opk.empty() || package_type == PKG_OPK) {
 		return exec + "#" + icon_opk;
 	} else
 
@@ -348,13 +352,17 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	INFO("Executing '%s' (%s %s)", title.c_str(), exec.c_str(), params.c_str());
 
-	if (!gmenu2x->platform->opk.empty() && isOPK()) {
+	if (package_type == PKG_OPK) {
 		string opk_mount = "umount -fl /mnt &> /dev/null; mount -o loop " + command + " /mnt";
 		system(opk_mount.c_str());
 		chdir("/mnt"); // Set correct working directory
 
 		command = "/mnt/" + params;
 		params = "";
+	}
+
+	else if (package_type == PKG_RETROARCH) {
+		command = "retroarch -L \"" + cmdclean(command) + "\"";
 	}
 	else
 	{

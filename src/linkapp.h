@@ -28,6 +28,12 @@ using std::vector;
 
 #include "link.h"
 
+enum package_type {
+	PKG_GENERIC,
+	PKG_OPK,
+	PKG_RETROARCH,
+};
+
 /**
 	Parses links files.
 	@author Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
@@ -39,7 +45,8 @@ private:
 			clock = 0,
 			selectorelement = 0,
 			scalemode,
-			_scalemode = 0; //, ivolume = 0;
+			_scalemode = 0,
+			package_type = PKG_GENERIC;
 
 	bool	selectorbrowser = true,
 			terminal = false,

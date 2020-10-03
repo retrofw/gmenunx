@@ -236,6 +236,10 @@ void PKGScannerDialog::exec(bool _any_platform) {
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 			opkScan(paths[i]);
 		}
+
+		text.push_back(_F("Scanning %s", "retroarch/cores"));
+		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
+		raScan(gmenu2x->confStr["homePath"] + "/.config/retroarch/cores");
 	}
 
 	system("sync &");
@@ -251,3 +255,53 @@ void PKGScannerDialog::exec(bool _any_platform) {
 
 	TextDialog::exec();
 }
+
+void PKGScannerDialog::raScan(string radir) {
+	FileLister fl;
+	fl.showDirectories = false;
+	fl.showFiles = true;
+	fl.setFilter(".so");
+	fl.browse(radir);
+
+	for (uint32_t i = 0; i < fl.size(); i++) {
+		text.push_back(_F("Installing %s", fl.getFile(i).c_str()));
+		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
+		// opkInstall(fl.getPath(i));
+
+		string path = fl.getPath(i);
+		string pkgname = "ra";
+
+		string linkname(fl.getFile(i));
+		string::size_type pos = linkname.rfind('.');
+
+		linkname = strreplace(linkname, "_libretro", "");
+
+		string linkpath = linkname.substr(0, pos);
+		linkpath = pkgname + "." + linkname + ".lnk";
+
+		string
+			title = linkname,
+			params = "",
+			description = "",
+			manual = "",
+			selectordir = "";
+			selectorfilter = "",
+			aliasfile = "",
+			scaling = "",
+			icon = "",
+			section = "retroarch";
+
+		gmenu2x->menu->addSection(section);
+
+		linkpath = home_path("/sections/") + section + "/" + linkpath;
+
+		LinkApp *link = new LinkApp(gmenu2x, linkpath.c_str());
+
+		if (!path.empty()) link->setExec(path);
+		if (!title.empty()) link->setTitle(title);
+		if (!selectordir.empty() && link->getSelectorDir().empty()) link->setSelectorDir(selectordir);
+
+		link->save();
+	}
+}
+

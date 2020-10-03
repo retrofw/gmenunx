@@ -18,6 +18,7 @@ public:
 	PKGScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop = "");
 	void preProcess() { };
 	void exec(bool any_platform = false);
+	void raScan(string opkdir);
 };
 
 #endif /*PKGSCANNERDIALOG_H_*/
