@@ -88,7 +88,7 @@ private:
 	void initFont();
 	void umountSdDialog();
 	void opkInstall(string path);
-	void opkScanner();
+	void pkgScanner();
 	string ipkName(string cmd);
 	void ipkInstall(string path);
 

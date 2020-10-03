@@ -52,7 +52,7 @@
 #include "menusettingdatetime.h"
 #include "debug.h"
 
-#include "opkscannerdialog.h"
+#include "pkgscannerdialog.h"
 #include <libopk.h>
 
 using std::ifstream;
@@ -1313,7 +1313,7 @@ void GMenu2X::contextMenu() {
 	options.push_back((MenuOption){_("Delete section"),		MakeDelegate(this, &GMenu2X::deleteSection)});
 
 	if (!platform->opk.empty()) {
-		options.push_back((MenuOption){_("Update OPK links"),	MakeDelegate(this, &GMenu2X::opkScanner)});
+		options.push_back((MenuOption){_("Update package links"),	MakeDelegate(this, &GMenu2X::pkgScanner)});
 	}
 
 	MessageBox mb(this, options);
@@ -1581,8 +1581,8 @@ void GMenu2X::deleteSection() {
 	}
 }
 
-void GMenu2X::opkScanner() {
-	OPKScannerDialog od(this, _("Update OPK links"), "Scanning OPK packages", "skin:icons/configure.png");
+void GMenu2X::pkgScanner() {
+	PKGScannerDialog od(this, _("Update package links"), "Scanning packages", "skin:icons/configure.png");
 	od.exec();
 	initMenu();
 }
@@ -1591,7 +1591,7 @@ void GMenu2X::opkInstall(string path) {
 	input.update(false);
 	bool debug = input[MENU];
 
-	OPKScannerDialog od(this, _("Package installer"), _F("Installing %s", base_name(path).c_str()), "skin:icons/configure.png");
+	PKGScannerDialog od(this, _("Package installer"), _F("Installing %s", base_name(path).c_str()), "skin:icons/configure.png");
 	od.opkpath = path;
 	od.exec(debug);
 	initMenu();

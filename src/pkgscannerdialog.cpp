@@ -1,24 +1,4 @@
-/***************************************************************************
- *   Copyright (C) 2006 by Massimiliano Torromeo   *
- *   massimiliano.torromeo@gmail.com   *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
-
-#include "opkscannerdialog.h"
+#include "pkgscannerdialog.h"
 #include "utilities.h"
 #include "menu.h"
 #include "powermanager.h"
@@ -33,10 +13,10 @@ extern const char *CARD_ROOT;
 
 bool any_platform = false;
 
-OPKScannerDialog::OPKScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop):
+PKGScannerDialog::PKGScannerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon, const string &backdrop):
 TextDialog(gmenu2x, title, description, icon, backdrop) {}
 
-void OPKScannerDialog::opkInstall(const string &path) {
+void PKGScannerDialog::opkInstall(const string &path) {
 	string pkgname = base_name(path, true);
 
 	struct OPK *opk = opk_open(path.c_str());
@@ -177,7 +157,7 @@ void OPKScannerDialog::opkInstall(const string &path) {
 	opk_close(opk);
 }
 
-void OPKScannerDialog::opkScan(string opkdir) {
+void PKGScannerDialog::opkScan(string opkdir) {
 	FileLister fl;
 	fl.showDirectories = false;
 	fl.showFiles = true;
@@ -191,7 +171,7 @@ void OPKScannerDialog::opkScan(string opkdir) {
 	}
 }
 
-void OPKScannerDialog::exec(bool _any_platform) {
+void PKGScannerDialog::exec(bool _any_platform) {
 	any_platform = _any_platform;
 	rowsPerPage = gmenu2x->listRect.h / gmenu2x->font->height();
 
