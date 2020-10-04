@@ -59,8 +59,6 @@ SDL_Color rgbatosdl(RGBAColor color) {
 }
 
 Surface::Surface() {
-	raw = NULL;
-	dblbuffer = NULL;
 }
 
 Surface::Surface(void *s, size_t &size) {
@@ -71,19 +69,14 @@ Surface::Surface(void *s, size_t &size) {
 }
 
 Surface::Surface(const string &img, bool alpha, const string &skin) {
-	raw = NULL;
-	dblbuffer = NULL;
 	load(img, alpha, skin);
 }
 
 Surface::Surface(const string &img, const string &skin, bool alpha) {
-	raw = NULL;
-	dblbuffer = NULL;
 	load(img, alpha, skin);
 }
 
 Surface::Surface(SDL_Surface *s, SDL_PixelFormat *fmt, uint32_t flags) {
-	dblbuffer = NULL;
 	this->operator =(s);
 	// if (fmt != NULL || flags != 0) {
 	if (fmt == NULL) fmt = s->format;
@@ -93,31 +86,22 @@ Surface::Surface(SDL_Surface *s, SDL_PixelFormat *fmt, uint32_t flags) {
 }
 
 Surface::Surface(Surface *s) {
-	dblbuffer = NULL;
 	this->operator =(s->raw);
 }
 
 Surface::Surface(int w, int h, int bpp) {
-	dblbuffer = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE |
+	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE |
 		#ifdef SDL_TRIPLEBUF
 			SDL_TRIPLEBUF
 		#else
 			SDL_DOUBLEBUF
 		#endif
 	);
-	raw = SDL_DisplayFormat(dblbuffer);
+	raw = SDL_DisplayFormat(screen);
 }
 
 Surface::~Surface() {
 	free();
-}
-
-void Surface::enableVirtualDoubleBuffer(SDL_Surface *surface) {
-	dblbuffer = surface;
-
-	SDL_Surface* _raw = SDL_CreateRGBSurface(SDL_SWSURFACE, dblbuffer->w, dblbuffer->h, 16, 0, 0, 0, 0);
-	raw = SDL_DisplayFormat(_raw);
-	SDL_FreeSurface(_raw);
 }
 
 void Surface::enableAlpha() {
@@ -128,9 +112,9 @@ void Surface::enableAlpha() {
 
 void Surface::free() {
 	SDL_FreeSurface(raw);
-	SDL_FreeSurface(dblbuffer);
+	SDL_FreeSurface(screen);
 	raw = NULL;
-	dblbuffer = NULL;
+	screen = NULL;
 }
 
 SDL_PixelFormat *Surface::format() {
@@ -182,9 +166,9 @@ void Surface::unlock() {
 }
 
 void Surface::flip() {
-	if (dblbuffer != NULL) {
-		SDL_BlitSurface(raw, NULL, dblbuffer, NULL);
-		SDL_Flip(dblbuffer);
+	if (screen != NULL) {
+		SDL_BlitSurface(raw, NULL, screen, NULL);
+		SDL_Flip(screen);
 	} else {
 		SDL_Flip(raw);
 	}

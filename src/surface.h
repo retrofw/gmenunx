@@ -64,7 +64,7 @@ SDL_Color rgbatosdl(RGBAColor color);
 class Surface {
 private:
 	bool locked;
-	SDL_Surface *dblbuffer;
+	SDL_Surface *screen = NULL;
 
 public:
 	Surface();
@@ -76,10 +76,9 @@ public:
 	Surface(void *s, size_t &size);
 	~Surface();
 
-	void enableVirtualDoubleBuffer(SDL_Surface *surface);
 	void enableAlpha();
 
-	SDL_Surface *raw, *screen;
+	SDL_Surface *raw = NULL;
 
 	void free();
 	void load(const string &img, bool alpha = true, string skin = "");
