@@ -97,12 +97,15 @@ Surface::Surface(Surface *s) {
 	this->operator =(s->raw);
 }
 
-Surface::Surface(int w, int h, uint32_t flags) {
-	dblbuffer = NULL;
-	SDL_Surface* _raw = SDL_CreateRGBSurface(flags, w, h, 16, rmask, gmask, bmask, amask);
-	raw = SDL_DisplayFormat(_raw);
-	SDL_FreeSurface(_raw);
-	//SDL_SetAlpha(raw, SDL_SRCALPHA|SDL_RLEACCEL, SDL_ALPHA_OPAQUE);
+Surface::Surface(int w, int h, int bpp) {
+	dblbuffer = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE |
+		#ifdef SDL_TRIPLEBUF
+			SDL_TRIPLEBUF
+		#else
+			SDL_DOUBLEBUF
+		#endif
+	);
+	raw = SDL_DisplayFormat(dblbuffer);
 }
 
 Surface::~Surface() {

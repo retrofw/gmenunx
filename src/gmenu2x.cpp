@@ -156,16 +156,7 @@ void GMenu2X::main() {
 
 	setInputSpeed();
 
-	SDL_Surface *screen = SDL_SetVideoMode(platform->w, platform->h, platform->bpp, SDL_HWSURFACE |
-		#ifdef SDL_TRIPLEBUF
-			SDL_TRIPLEBUF
-		#else
-			SDL_DOUBLEBUF
-		#endif
-	);
-	s = new Surface();
-
-	s->enableVirtualDoubleBuffer(screen);
+	s = new Surface(platform->w, platform->h, platform->bpp);
 
 	setSkin(confStr["skin"], true);
 
