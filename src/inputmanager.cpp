@@ -251,7 +251,6 @@ uint32_t pushEventEnd(uint32_t interval, void *action) {
 }
 
 void InputManager::pushEvent(int action) {
-	WARNING("EVENT START");
 	SDL_Event event;
 	event.type = SDL_KEYDOWN;
 	event.key.state = SDL_PRESSED;
