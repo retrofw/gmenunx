@@ -259,10 +259,6 @@ void InputManager::pushEvent(int action) {
 	SDL_AddTimer(50, pushEventEnd, (void*)action);
 }
 
-int InputManager::count() {
-	return actions.size();
-}
-
 void InputManager::setInterval(int ms, int action) {
 	if (action < 0)
 		for (uint32_t x = 0; x < actions.size(); x++)

@@ -91,7 +91,6 @@ public:
 	bool combo();
 	void dropEvents(bool drop_timer = true);
 	static void pushEvent(int action);
-	int count();
 	void setActionsCount(int count);
 	void setInterval(int ms, int action = -1);
 	bool &operator[](int action);
