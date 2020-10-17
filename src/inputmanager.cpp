@@ -118,7 +118,6 @@ void InputManager::init(string conffile) {
 		else if (name == "backlight")    action = BACKLIGHT;
 		else if (name == "power")        action = POWER;
 		else if (name == "menu")         action = MENU;
-		else if (name == "speaker") {}
 		else {
 			ERROR("%s:%d Unknown action '%s'.", conffile.c_str(), linenum, name.c_str());
 			continue;
