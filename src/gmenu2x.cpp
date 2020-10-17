@@ -150,6 +150,7 @@ void GMenu2X::main() {
 		quit();
 		return;
 	}
+	SDL_WM_SetCaption("gmenunx", NULL);
 	SDL_ShowCursor(SDL_DISABLE);
 
 	input.init(homePath + "/input.conf");
