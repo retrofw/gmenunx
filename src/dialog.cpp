@@ -16,11 +16,14 @@ Dialog::~Dialog() {
 }
 
 void Dialog::drawTopBar(Surface *s, const std::string &title, const std::string &description, const std::string &icon) {
-	// Surface *bar = sc[gmenu2x->confStr["skin"] + "/imgs/topbar.png"];
-	// if (bar != NULL) bar->blit(s, 0, 0);
-	// else
+	Surface *bar = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/topbar.png", false)];
+	if (bar != NULL) {
+		bar->blit(s, gmenu2x->platform->w / 2, 0, HAlignCenter);
+	} else {
+		s->box(0, 0, gmenu2x->platform->w, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColor["topBarBg"]);
+	}
+
 	s->setClipRect({0, 0, gmenu2x->platform->w, gmenu2x->skinConfInt["sectionBarSize"]});
-	s->box(0, 0, gmenu2x->platform->w, gmenu2x->skinConfInt["sectionBarSize"], gmenu2x->skinConfColor["topBarBg"]);
 
 	int iconOffset = 2;
 
@@ -50,10 +53,12 @@ void Dialog::drawTopBar(Surface *s, const std::string &title, const std::string 
 }
 
 void Dialog::drawBottomBar(Surface *s, buttons_t buttons) {
-	// Surface *bar = sc[gmenu2x->confStr["skin"] + "/imgs/bottombar.png"];
-	// if (bar != NULL) bar->blit(s, 0, gmenu2x->h - bar->raw->h);
-	// else
-	s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
+	Surface *bar = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/bottombar.png", false)];
+	if (bar != NULL) {
+		bar->blit(s, gmenu2x->platform->w / 2, gmenu2x->platform->h, HAlignCenter | VAlignBottom);
+	} else {
+		s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
+	}
 
 	int x = gmenu2x->bottomBarRect.x + 5, y = gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2;
 

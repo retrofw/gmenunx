@@ -586,7 +586,30 @@ void Menu::drawGrid() {
 }
 
 void Menu::drawSectionBar() {
-	gmenu2x->s->box(gmenu2x->sectionBarRect, gmenu2x->skinConfColor["topBarBg"]);
+	string barbg = "";
+
+	switch (gmenu2x->skinConfInt["sectionBar"]) {
+		case SB_LEFT:
+			barbg = "imgs/leftbar.png";
+			break;
+		case SB_BOTTOM:
+			barbg = "imgs/bottombar.png";
+			break;
+		case SB_RIGHT:
+			barbg = "imgs/rightbar.png";
+			break;
+		case SB_TOP:
+		case SB_CLASSIC:
+			barbg = "imgs/topbar.png";
+			break;
+	}
+
+	Surface *bar = gmenu2x->sc[gmenu2x->sc.getSkinFilePath(barbg, false)];
+	if (bar != NULL) {
+		bar->blit(gmenu2x->s, gmenu2x->sectionBarRect, HAlignCenter | VAlignMiddle);
+	} else {
+		gmenu2x->s->box(gmenu2x->sectionBarRect, gmenu2x->skinConfColor["topBarBg"]);
+	}
 
 	int ix = 0, iy = 0, sy = 0;
 	int x = gmenu2x->sectionBarRect.x;
@@ -634,10 +657,15 @@ void Menu::drawSectionBar() {
 void Menu::drawStatusBar() {
 	int iconTrayShift = 0;
 
+	Surface *bar = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/bottombar.png", false)];
+	if (bar != NULL) {
+		bar->blit(gmenu2x->s, gmenu2x->bottomBarRect, HAlignCenter | VAlignBottom);
+	} else {
+		gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
+	}
+
 	const int iconWidth = 16, pctWidth = gmenu2x->font->getTextWidth("100");
 	char buf[32]; int x = 0;
-
-	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColor["bottomBarBg"]);
 
 	if (!iconDescription.empty() && SDL_GetTicks() - icon_changed < 300) {
 		x = iconPadding;
