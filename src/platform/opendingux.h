@@ -12,7 +12,7 @@ public:
 	int32_t tickBattery = 0;
 	void hwInit() {
 		rtc = true;
-		tvout = true;
+		tvout = false;
 		udc = true;
 		ext_sd = true;
 		hw_scaler = true;
@@ -63,10 +63,6 @@ public:
 			}
 		}
 		return UDC_REMOVE;
-	}
-
-	uint8_t getTVOutStatus() {
-		return TV_REMOVE;
 	}
 
 	uint8_t getVolumeMode(uint8_t vol) {
