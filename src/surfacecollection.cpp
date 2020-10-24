@@ -22,7 +22,7 @@
 #include "surface.h"
 #include "utilities.h"
 #include "debug.h"
-#include <libopk.h>
+#include "libopk.h"
 
 SurfaceCollection::SurfaceCollection() {
 	skin = data_path("skins/Default");

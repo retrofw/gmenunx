@@ -53,7 +53,7 @@
 #include "debug.h"
 
 #include "pkgscannerdialog.h"
-#include <libopk.h>
+#include "libopk.h"
 
 using std::ifstream;
 using std::ofstream;

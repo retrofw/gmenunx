@@ -5,7 +5,7 @@
 #include "debug.h"
 #include "linkapp.h"
 #include <dirent.h>
-#include <libopk.h>
+#include "libopk.h"
 #include "filelister.h"
 #include <algorithm>
 

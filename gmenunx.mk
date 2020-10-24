@@ -17,7 +17,6 @@ CFLAGS += -fdata-sections -ffunction-sections -fno-exceptions -fno-math-errno -f
 CFLAGS += -Isrc -Isrc/libopk -Isrc/platform
 CFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
 
-LDFLAGS += -Wl,-Bstatic -Lsrc/libopk -l:libopk.a
 LDFLAGS += -Wl,-Bdynamic -lz $(SDL_LIBS) -lSDL_image -lSDL_ttf
 LDFLAGS += -Wl,--as-needed -Wl,--gc-sections
 
@@ -25,10 +24,14 @@ OBJDIR = /tmp/gmenunx/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
 TARGET = dist/$(PLATFORM)/gmenunx
 
-SOURCES := $(wildcard src/*.cpp)
-OBJS := $(patsubst src/%.cpp, $(OBJDIR)/src/%.o, $(SOURCES))
+SOURCES = $(wildcard src/*.cpp)
+OBJS = $(patsubst src/%.cpp, $(OBJDIR)/src/%.o, $(SOURCES))
+OBJS += $(patsubst src/libopk/%.c, $(OBJDIR)/src/libopk/%.o, src/libopk/libopk.c src/libopk/unsqfs.c src/libopk/libini.c)
 
 # File types rules
+$(OBJDIR)/src/libopk/%.o: src/libopk/%.c
+	$(CC) -o $@ -c $< -lz -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -fPIC -fvisibility=hidden -DUSE_GZIP=1
+
 $(OBJDIR)/src/%.o: src/%.cpp src/%.h
 	$(CXX) $(CFLAGS) -o $@ -c $<
 
@@ -37,7 +40,7 @@ $(OBJDIR)/src/%.o: src/%.cpp src/%.h
 all: dir shared
 
 dir:
-	@mkdir -p $(OBJDIR)/src dist/$(PLATFORM)
+	@mkdir -p $(OBJDIR)/src/libopk dist/$(PLATFORM)
 
 debug: $(OBJS)
 	@echo "Linking gmenunx-debug..."
