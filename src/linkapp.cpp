@@ -409,7 +409,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	if (getTerminal()) gmenu2x->platform->enableTerminal();
 
-	gmenu2x->quit();
+	gmenu2x->quit(false);
 
 	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
 	execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);

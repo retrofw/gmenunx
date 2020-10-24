@@ -117,7 +117,7 @@ public:
 	string currBackdrop;
 
 	~GMenu2X();
-	void quit();
+	void quit(bool all = true);
 	void main();
 	void settings();
 	void poweroffDialog();

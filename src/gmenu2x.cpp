@@ -106,9 +106,14 @@ int main(int /*argc*/, char * /*argv*/[]) {
 }
 
 GMenu2X::~GMenu2X() {
+	writeConfig();
+}
+
+void GMenu2X::quit(bool all) {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 
 	powerManager->clearTimer();
+
 	writeConfig();
 
 	delete menu;
@@ -116,14 +121,15 @@ GMenu2X::~GMenu2X() {
 	delete font;
 	delete titlefont;
 
+	SDL_Quit();
+
 	fflush(NULL);
 
-	SDL_Quit();
 	platform->hwDeinit();
-}
 
-void GMenu2X::quit() {
-	delete GMenu2X::instance;
+	if (all) {
+		quit_all(0);
+	}
 }
 
 void GMenu2X::main() {
@@ -1272,7 +1278,7 @@ void GMenu2X::poweroffDialog() {
 			mb.setAutoHide(1);
 			mb.exec();
 			setVolume(0);
-			quit();
+			quit(false);
 			system("sync; mount -o remount,ro $HOME; poweroff");
 			break;
 		}
@@ -1281,7 +1287,7 @@ void GMenu2X::poweroffDialog() {
 			mb.setAutoHide(1);
 			mb.exec();
 			setVolume(0);
-			quit();
+			quit(false);
 			system("sync; mount -o remount,ro $HOME; reboot");
 			break;
 		}
