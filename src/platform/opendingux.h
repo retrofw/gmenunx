@@ -16,8 +16,6 @@ public:
 		udc = true;
 		ext_sd = true;
 		hw_scaler = true;
-		opk = "gcw0";
-		ipk = true;
 		gamma = false;
 		cpu_menu = 0;
 		cpu_link = 0;
@@ -30,6 +28,14 @@ public:
 		bpp = 32;
 
 		batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
+
+		if (file_exists("/usr/bin/retrofw")) {
+			opk = "retrofw";
+			ipk = true;
+		} else {
+			opk = "gcw0";
+			ipk = false;
+		}
 
 #if defined(OPK_SUPPORT)
 		system("umount -fl /mnt");
