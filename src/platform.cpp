@@ -5,7 +5,6 @@
 // #include "platform/gp2x.h"
 
 Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) {
-	INFO("Platform Class");
 }
 
 uint16_t Platform::getDevStatus() {
@@ -32,12 +31,10 @@ uint32_t Platform::hwCheck(unsigned int interval, void *param) {
 }
 
 void Platform::hwInit() {
-	INFO("LINUX");
+	WARNING("Linux");
 }
 
 Platform* PlatformInit(GMenu2X *gmenu2x) { // Detect platform type and return base class pointer
-	WARNING("Platform INIT FUNCTION:");
-
 	if (FILE *f = fopen("/proc/jz/gpio", "r")) {
 		fclose(f);
 		return new RetroFW(gmenu2x);

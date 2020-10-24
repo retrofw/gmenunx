@@ -6,7 +6,7 @@ private:
 
 public:
 	OpenDingux(GMenu2X *gmenu2x): Platform(gmenu2x) {
-		INFO("OpenDingux");
+		WARNING("OpenDingux");
 	};
 
 	int32_t tickBattery = 0;

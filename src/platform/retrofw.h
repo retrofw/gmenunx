@@ -53,7 +53,7 @@ private:
 
 public:
 	RetroFW(GMenu2X *gmenu2x) : Platform(gmenu2x) {
-		INFO("RetroFW");
+		WARNING("RetroFW");
 	};
 
 	void hwDeinit() {
