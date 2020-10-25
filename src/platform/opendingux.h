@@ -162,24 +162,16 @@ public:
 		}
 	}
 
-	int setBacklight(int val, bool popup = false) {
-		if (val < 1 && getUDCStatus() != UDC_REMOVE) {
-			val = 0; // suspend only if not charging
-		} else if (popup) {
-			val = gmenu2x->setBacklight(val, popup);
+	void setBacklight(int val) {
+		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "w")) {
+			fprintf(f, "%0.0f", val * (255.0f / 100.0f)); // fputs(val, f);
+			fclose(f);
 		}
 
 		if (FILE *f = fopen("/sys/class/graphics/fb0/blank", "w")) {
 			fprintf(f, "%d", val <= 0);
 			fclose(f);
 		}
-
-		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "w")) {
-			fprintf(f, "%0.0f", val * (255.0f / 100.0f)); // fputs(val, f);
-			fclose(f);
-		}
-
-		return val;
 	}
 
 	void setVolume(int val) {
