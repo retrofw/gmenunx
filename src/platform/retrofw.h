@@ -224,16 +224,6 @@ public:
 		return TV_REMOVE;
 	}
 
-	uint16_t getDevStatus() {
-		char buf[10000];
-		if (FILE *f = fopen("/proc/bus/input/devices", "r")) {
-			size_t val = fread(buf, sizeof(char), 10000, f);
-			fclose(f);
-			return val;
-		}
-		return 0;
-	}
-
 	int16_t getBatteryLevel() {
 		int val = -1;
 		if (FILE *f = fopen("/proc/jz/battery", "r")) {

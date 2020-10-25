@@ -45,16 +45,6 @@ public:
 		system("echo 1 > /sys/class/backlight/pwm-backlight/bl_power; echo 1 > /sys/class/graphics/fb0/blank; echo 0 > /sys/class/graphics/fb0/blank; echo 0 > /sys/class/backlight/pwm-backlight/bl_power;");
 	}
 
-	uint16_t getDevStatus() {
-		char buf[10000];
-		if (FILE *f = fopen("/proc/bus/input/devices", "r")) {
-			size_t sz = fread(buf, sizeof(char), 10000, f);
-			fclose(f);
-			return sz;
-		}
-		return 0;
-	}
-
 	uint8_t getMMCStatus() {
 		return MMC_REMOVE;
 	}
