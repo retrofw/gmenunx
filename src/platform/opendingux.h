@@ -40,9 +40,6 @@ public:
 #if defined(OPK_SUPPORT)
 		system("umount -fl /mnt");
 #endif
-
-		system("echo 1 > /sys/class/hdmi/hdmi &");
-		system("echo 1 > /sys/class/backlight/pwm-backlight/bl_power; echo 1 > /sys/class/graphics/fb0/blank; echo 0 > /sys/class/graphics/fb0/blank; echo 0 > /sys/class/backlight/pwm-backlight/bl_power;");
 	}
 
 	uint8_t getMMCStatus() {
