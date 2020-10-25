@@ -8,9 +8,8 @@ Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) {
 }
 
 uint16_t Platform::getDevStatus() {
-	FILE *f;
 	char buf[10000];
-	if (f = fopen("/proc/bus/input/devices", "r")) {
+	if (FILE *f = fopen("/proc/bus/input/devices", "r")) {
 	// if (f = fopen("/proc/bus/input/handlers", "r")) {
 		size_t sz = fread(buf, sizeof(char), 10000, f);
 		fclose(f);
