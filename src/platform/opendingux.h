@@ -43,6 +43,7 @@ public:
 	}
 
 	uint8_t getMMCStatus() {
+		if (file_exists("/dev/mmcblk1p1")) return MMC_INSERT;
 		return MMC_REMOVE;
 	}
 
@@ -111,6 +112,16 @@ public:
 			if (volumeModePrev != volumeMode) {
 				volumeModePrev = volumeMode;
 				InputManager::pushEvent(PHONES_CONNECT);
+				return 500;
+			}
+
+			mmcStatus = getMMCStatus();
+			if (mmcPrev != mmcStatus) {
+				mmcPrev = mmcStatus;
+				InputManager::pushEvent(mmcStatus);
+				if (mmcStatus == MMC_REMOVE) {
+					system("umount -fl /mnt &> /dev/null");
+				}
 				return 500;
 			}
 		}
