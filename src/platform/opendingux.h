@@ -28,6 +28,10 @@ public:
 		bpp = 32;
 
 		batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
+		udcStatus = getUDCStatus();
+		numJoyPrev = numJoy = getDevStatus();
+		volumeModePrev = volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
+		mmcPrev = mmcStatus = getMMCStatus();
 
 		if (file_exists("/usr/bin/retrofw")) {
 			opk = "retrofw";

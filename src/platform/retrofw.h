@@ -82,7 +82,6 @@ public:
 		bpp = 16;
 
 		batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-
 		mmcPrev = mmcStatus = getMMCStatus();
 		udcStatus = getUDCStatus();
 		numJoyPrev = numJoy = getDevStatus();
@@ -289,7 +288,6 @@ public:
 				InputManager::pushEvent(PHONES_CONNECT);
 				return 500;
 			}
-
 
 			tvOutStatus = getTVOutStatus();
 			if (tvOutPrev != tvOutStatus) {
