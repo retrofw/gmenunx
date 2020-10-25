@@ -182,8 +182,7 @@ public:
 		return val;
 	}
 
-	int setVolume(int val, bool popup = false) {
-		val = gmenu2x->setVolume(val, popup);
+	void setVolume(int val) {
 		val = val * (63.0f / 100.0f);
 
 		int hp = 0;
@@ -199,8 +198,6 @@ public:
 
 		sprintf(cmd, "amixer set Headphone %d; amixer set PCM %d", hp, val);
 		system(cmd);
-
-		return (val + hp) * (100.0f / 63.0f);
 	}
 
 	int getVolume() {
