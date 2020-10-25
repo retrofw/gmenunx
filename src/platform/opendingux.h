@@ -112,7 +112,7 @@ public:
 				return 5000;
 			}
 
-			volumeMode = getVolumeMode(1);
+			volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
 			if (volumeModePrev != volumeMode) {
 				volumeModePrev = volumeMode;
 				InputManager::pushEvent(PHONES_CONNECT);
