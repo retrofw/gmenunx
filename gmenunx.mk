@@ -1,9 +1,9 @@
 PLATFORM	?= linux
 BUILDTIME	:= $(shell date +%s)
 
-CC			:= $(CROSS_COMPILE)gcc
-CXX			:= $(CROSS_COMPILE)g++
-STRIP		:= $(CROSS_COMPILE)strip
+CC			?= gcc
+CXX			?= g++
+STRIP		?= strip
 
 SYSROOT     ?= $(shell $(CC) --print-sysroot)
 SDL_CFLAGS  ?= $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
