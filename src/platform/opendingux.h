@@ -106,6 +106,13 @@ public:
 				InputManager::pushEvent(JOYSTICK_CONNECT);
 				return 5000;
 			}
+
+			volumeMode = getVolumeMode(1);
+			if (volumeModePrev != volumeMode) {
+				volumeModePrev = volumeMode;
+				InputManager::pushEvent(PHONES_CONNECT);
+				return 500;
+			}
 		}
 		return interval;
 	}
@@ -187,6 +194,8 @@ public:
 
 		sprintf(cmd, "amixer set Headphone %d; amixer set PCM %d", hp, val);
 		system(cmd);
+
+		volumeMode = getVolumeMode(val);
 	}
 
 	int getVolume() {
