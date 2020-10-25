@@ -113,7 +113,7 @@ public:
 		return interval;
 	}
 
-	void udcDialog(int udcStatus) {
+	void setUDC(int udcStatus) {
 		if (udcStatus == UDC_REMOVE) {
 			INFO("USB Disconnected. Disabling devices...");
 			system("/usr/bin/retrofw stop");
