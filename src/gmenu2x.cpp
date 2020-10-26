@@ -1081,21 +1081,8 @@ void GMenu2X::skinColors() {
 
 void GMenu2X::about() {
 	vector<string> text;
-	// string temp = "", buf;
-
-	// temp = tr["Build date: "] + __DATE__ + "\n";
-
-	// float battlevel = getBatteryStatus();
-	// { stringstream ss; ss.precision(2); ss << battlevel/1000; ss >> buf; }
-	// temp += tr["Battery: "] + ((battlevel < 0 || battlevel > 10000) ? tr["Charging"] : buf + " V") + "\n";
-	// temp += tr["Uptime: "] + ms2hms(SDL_GetTicks()) + "\n";
-
-	// temp += "----\n";
-
 	TextDialog td(this, "GMenuNX", _F("Build date: %s", __DATE__), "skin:icons/about.png");
-
-	// td.appendText(temp);
-	td.appendFile("about.txt");
+	td.appendFile(data_path("about.txt"));
 	td.exec();
 }
 

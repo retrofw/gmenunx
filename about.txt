@@ -1,6 +1,5 @@
-GMenu2X is developed by Massimiliano "Ryo" Torromeo, and is released under the GPL-v2 license.
-Website: http://mtorromeo.github.com/gmenu2x
-E-Mail & PayPal account: massimiliano.torromeo@gmail.com
+GMenuNX is a fork of GMenu2X. Is developed for the RetroFW and released under the GNU GPL license v2.
+Source code: https://www.github.com/retrofw/gmenunx
 
 Controls
 ----
@@ -10,12 +9,11 @@ Controls
 * Y: Bring up the manual/readme;
 * L, R: Switch between sections / PageUp/PageDown on lists;
 * START: GMenuNX settings;
-* SELECT: Bring up the contextual menu;
+* SELECT: Context menu;
 * SELECT + L: Volume control;
 * SELECT + R, BRIGHTNESS: Change screen brightness;
-* SELECT + START: Take a screenshot;
-* POWER: Toggle Suspend mode;
-* POWER/START (hold): Bring up Poweroff dialog.
+* START (hold): Take a screenshot;
+* SELECT + START / POWER: Bring up Poweroff dialog.
 * TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
@@ -39,6 +37,8 @@ How to have previews in Selector Browser
 
 
 Thanks goes to...
+
+Massimiliano "Ryo" Torromeo, by the original GMenu2X code.
 
 Contributors
 ----
