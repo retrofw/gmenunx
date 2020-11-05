@@ -209,6 +209,11 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 
 		powerManager->doSuspend(0);
+
+		while (input[POWER] || input[SETTINGS]) {
+			input.update();
+		}
+
 		input[WAKE_UP] = true;
 
 		if (!(input[UDC_REMOVE] || input[UDC_CONNECT] || input[MMC_INSERT] || input[MMC_REMOVE])) {
