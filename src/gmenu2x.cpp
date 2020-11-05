@@ -1002,9 +1002,9 @@ void GMenu2X::skinMenu() {
 			sc.del("skin:imgs/buttons/left.png");
 			sc.del("skin:imgs/buttons/right.png");
 			sc.del("skin:imgs/buttons/a.png");
-		}
 
-		confStr["wallpaper"] = wallpapers.at(0);
+			confStr["wallpaper"] = wallpapers.at(0);
+		}
 
 		sc.del(confStr["wallpaper"]);
 		setBackground(bg, confStr["wallpaper"]);
