@@ -13,7 +13,7 @@ public:
 	void hwInit() {
 		rtc = true;
 		tvout = false;
-		udc = true;
+		udc = false;
 		ext_sd = true;
 		hw_scaler = true;
 		gamma = false;
