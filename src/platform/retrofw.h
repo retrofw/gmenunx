@@ -26,7 +26,8 @@
 */
 
 
-#define BASE    0x10000000
+#define MBASE   0x10000000
+#define MSIZE   0x20000
 #define CPPCR   (0x10 >> 2)
 #define PAPIN	(0x10000 >> 2)
 #define PBPIN	(0x10100 >> 2)
@@ -47,7 +48,7 @@ void printbin(const char *id, int n) {
 // class BrowseDialog : protected Dialog, public FileLister {
 class RetroFW : public Platform {
 private:
-	volatile uint32_t *mem;
+	uint32_t *mem;
 	volatile uint8_t memdev = 0;
 	int32_t tickBattery = 0;
 
@@ -59,6 +60,9 @@ public:
 	void hwDeinit() {
 		if (memdev > 0) {
 			close(memdev);
+			if (mem != MAP_FAILED) {
+				munmap(mem, MSIZE);
+			}
 		}
 	}
 
@@ -95,7 +99,7 @@ public:
 
 		memdev = open("/dev/mem", O_RDWR);
 		if (memdev > 0) {
-			mem = (uint32_t*)mmap(0, 0x20000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, BASE);
+			mem = (uint32_t*)mmap(0, MSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, MBASE);
 			if (mem == MAP_FAILED) {
 				ERROR("Could not mmap hardware registers!");
 				close(memdev);
