@@ -34,18 +34,15 @@ void Platform::hwInit() {
 }
 
 Platform* PlatformInit(GMenu2X *gmenu2x) { // Detect platform type and return base class pointer
-	if (FILE *f = fopen("/proc/jz/gpio", "r")) {
-		fclose(f);
+	if (file_exists("/proc/jz/gpio")) {
 		return new RetroFW(gmenu2x);
 	}
 
-	if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio", "r")) {
-		fclose(f);
+	if (file_exists("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio")) {
 		return new OpenDingux(gmenu2x);
 	}
 
-	if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
-		fclose(f);
+	if (file_exists("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now")) {
 		return new Miyoo(gmenu2x);
 	}
 
