@@ -1613,7 +1613,8 @@ string GMenu2X::ipkName(string cmd) {
 void GMenu2X::ipkInstall(string path) {
 	string cmd = "opkg install --force-reinstall --force-overwrite ";
 	input.update(false);
-	if (input[MANUAL]) cmd += "--force-downgrade ";
+	bool debug = input[MENU];
+	if (debug) cmd += "--force-downgrade --force-depends --force-maintainer ";
 	TerminalDialog td(this, _("Package installer"), "opkg install " + base_name(path), "skin:icons/configure.png");
 	td.exec(cmd + cmdclean(path));
 	system("if [ -d sections/systems ]; then mkdir -p sections/emulators.systems; cp -r sections/systems/* sections/emulators.systems/; rm -rf sections/systems; fi; sync;");
