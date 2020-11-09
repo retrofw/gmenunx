@@ -25,17 +25,6 @@
 	LEFT       LEFT           SDLK_LEFT       276       !(mem[PDPIN] >> 00 & 1)
 */
 
-
-#define MBASE   0x10000000
-#define MSIZE   0x20000
-#define CPPCR   (0x10 >> 2)
-#define PAPIN	(0x10000 >> 2)
-#define PBPIN	(0x10100 >> 2)
-#define PCPIN	(0x10200 >> 2)
-#define PDPIN	(0x10300 >> 2)
-#define PEPIN	(0x10400 >> 2)
-#define PFPIN	(0x10500 >> 2)
-
 void printbin(const char *id, int n) {
 	printf("%s: 0x%08x ", id, n);
 	for(int i = 31; i >= 0; i--) {
@@ -48,6 +37,15 @@ void printbin(const char *id, int n) {
 // class BrowseDialog : protected Dialog, public FileLister {
 class RetroFW : public Platform {
 private:
+	static const uint32_t MBASE = 0x10000000;
+	static const uint32_t MSIZE = 0x20000;
+	static const uint32_t CPPCR = (0x10 >> 2);
+	static const uint32_t PAPIN = (0x10000 >> 2);
+	static const uint32_t PBPIN = (0x10100 >> 2);
+	static const uint32_t PCPIN = (0x10200 >> 2);
+	static const uint32_t PDPIN = (0x10300 >> 2);
+	static const uint32_t PEPIN = (0x10400 >> 2);
+	static const uint32_t PFPIN = (0x10500 >> 2);
 	uint32_t *mem;
 	volatile uint8_t memdev = 0;
 	int32_t tickBattery = 0;
