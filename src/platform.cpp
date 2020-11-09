@@ -2,6 +2,7 @@
 #include "platform/retrofw.h"
 #include "platform/opendingux.h"
 #include "platform/miyoo.h"
+#include "platform/gkd350h.h"
 // #include "platform/gp2x.h"
 
 Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) { }
@@ -24,6 +25,10 @@ Platform* PlatformInit(GMenu2X *gmenu2x) { // Detect platform type and return ba
 
 	if (file_exists("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio")) {
 		return new OpenDingux(gmenu2x);
+	}
+
+	if (file_exists("/proc/jz/gpio/gpios")) {
+		return new GKD350H(gmenu2x);
 	}
 
 	if (file_exists("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now")) {
