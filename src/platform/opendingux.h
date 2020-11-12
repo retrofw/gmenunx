@@ -41,6 +41,11 @@ public:
 			ipk = false;
 		}
 
+		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/allow_downscaling", "w")) {
+			fprintf(f, "1");
+			fclose(f);
+		}
+
 #if defined(OPK_SUPPORT)
 		system("umount -fl /mnt");
 #endif
