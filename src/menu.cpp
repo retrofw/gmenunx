@@ -677,18 +677,16 @@ void Menu::drawStatusBar() {
 
 		// Volume indicator
 		// TODO: use drawButton(gmenu2x->s, iconVolume[volumeMode], confInt["globalVolume"], x);
-		{ stringstream ss; ss << gmenu2x->confInt["globalVolume"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
 		x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
 		iconVolume[gmenu2x->platform->volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
+		gmenu2x->s->write(gmenu2x->font, std::to_string(gmenu2x->confInt["globalVolume"]), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
 		// Brightness indicator
-		{ stringstream ss; ss << gmenu2x->confInt["backlight"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
 		x += iconPadding + pctWidth;
 		iconBrightness[brightnessIcon]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
+		gmenu2x->s->write(gmenu2x->font, std::to_string(gmenu2x->confInt["backlight"]), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
 		// // Menu indicator
 		// iconMenu->blit(gmenu2x->s, iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
@@ -719,11 +717,10 @@ void Menu::drawStatusBar() {
 
 				if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
 					// CPU indicator
-					{ stringstream ss; ss << getLinkApp()->getCPU() << "MHz"; ss.get(&buf[0], sizeof(buf)); }
 					x += iconPadding + pctWidth;
 					iconCPU->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 					x += iconWidth + iconPadding;
-					gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
+					gmenu2x->s->write(gmenu2x->font, std::to_string(getLinkApp()->getCPU()) + "MHz", x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 				}
 			}
 		}
