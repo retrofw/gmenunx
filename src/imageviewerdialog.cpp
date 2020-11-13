@@ -5,7 +5,7 @@ ImageViewerDialog::ImageViewerDialog(GMenu2X *gmenu2x, const string &title, cons
 Dialog(gmenu2x, title, description, icon), path(path) {}
 
 void ImageViewerDialog::exec() {
-	Surface image(path);
+	Surface *image = new Surface(path);
 
 	bool inputAction = false;
 	int offsetX = 0, offsetY = 0;
@@ -17,7 +17,7 @@ void ImageViewerDialog::exec() {
 	while (true) {
 		this->bg->blit(gmenu2x->s, 0, 0);
 		gmenu2x->s->setClipRect(gmenu2x->listRect);
-		image.blit(gmenu2x->s, gmenu2x->listRect.x + offsetX, gmenu2x->listRect.y + offsetY);
+		image->blit(gmenu2x->s, gmenu2x->listRect.x + offsetX, gmenu2x->listRect.y + offsetY);
 		gmenu2x->s->flip();
 		gmenu2x->s->clearClipRect();
 
@@ -30,17 +30,17 @@ void ImageViewerDialog::exec() {
 				offsetX += gmenu2x->listRect.w / 3;
 				if (offsetX > 0) offsetX = 0;
 			}
-			else if (gmenu2x->input[RIGHT] && image.raw->w + offsetX > gmenu2x->listRect.w) {
+			else if (gmenu2x->input[RIGHT] && image->raw->w + offsetX > gmenu2x->listRect.w) {
 				offsetX -=  gmenu2x->listRect.w / 3;
-				if (image.raw->w + offsetX < gmenu2x->listRect.w) offsetX = gmenu2x->listRect.w - image.raw->w;
+				if (image->raw->w + offsetX < gmenu2x->listRect.w) offsetX = gmenu2x->listRect.w - image->raw->w;
 			}
 			else if (gmenu2x->input[UP] && offsetY < 0) {
 				offsetY +=  gmenu2x->listRect.h / 3;
 				if (offsetY > 0) offsetY = 0;
 			}
-			else if (gmenu2x->input[DOWN] && image.raw->w + offsetY > gmenu2x->listRect.h) {
+			else if (gmenu2x->input[DOWN] && image->raw->w + offsetY > gmenu2x->listRect.h) {
 				offsetY -=  gmenu2x->listRect.h / 3;
-				if (image.raw->h + offsetY < gmenu2x->listRect.h) offsetY = gmenu2x->listRect.h - image.raw->h;
+				if (image->raw->h + offsetY < gmenu2x->listRect.h) offsetY = gmenu2x->listRect.h - image->raw->h;
 			}
 		} while (!inputAction);
 	}

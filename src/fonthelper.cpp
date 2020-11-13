@@ -168,16 +168,16 @@ void FontHelper::write(Surface *surface, const string &text, int x, int y, RGBAC
 	if (text.empty()) return;
 
 	if (bgColor.a > 0) {
-		Surface bg;
-		bg.raw = TTF_RenderUTF8_Blended(fontOutline, text.c_str(), rgbatosdl(bgColor));
-		bg.setAlpha(bgColor.a);
-		bg.blit(surface, x - outline, y - outline);
+		Surface *bg = new Surface();
+		bg->raw = TTF_RenderUTF8_Blended(fontOutline, text.c_str(), rgbatosdl(bgColor));
+		bg->setAlpha(bgColor.a);
+		bg->blit(surface, x - outline, y - outline);
 	}
 
 	if (fgColor.a > 0) {
-		Surface fg;
-		fg.raw = TTF_RenderUTF8_Blended(font, text.c_str(), rgbatosdl(fgColor));
-		fg.setAlpha(fgColor.a);
-		fg.blit(surface, x, y);
+		Surface *fg = new Surface();
+		fg->raw = TTF_RenderUTF8_Blended(font, text.c_str(), rgbatosdl(fgColor));
+		fg->setAlpha(fgColor.a);
+		fg->blit(surface, x, y);
 	}
 }

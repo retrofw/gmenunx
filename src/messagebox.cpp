@@ -28,7 +28,7 @@ gmenu2x(gmenu2x) {
 	uint32_t i, fadeAlpha = 0, h = gmenu2x->font->height(), h2 = gmenu2x->font->height() / 2;
 	SDL_Rect box;
 
-	Surface bg(gmenu2x->s);
+	Surface *bg = new Surface(gmenu2x->s);
 
 	gmenu2x->input.dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
@@ -47,7 +47,7 @@ gmenu2x(gmenu2x) {
 		if (selected < 0) selected = options.size() - 1;
 		if (selected >= options.size()) selected = 0;
 
-		bg.blit(gmenu2x->s, 0, 0);
+		bg->blit(gmenu2x->s, 0, 0);
 
 		gmenu2x->s->box(0, 0, gmenu2x->platform->w, gmenu2x->platform->h, 0,0,0, fadeAlpha);
 		gmenu2x->s->box(box.x, box.y, box.w, box.h, gmenu2x->skinConfColor["messageBoxBg"]);
@@ -144,7 +144,7 @@ int MessageBox::exec() {
 	int fadeAlpha = 0, ix = 0;
 	SDL_Rect box;
 
-	Surface bg(gmenu2x->s);
+	Surface *bg = new Surface(gmenu2x->s);
 
 	gmenu2x->input.dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
@@ -172,7 +172,7 @@ int MessageBox::exec() {
 
 	uint32_t tickStart = SDL_GetTicks();
 	do {
-		bg.blit(gmenu2x->s, 0, 0);
+		bg->blit(gmenu2x->s, 0, 0);
 
 		// Darken background
 		gmenu2x->s->box(0, 0, gmenu2x->platform->w, gmenu2x->platform->h, 0,0,0, fadeAlpha);

@@ -88,7 +88,7 @@ bool BrowseDialog::exec(string _path) {
 			}
 
 			if (gmenu2x->confStr["previewMode"] != "Backdrop") {
-				Surface anim = new Surface(gmenu2x->s);
+				Surface *anim = new Surface(gmenu2x->s);
 				if (preview.empty() || preview == "#") { // hide preview
 					 while (animation > 0) {
 						animation -= gmenu2x->skinConfInt["previewWidth"] / 8;
@@ -96,7 +96,7 @@ bool BrowseDialog::exec(string _path) {
 						if (animation < 0)
 							animation = 0;
 
-						anim.blit(gmenu2x->s,0,0);
+						anim->blit(gmenu2x->s,0,0);
 						gmenu2x->s->box(gmenu2x->platform->w - animation, gmenu2x->listRect.y, gmenu2x->skinConfInt["previewWidth"] + 2 * padding, gmenu2x->listRect.h, gmenu2x->skinConfColor["previewBg"]);
 						gmenu2x->s->flip();
 						SDL_Delay(10);
@@ -115,7 +115,7 @@ bool BrowseDialog::exec(string _path) {
 						if (animation > gmenu2x->skinConfInt["previewWidth"] + 2 * padding)
 							animation = gmenu2x->skinConfInt["previewWidth"] + 2 * padding;
 
-						anim.blit(gmenu2x->s,0,0);
+						anim->blit(gmenu2x->s,0,0);
 						gmenu2x->s->box(gmenu2x->platform->w - animation, gmenu2x->listRect.y, gmenu2x->skinConfInt["previewWidth"] + 2 * padding, gmenu2x->listRect.h, gmenu2x->skinConfColor["previewBg"]);
 						gmenu2x->sc[preview + "scaled"]->blit(gmenu2x->s, {gmenu2x->platform->w - animation + padding, gmenu2x->listRect.y + padding, gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding}, HAlignCenter | VAlignMiddle, gmenu2x->platform->h);
 						gmenu2x->s->flip();
