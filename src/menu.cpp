@@ -678,8 +678,11 @@ void Menu::drawSectionBar() {
 	}
 
 	if (gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
-		if (iconL != NULL) iconL->blit(gmenu2x->s, 0, 0, HAlignLeft | VAlignTop);
-		if (iconR != NULL) iconR->blit(gmenu2x->s, gmenu2x->platform->w, 0, HAlignRight | VAlignTop);
+		string iconL = gmenu2x->sc.getSkinFilePath("imgs/section-l.png", false);
+		if (!iconL.empty()) gmenu2x->sc[iconL]->blit(gmenu2x->s, 0, 0, HAlignLeft | VAlignTop);
+
+		string iconR = gmenu2x->sc.getSkinFilePath("imgs/section-r.png", false);
+		if (!iconR.empty()) gmenu2x->sc[iconR]->blit(gmenu2x->s, gmenu2x->platform->w, 0, HAlignRight | VAlignTop);
 	}
 }
 
@@ -698,7 +701,7 @@ void Menu::drawStatusBar() {
 
 	if (!iconDescription.empty() && SDL_GetTicks() - icon_changed < 300) {
 		x = iconPadding;
-		iconManual->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+		gmenu2x->sc["skin:imgs/manual.png"]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
 		gmenu2x->s->write(gmenu2x->font, iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 	} else {
@@ -727,13 +730,13 @@ void Menu::drawStatusBar() {
 
 		// SD Card indicator
 		if (gmenu2x->platform->mmcStatus == MMC_INSERT) {
-			iconSD->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+			gmenu2x->sc["skin:imgs/sd.png"]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
 
 		// Network indicator
-		if (gmenu2x->inetIcon != NULL) {
-			gmenu2x->inetIcon->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+		if (!gmenu2x->inetIcon.empty()) {
+			gmenu2x->sc[gmenu2x->inetIcon]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
 
@@ -741,13 +744,13 @@ void Menu::drawStatusBar() {
 			if (getLinkApp() != NULL) {
 				if (!getLinkApp()->getManualPath().empty()) {
 					// Manual indicator
-					iconManual->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+					gmenu2x->sc["skin:imgs/manual.png"]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 				}
 
 				if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
 					// CPU indicator
 					x += iconPadding + pctWidth;
-					iconCPU->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+					gmenu2x->sc["skin:imgs/cpu.png"]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 					x += iconWidth + iconPadding;
 					gmenu2x->s->write(gmenu2x->font, std::to_string(getLinkApp()->getCPU()) + "MHz", x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 				}
@@ -773,7 +776,7 @@ void Menu::drawIconTray() {
 
 	// TRAY iconTrayShift,1
 	if (gmenu2x->platform->mmcStatus == MMC_INSERT) {
-		iconSD->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
+		gmenu2x->sc["skin:imgs/sd.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 		iconTrayShift++;
 	}
 
@@ -781,14 +784,14 @@ void Menu::drawIconTray() {
 		if (getLinkApp() != NULL) {
 			if (!getLinkApp()->getManualPath().empty() && iconTrayShift < 2) {
 				// Manual indicator
-				iconManual->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
+				gmenu2x->sc["skin:imgs/manual.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 				iconTrayShift++;
 			}
 
 			if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
 				if (getLinkApp()->getCPU() != gmenu2x->confInt["cpuMenu"] && iconTrayShift < 2) {
 					// CPU indicator
-					iconCPU->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
+					gmenu2x->sc["skin:imgs/cpu.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 					iconTrayShift++;
 				}
 			}
@@ -802,7 +805,7 @@ void Menu::drawIconTray() {
 
 	if (iconTrayShift < 2) {
 		// Menu indicator
-		iconMenu->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
+		gmenu2x->sc["skin:imgs/menu.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 		iconTrayShift++;
 	}
 }
@@ -814,12 +817,6 @@ void Menu::exec() {
 	sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
 	iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
 
-	iconSD = gmenu2x->sc["skin:imgs/sd.png"];
-	iconManual = gmenu2x->sc["skin:imgs/manual.png"];
-	iconCPU = gmenu2x->sc["skin:imgs/cpu.png"];
-	iconMenu = gmenu2x->sc["skin:imgs/menu.png"];
-	iconL = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/section-l.png"];
-	iconR = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/section-r.png"];
 	iconBGoff = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_off.png"];
 	iconBGon = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_on.png"];
 

@@ -48,7 +48,7 @@ private:
 	const int iconPadding = 4;
 	uint32_t section_changed, icon_changed;
 
-	Surface *iconSD, *iconManual, *iconCPU, *iconMenu, *iconL, *iconR, *iconBGoff, *iconBGon;
+	Surface *iconBGoff, *iconBGon;
 	string iconDescription = "";
 
 	SDL_TimerID sectionChangedTimer, iconChangedTimer;

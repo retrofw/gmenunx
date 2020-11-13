@@ -154,7 +154,7 @@ public:
 
 		INFO("Enabling networking device");
 		system("/usr/bin/retrofw network on");
-		gmenu2x->inetIcon = gmenu2x->sc["skin:imgs/inet.png"];
+		gmenu2x->inetIcon = "skin:imgs/inet.png";
 	}
 
 	void setTVOut(int16_t mode) {

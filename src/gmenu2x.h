@@ -106,7 +106,7 @@ public:
 	ConfColorHash skinConfColor;
 
 	SurfaceCollection sc;
-	Surface *s, *bg, *inetIcon = NULL;
+	Surface *s, *bg;
 	FontHelper *font = NULL, *titlefont = NULL;
 	PowerManager *powerManager;
 	Platform *platform;
@@ -114,7 +114,7 @@ public:
 	Touchscreen ts;
 	Menu *menu;
 	bool f200 = true; //gp2x type // touchscreen
-	string currBackdrop;
+	string currBackdrop = "", inetIcon = "";
 
 	~GMenu2X();
 	void quit(bool all = true);

@@ -299,7 +299,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	} else if (input[UDC_REMOVE]) {
 		platform->setUDC(UDC_REMOVE);
-		inetIcon = NULL;
+		inetIcon = "";
 		platform->batteryStatus = platform->getBatteryStatus(platform->getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
 		powerManager->setPowerTimeout(confInt["powerTimeout"]);
 

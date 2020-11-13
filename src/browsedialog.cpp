@@ -12,13 +12,6 @@ Dialog(gmenu2x, title, description, icon) {
 bool BrowseDialog::exec(string _path) {
 	this->bg = new Surface(gmenu2x->bg); // needed to redraw on child screen return
 
-	Surface *iconGoUp = gmenu2x->sc["skin:imgs/go-up.png"];
-	Surface *iconFolder = gmenu2x->sc["skin:imgs/folder.png"];
-	Surface *iconFile = gmenu2x->sc["skin:imgs/file.png"];
-	Surface *iconSd = gmenu2x->sc["skin:imgs/sd.png"];
-	Surface *iconFav = gmenu2x->sc["skin:imgs/fav.png"];
-	Surface *iconCur;
-
 	uint32_t i, iY, firstElement = 0, padding = 6;
 	int32_t animation = 0;
 	uint32_t rowHeight = gmenu2x->font->height() + 1;
@@ -77,21 +70,20 @@ bool BrowseDialog::exec(string _path) {
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColor["selectionBg"]);
 
-				iconCur = iconFile;
+				string icon = "skin:imgs/file.png";
 
 				if (isDirectory(i)) {
 					if (getFile(i) == "..")
-						iconCur = iconGoUp;
+						icon = "skin:imgs/go-up.png";
 					else if (getPath(i) == "/media" || path == "/media")
-						iconCur = iconSd;
+						icon = "skin:imgs/sd.png";
 					else
-						iconCur = iconFolder;
+						icon = "skin:imgs/folder.png";
 				} else if (isFavourite(getFile(i))) {
-					iconCur = iconFav;
+					icon = "skin:imgs/fav.png";
 				}
 
-				iconCur->blit(gmenu2x->s, gmenu2x->listRect.x + 10, iY + rowHeight/2, HAlignCenter | VAlignMiddle);
-
+				gmenu2x->sc[icon]->blit(gmenu2x->s, gmenu2x->listRect.x + 10, iY + rowHeight/2, HAlignCenter | VAlignMiddle);
 				gmenu2x->s->write(gmenu2x->font, getFileName(i), gmenu2x->listRect.x + 21, iY + rowHeight/2, VAlignMiddle);
 			}
 
