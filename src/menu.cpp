@@ -469,6 +469,35 @@ void Menu::initLayout() {
 	linkHeight = (gmenu2x->linksRect.h - (linkCols > 1) * (linkRows + 1) * linkSpacing) / linkRows;
 }
 
+string Menu::getBatteryIcon(uint8_t level) {
+	if (level <= 5) {
+		string path = gmenu2x->sc.getSkinFilePath("imgs/battery/" +  std::to_string(level) + ".png");
+		if (!path.empty()) return path;
+	}
+ 	return gmenu2x->sc.getSkinFilePath("imgs/battery/ac.png");
+}
+
+string Menu::getBrightnessIcon(uint8_t level) {
+	level /= 20;
+	if (level <= 4) {
+		string path = gmenu2x->sc.getSkinFilePath("imgs/brightness/" +  std::to_string(level) + ".png");
+		if (!path.empty()) {
+			return path;
+		}
+	}
+	return gmenu2x->sc.getSkinFilePath("imgs/brightness.png");
+}
+
+string Menu::getVolumeIcon(uint8_t level) {
+	switch (level) {
+		case VOLUME_MODE_MUTE:
+			return gmenu2x->sc.getSkinFilePath("imgs/mute.png");
+		case VOLUME_MODE_PHONES:
+			return gmenu2x->sc.getSkinFilePath("imgs/phones.png");
+	}
+	return gmenu2x->sc.getSkinFilePath("imgs/volume.png");
+}
+
 void Menu::drawIcon(int i, int ix, int iy, bool selected) {
 	Surface *icon = gmenu2x->sc[sectionLinks()->at(i)->getIconPath()];
 
@@ -678,13 +707,13 @@ void Menu::drawStatusBar() {
 		// Volume indicator
 		// TODO: use drawButton(gmenu2x->s, iconVolume[volumeMode], confInt["globalVolume"], x);
 		x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
-		iconVolume[gmenu2x->platform->volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+		gmenu2x->sc[getVolumeIcon(gmenu2x->platform->volumeMode)]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
 		gmenu2x->s->write(gmenu2x->font, std::to_string(gmenu2x->confInt["globalVolume"]), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
 		// Brightness indicator
 		x += iconPadding + pctWidth;
-		iconBrightness[brightnessIcon]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+		gmenu2x->sc[getBrightnessIcon(gmenu2x->confInt["backlight"])]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
 		gmenu2x->s->write(gmenu2x->font, std::to_string(gmenu2x->confInt["backlight"]), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 
@@ -693,7 +722,7 @@ void Menu::drawStatusBar() {
 		// sc["skin:imgs/debug.png"]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 
 		// Battery indicator
-		iconBattery[gmenu2x->platform->batteryStatus]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+		gmenu2x->sc[getBatteryIcon(gmenu2x->platform->batteryStatus)]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 		iconTrayShift++;
 
 		// SD Card indicator
@@ -737,10 +766,10 @@ void Menu::drawIconTray() {
 	// s->box(sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38,16,16, strtorgba("ff00ffff"));
 
 	// TRAY 0,0
-	iconVolume[gmenu2x->platform->volumeMode]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+	gmenu2x->sc[getVolumeIcon(gmenu2x->platform->volumeMode)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 
 	// TRAY 1,0
-	iconBattery[gmenu2x->platform->batteryStatus]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+	gmenu2x->sc[getBatteryIcon(gmenu2x->platform->batteryStatus)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 
 	// TRAY iconTrayShift,1
 	if (gmenu2x->platform->mmcStatus == MMC_INSERT) {
@@ -767,11 +796,7 @@ void Menu::drawIconTray() {
 	}
 
 	if (iconTrayShift < 2) {
-		brightnessIcon = gmenu2x->confInt["backlight"] / 20;
-		if (brightnessIcon > 4 || iconBrightness[brightnessIcon] == NULL) {
-			brightnessIcon = 5;
-		}
-		iconBrightness[brightnessIcon]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
+		gmenu2x->sc[getBrightnessIcon(gmenu2x->confInt["backlight"])]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 		iconTrayShift++;
 	}
 
@@ -788,25 +813,6 @@ void Menu::exec() {
 
 	sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
 	iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
-
-	iconBrightness[0] = gmenu2x->sc["skin:imgs/brightness/0.png"],
-	iconBrightness[1] = gmenu2x->sc["skin:imgs/brightness/1.png"],
-	iconBrightness[2] = gmenu2x->sc["skin:imgs/brightness/2.png"],
-	iconBrightness[3] = gmenu2x->sc["skin:imgs/brightness/3.png"],
-	iconBrightness[4] = gmenu2x->sc["skin:imgs/brightness/4.png"],
-	iconBrightness[5] = gmenu2x->sc["skin:imgs/brightness.png"],
-
-	iconBattery[0] = gmenu2x->sc["skin:imgs/battery/0.png"],
-	iconBattery[1] = gmenu2x->sc["skin:imgs/battery/1.png"],
-	iconBattery[2] = gmenu2x->sc["skin:imgs/battery/2.png"],
-	iconBattery[3] = gmenu2x->sc["skin:imgs/battery/3.png"],
-	iconBattery[4] = gmenu2x->sc["skin:imgs/battery/4.png"],
-	iconBattery[5] = gmenu2x->sc["skin:imgs/battery/5.png"],
-	iconBattery[6] = gmenu2x->sc["skin:imgs/battery/ac.png"],
-
-	iconVolume[0] = gmenu2x->sc["skin:imgs/mute.png"],
-	iconVolume[1] = gmenu2x->sc["skin:imgs/phones.png"],
-	iconVolume[2] = gmenu2x->sc["skin:imgs/volume.png"],
 
 	iconSD = gmenu2x->sc["skin:imgs/sd.png"];
 	iconManual = gmenu2x->sc["skin:imgs/manual.png"];
@@ -832,11 +838,6 @@ void Menu::exec() {
 		// SECTIONS
 		if (gmenu2x->skinConfInt["sectionBar"]) {
 			drawSectionBar();
-
-			brightnessIcon = gmenu2x->confInt["backlight"] / 20;
-			if (brightnessIcon > 4 || iconBrightness[brightnessIcon] == NULL) {
-				brightnessIcon = 5;
-			}
 
 			if (gmenu2x->skinConfInt["sectionBar"] == SB_CLASSIC) {
 				drawStatusBar();

@@ -49,9 +49,6 @@ private:
 	uint32_t section_changed, icon_changed;
 
 	Surface *iconSD, *iconManual, *iconCPU, *iconMenu, *iconL, *iconR, *iconBGoff, *iconBGon;
-	Surface *iconBrightness[6], *iconBattery[7], *iconVolume[3];
-
-	int8_t brightnessIcon = 5;
 	string iconDescription = "";
 
 	SDL_TimerID sectionChangedTimer, iconChangedTimer;
@@ -110,6 +107,10 @@ public:
 	int getSectionIndex() { return iSectionIndex; }
 	int getLinkIndex() { return iLinkIndex; }
 	const string &getSection() { return sections[iSectionIndex]; }
+
+	string getBatteryIcon(uint8_t level);
+	string getBrightnessIcon(uint8_t level);
+	string getVolumeIcon(uint8_t level);
 };
 
 #endif

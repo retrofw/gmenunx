@@ -1647,17 +1647,11 @@ int GMenu2X::setVolume(int val, bool popup) {
 	val = constrain(val, 0, 100);
 
 	if (popup) {
-		Surface bg(s);
-
-		Surface *iconVolume[3] = {
-			sc["skin:imgs/mute.png"],
-			sc["skin:imgs/phones.png"],
-			sc["skin:imgs/volume.png"],
-		};
+		bg = new Surface(s);
 
 		powerManager->clearTimer();
 		while (true) {
-			drawSlider(val, 0, 100, *iconVolume[platform->getVolumeMode(val)], bg);
+			drawSlider(val, 0, 100, menu->getVolumeIcon(platform->getVolumeMode(val)), bg);
 
 			input.update();
 
@@ -1672,7 +1666,7 @@ int GMenu2X::setVolume(int val, bool popup) {
 			val = constrain(val, 0, 100);
 		}
 
-		bg.blit(s, 0, 0);
+		bg->blit(s, 0, 0);
 		s->flip();
 
 		powerManager->resetSuspendTimer();
@@ -1690,23 +1684,11 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		int backlightStep = 10;
 		val = constrain(val, 5, 100);
 
-		Surface bg(s);
-
-		Surface *iconBrightness[6] = {
-			sc["skin:imgs/brightness/0.png"],
-			sc["skin:imgs/brightness/1.png"],
-			sc["skin:imgs/brightness/2.png"],
-			sc["skin:imgs/brightness/3.png"],
-			sc["skin:imgs/brightness/4.png"],
-			sc["skin:imgs/brightness.png"],
-		};
+		bg = new Surface(s);
 
 		powerManager->clearTimer();
 		while (true) {
-			int brightnessIcon = val / 20;
-			if (brightnessIcon > 4 || iconBrightness[brightnessIcon] == NULL) brightnessIcon = 5;
-
-			drawSlider(val, 0, 100, *iconBrightness[brightnessIcon], bg);
+			drawSlider(val, 0, 100, menu->getBrightnessIcon(val), bg);
 
 			input.update();
 
@@ -1724,7 +1706,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			val = constrain(val, 5, 100);
 		}
 
-		bg.blit(s, 0, 0);
+		bg->blit(s, 0, 0);
 		s->flip();
 
 		powerManager->resetSuspendTimer();
@@ -1815,17 +1797,17 @@ void GMenu2X::drawScrollBar(uint32_t pagesize, uint32_t totalsize, uint32_t page
 	s->rectangle(bar.x - 1, bar.y - 1, bar.w + 2, bar.h + 2, skinConfColor["listBg"]);
 }
 
-void GMenu2X::drawSlider(int val, int min, int max, Surface &icon, Surface &bg) {
+void GMenu2X::drawSlider(int val, int min, int max, string icon, Surface *bg) {
 	SDL_Rect progress = {52, 32, platform->w - 84, 8};
 	SDL_Rect box = {20, 20, platform->w - 40, 32};
 
 	val = constrain(val, min, max);
 
-	bg.blit(s,0,0);
+	bg->blit(s,0,0);
 	s->box(box, skinConfColor["messageBoxBg"]);
 	s->rectangle(box.x + 2, box.y + 2, box.w - 4, box.h - 4, skinConfColor["messageBoxBorder"]);
 
-	icon.blit(s, 28, 28);
+	sc[icon]->blit(s, 28, 28);
 
 	s->box(progress, skinConfColor["messageBoxBg"]);
 	s->box(progress.x + 1, progress.y + 1, val * (progress.w - 3) / max + 1, progress.h - 2, skinConfColor["messageBoxSelection"]);

@@ -143,7 +143,7 @@ public:
 	void changeSelectorDir();
 
 	bool saveScreenshot(string path);
-	void drawSlider(int val, int min, int max, Surface &icon, Surface &bg);
+	void drawSlider(int val, int min, int max, string icon, Surface *bg);
 
 	void setInputSpeed();
 
