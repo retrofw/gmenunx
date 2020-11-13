@@ -817,8 +817,8 @@ void Menu::exec() {
 	sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
 	iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
 
-	iconBGoff = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_off.png"];
-	iconBGon = gmenu2x->sc[gmenu2x->confStr["skin"] + "/imgs/iconbg_on.png"];
+	iconBGoff = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/iconbg_off.png", false)];
+	iconBGon = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/iconbg_on.png", false)];
 
 	while (true) {
 		// BACKGROUND
