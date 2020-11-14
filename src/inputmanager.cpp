@@ -193,7 +193,6 @@ bool InputManager::update(bool wait) {
 			keystate[x] = true;
 			break;
 		case SDL_KEYUP:
-			anyactions = true;
 			keystate[x] = false;
 			break;
 		case SDL_USEREVENT:
