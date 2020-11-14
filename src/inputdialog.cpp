@@ -101,6 +101,7 @@ void InputDialog::setKeyboard(int kb) {
 bool InputDialog::exec() {
 	Surface *bg = new Surface(gmenu2x->s);
 
+	bool inputAction = false;
 	SDL_Rect box = {gmenu2x->listRect.x + 2, 0, gmenu2x->listRect.w - 4, gmenu2x->font->height() + 4};
 	box.y = kbRect.y - box.h;
 
@@ -143,7 +144,10 @@ bool InputDialog::exec() {
 		drawVirtualKeyboard();
 		gmenu2x->s->flip();
 
-		bool inputAction = gmenu2x->input.update();
+		do {
+			inputAction = gmenu2x->input.update();
+		} while (!inputAction);
+
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;

@@ -67,19 +67,19 @@ gmenu2x(gmenu2x) {
 
 		do {
 			inputAction = gmenu2x->input.update();
-
-			if (gmenu2x->inputCommonActions(inputAction)) continue;
-
-			if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) return;
-			else if (gmenu2x->input[UP]) selected--;
-			else if (gmenu2x->input[DOWN]) selected++;
-			else if (gmenu2x->input[LEFT] || gmenu2x->input[PAGEUP]) selected = 0;
-			else if (gmenu2x->input[RIGHT] || gmenu2x->input[PAGEDOWN]) selected = (int)options.size() - 1;
-			else if (gmenu2x->input[SETTINGS] || gmenu2x->input[CONFIRM]) {
-				options[selected].action();
-				return;
-			}
 		} while (!inputAction);
+
+		if (gmenu2x->inputCommonActions(inputAction)) continue;
+
+		if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) return;
+		else if (gmenu2x->input[UP]) selected--;
+		else if (gmenu2x->input[DOWN]) selected++;
+		else if (gmenu2x->input[LEFT] || gmenu2x->input[PAGEUP]) selected = 0;
+		else if (gmenu2x->input[RIGHT] || gmenu2x->input[PAGEDOWN]) selected = (int)options.size() - 1;
+		else if (gmenu2x->input[SETTINGS] || gmenu2x->input[CONFIRM]) {
+			options[selected].action();
+			return;
+		}
 	}
 }
 
@@ -143,6 +143,7 @@ void MessageBox::setBgAlpha(uint32_t bgalpha) {
 int MessageBox::exec() {
 	int fadeAlpha = 0, ix = 0;
 	SDL_Rect box;
+	bool inputAction = false;
 
 	Surface *bg = new Surface(gmenu2x->s);
 
@@ -237,14 +238,14 @@ int MessageBox::exec() {
 		// 	}
 		// }
 
-		bool inputAction = gmenu2x->input.update();
-		if (inputAction) {
-			// if (gmenu2x->inputCommonActions(inputAction)) continue; // causes power button bounce
-			for (uint32_t i = 0; i < buttonText.size(); i++) {
-				if (buttonText[i] != "" && gmenu2x->input[i]) {
-					return i;
-					break;
-				}
+		do {
+			inputAction = gmenu2x->input.update();
+		} while (!inputAction);
+
+		for (uint32_t i = 0; i < buttonText.size(); i++) {
+			if (buttonText[i] != "" && gmenu2x->input[i]) {
+				return i;
+				break;
 			}
 		}
 	}

@@ -65,50 +65,52 @@ bool SettingsDialog::exec() {
 		gmenu2x->drawScrollBar(numRows, voices.size(), firstElement, gmenu2x->listRect);
 
 		gmenu2x->s->flip();
+	
 		do {
 			inputAction = gmenu2x->input.update();
-			if (gmenu2x->inputCommonActions(inputAction)) continue;
-
-			action = SD_NO_ACTION;
-			if (!(action = voices[selected]->manageInput())) {
-				if (gmenu2x->input[UP]) 							action = SD_ACTION_UP;
-				else if (gmenu2x->input[DOWN]) 						action = SD_ACTION_DOWN;
-				else if (gmenu2x->input[PAGEUP]) 					action = SD_ACTION_PAGEUP;
-				else if (gmenu2x->input[PAGEDOWN]) 					action = SD_ACTION_PAGEDOWN;
-				else if (gmenu2x->input[SETTINGS]) 					action = SD_ACTION_SAVE;
-				else if (gmenu2x->input[CANCEL] && allowCancel)		action = SD_ACTION_CLOSE;
-			}
-
-			switch (action) {
-				case SD_ACTION_SAVE:
-					save = true;
-					loop = false;
-					break;
-				case SD_ACTION_CLOSE:
-					loop = false;
-					if (allowCancel && edited()) {
-						MessageBox mb(gmenu2x, _("Save changes?"), this->icon);
-						mb.setButton(CONFIRM, _("Yes"));
-						mb.setButton(CANCEL,  _("No"));
-						save = (mb.exec() == CONFIRM);
-					}
-					break;
-				case SD_ACTION_UP:
-					selected--;
-					break;
-				case SD_ACTION_DOWN:
-					selected++;
-					break;
-				case SD_ACTION_PAGEUP:
-					selected -= numRows;
-					if (selected < 0) selected = 0;
-					break;
-				case SD_ACTION_PAGEDOWN:
-					selected += numRows;
-					if (selected >= voices.size()) selected = voices.size() - 1;
-					break;
-			}
 		} while (!inputAction);
+		
+		if (gmenu2x->inputCommonActions(inputAction)) continue;
+
+		action = SD_NO_ACTION;
+		if (!(action = voices[selected]->manageInput())) {
+			if (gmenu2x->input[UP]) 							action = SD_ACTION_UP;
+			else if (gmenu2x->input[DOWN]) 						action = SD_ACTION_DOWN;
+			else if (gmenu2x->input[PAGEUP]) 					action = SD_ACTION_PAGEUP;
+			else if (gmenu2x->input[PAGEDOWN]) 					action = SD_ACTION_PAGEDOWN;
+			else if (gmenu2x->input[SETTINGS]) 					action = SD_ACTION_SAVE;
+			else if (gmenu2x->input[CANCEL] && allowCancel)		action = SD_ACTION_CLOSE;
+		}
+
+		switch (action) {
+			case SD_ACTION_SAVE:
+				save = true;
+				loop = false;
+				break;
+			case SD_ACTION_CLOSE:
+				loop = false;
+				if (allowCancel && edited()) {
+					MessageBox mb(gmenu2x, _("Save changes?"), this->icon);
+					mb.setButton(CONFIRM, _("Yes"));
+					mb.setButton(CANCEL,  _("No"));
+					save = (mb.exec() == CONFIRM);
+				}
+				break;
+			case SD_ACTION_UP:
+				selected--;
+				break;
+			case SD_ACTION_DOWN:
+				selected++;
+				break;
+			case SD_ACTION_PAGEUP:
+				selected -= numRows;
+				if (selected < 0) selected = 0;
+				break;
+			case SD_ACTION_PAGEDOWN:
+				selected += numRows;
+				if (selected >= voices.size()) selected = voices.size() - 1;
+				break;
+		}
 	}
 
 	gmenu2x->setInputSpeed();

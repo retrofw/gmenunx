@@ -811,6 +811,7 @@ void Menu::drawIconTray() {
 }
 
 void Menu::exec() {
+	bool inputAction = false;
 	icon_changed = SDL_GetTicks();
 	section_changed = icon_changed;
 
@@ -864,7 +865,9 @@ void Menu::exec() {
 			gmenu2x->s->flip();
 		}
 
-		bool inputAction = gmenu2x->input.update();
+		do {
+			inputAction = gmenu2x->input.update();
+		} while (!inputAction);
 
 		if (gmenu2x->input.combo()) {
 			gmenu2x->skinConfInt["sectionBar"] = ((gmenu2x->skinConfInt["sectionBar"]) % 5) + 1;
