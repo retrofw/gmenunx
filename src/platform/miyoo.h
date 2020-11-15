@@ -212,9 +212,7 @@ public:
 		INFO("Miyoo");
 	};
 
-	int setVolume(int val, bool popup = false) {
-		val = gmenu2x->setVolume(val, popup);
-
+	void setVolume(int val) {
 		uint32_t snd = open("/dev/miyoo_snd", O_RDWR);
 
 		if (snd) {
@@ -224,8 +222,6 @@ public:
 			close(snd);
 		}
 		volumeMode = getVolumeMode(val);
-
-		return val;
 	}
 
 	int setBacklight(int val, bool popup = false) {
