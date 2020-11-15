@@ -235,9 +235,8 @@ public:
 	}
 
 	uint8_t getVolumeMode(uint8_t vol) {
-		if (!vol) return VOLUME_MODE_MUTE;
 		if (memdev > 0 && !(mem[PDPIN] >> 6 & 1)) return VOLUME_MODE_PHONES;
-		return VOLUME_MODE_NORMAL;
+		return Platform::getVolumeMode(vol);
 	}
 
 #if 0

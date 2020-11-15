@@ -172,11 +172,6 @@ public:
 		return (pcm + hp) * (100.0f / 63.0f);
 	}
 #endif
-	
-	uint8_t getVolumeMode(uint8_t vol) {
-		if (!vol) return VOLUME_MODE_MUTE;
-		return VOLUME_MODE_NORMAL;
-	}
 
 	string hwPreLinkLaunch() {
 		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
