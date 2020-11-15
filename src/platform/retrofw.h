@@ -197,13 +197,21 @@ public:
 		}
 	}
 
-	int16_t getBacklight() {
-		int val = -1;
-		if (FILE *f = fopen("/proc/jz/backlight", "r")) {
+	uint16_t getTVOut() {
+		int val = 0;
+		if (FILE *f = fopen("/proc/jz/tvout", "r")) {
 			fscanf(f, "%i", &val);
 			fclose(f);
 		}
 		return val;
+	}
+
+	uint8_t getTVOutStatus() {
+		if (memdev > 0) {
+			if (fwtype == FW_RETROARCADE && !(mem[PDPIN] >> 6 & 1)) return TV_CONNECT;
+			if (!(mem[PDPIN] >> 25 & 1)) return TV_CONNECT;
+		}
+		return TV_REMOVE;
 	}
 
 	uint8_t getMMCStatus() {
@@ -215,14 +223,6 @@ public:
 		// if (memdev > 0 && ((mem[PDPIN] >> 7 & 1) || (mem[PEPIN] >> 13 & 1))) return UDC_CONNECT;
 		if (memdev > 0 && (mem[PDPIN] >> 7 & 1)) return UDC_CONNECT;
 		return UDC_REMOVE;
-	}
-
-	uint8_t getTVOutStatus() {
-		if (memdev > 0) {
-			if (fwtype == FW_RETROARCADE && !(mem[PDPIN] >> 6 & 1)) return TV_CONNECT;
-			if (!(mem[PDPIN] >> 25 & 1)) return TV_CONNECT;
-		}
-		return TV_REMOVE;
 	}
 
 	int16_t getBatteryLevel() {
@@ -244,21 +244,91 @@ public:
 		return 0; // 0% :(
 	}
 
-	uint16_t getTVOut() {
-		int val = 0;
-		if (FILE *f = fopen("/proc/jz/tvout", "r")) {
-			fscanf(f, "%i", &val);
-			fclose(f);
-		}
-		return val;
-	}
-
 	uint8_t getVolumeMode(uint8_t vol) {
 		if (!vol) return VOLUME_MODE_MUTE;
 		if (memdev > 0 && !(mem[PDPIN] >> 6 & 1)) return VOLUME_MODE_PHONES;
 		return VOLUME_MODE_NORMAL;
 	}
 
+	int getVolume() {
+		int vol = -1;
+		uint32_t soundDev = open("/dev/mixer", O_RDONLY);
+
+		if (soundDev) {
+			ioctl(soundDev, SOUND_MIXER_READ_VOLUME, &vol);
+			close(soundDev);
+			if (vol != -1) {
+				// just return one channel , not both channels, they're hopefully the same anyways
+				return vol & 0xFF;
+			}
+		}
+		return vol;
+	}
+
+	void setVolume(int val) {
+		uint32_t soundDev = open("/dev/mixer", O_RDWR);
+		if (soundDev) {
+			int vol = (val << 8) | val;
+			ioctl(soundDev, SOUND_MIXER_WRITE_VOLUME, &vol);
+			close(soundDev);
+
+		}
+		volumeMode = getVolumeMode(val);
+	}
+
+	int16_t getBacklight() {
+		int val = -1;
+		if (FILE *f = fopen("/proc/jz/backlight", "r")) {
+			fscanf(f, "%i", &val);
+			fclose(f);
+		}
+		return val;
+	}
+
+	void setBacklight(int val) {
+		if (val < 1 && getUDCStatus() != UDC_REMOVE /* && !getTVOut() */) {
+			val = 0; // suspend only if not charging and TV out is not enabled
+		}
+
+		if (FILE *f = fopen("/proc/jz/backlight", "w")) {
+			if (val == 0) {
+				fprintf(f, "-"); // disable backlight button
+			}
+			fprintf(f, "%d", val); // fputs(val, f);
+			fclose(f);
+		}
+	}
+
+	void setScaleMode(unsigned int mode) {
+		/* Scaling Modes:
+			0: stretch
+			1: aspect
+			2: original (fallback to aspect when downscale is needed)
+			3: 4:3
+		*/
+		if (FILE *f = fopen("/proc/jz/ipu", "w")) {
+			fprintf(f, "%d", mode); // fputs(val, f);
+			fclose(f);
+		}
+	}
+
+	void setCPU(uint32_t mhz) {
+		if (getTVOut()) {
+			WARNING("Can't overclock when TV out is enabled.");
+			return;
+		}
+		mhz = constrain(mhz, cpu_min, cpu_max);
+		if (memdev > 0) {
+			DEBUG("Setting clock to %d", mhz);
+			uint32_t m = mhz / 6;
+			mem[CPPCR] = (m << 24) | 0x090520;
+		}
+	}
+
+	string hwPreLinkLaunch() {
+		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
+		return "";
+	}
 
 	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 		tickBattery++;
@@ -307,89 +377,8 @@ public:
 				}
 				return 500;
 			}
-
-
-			// volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-			// if (volumeModePrev != volumeMode && volumeMode == VOLUME_MODE_PHONES) {
-			// 	setVolume(min(70, gmenu2x->confInt["globalVolume"]), true);
-			// }
-			// volumeModePrev = volumeMode;
 		}
 		return interval;
-	}
-
-
-// public:
-	int getVolume() {
-		int vol = -1;
-		uint32_t soundDev = open("/dev/mixer", O_RDONLY);
-
-		if (soundDev) {
-			ioctl(soundDev, SOUND_MIXER_READ_VOLUME, &vol);
-			close(soundDev);
-			if (vol != -1) {
-				// just return one channel , not both channels, they're hopefully the same anyways
-				return vol & 0xFF;
-			}
-		}
-		return vol;
-	}
-
-	void setVolume(int val) {
-		uint32_t soundDev = open("/dev/mixer", O_RDWR);
-		if (soundDev) {
-			int vol = (val << 8) | val;
-			ioctl(soundDev, SOUND_MIXER_WRITE_VOLUME, &vol);
-			close(soundDev);
-
-		}
-		volumeMode = getVolumeMode(val);
-	}
-
-	void setBacklight(int val) {
-		if (val < 1 && getUDCStatus() != UDC_REMOVE /* && !getTVOut() */) {
-			val = 0; // suspend only if not charging and TV out is not enabled
-		}
-
-		if (FILE *f = fopen("/proc/jz/backlight", "w")) {
-			if (val == 0) {
-				fprintf(f, "-"); // disable backlight button
-			}
-			fprintf(f, "%d", val); // fputs(val, f);
-			fclose(f);
-		}
-	}
-
-	void setScaleMode(unsigned int mode) {
-		/* Scaling Modes:
-			0: stretch
-			1: aspect
-			2: original (fallback to aspect when downscale is needed)
-			3: 4:3
-		*/
-		if (FILE *f = fopen("/proc/jz/ipu", "w")) {
-			fprintf(f, "%d", mode); // fputs(val, f);
-			fclose(f);
-		}
-	}
-
-	void setCPU(uint32_t mhz) {
-		if (getTVOut()) {
-			WARNING("Can't overclock when TV out is enabled.");
-			return;
-		}
-		mhz = constrain(mhz, gmenu2x->confInt["cpuMenu"], gmenu2x->confInt["cpuMax"]);
-		if (memdev > 0) {
-			DEBUG("Setting clock to %d", mhz);
-			uint32_t m = mhz / 6;
-			mem[CPPCR] = (m << 24) | 0x090520;
-			INFO("CPU clock: %d MHz", mhz);
-		}
-	}
-
-	string hwPreLinkLaunch() {
-		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
-		return "";
 	}
 };
 

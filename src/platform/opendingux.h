@@ -68,9 +68,32 @@ public:
 		return UDC_REMOVE;
 	}
 
-	uint8_t getVolumeMode(uint8_t vol) {
-		if (!vol) return VOLUME_MODE_MUTE;
-		return VOLUME_MODE_NORMAL;
+	void setUDC(int udcStatus) {
+		if (udcStatus == UDC_REMOVE) {
+			INFO("USB Disconnected. Disabling devices...");
+			system("/usr/bin/retrofw stop");
+			return;
+		}
+
+		INFO("Enabling networking device");
+		system("/usr/bin/retrofw network on");
+		gmenu2x->inetIcon = "skin:imgs/inet.png";
+	}
+
+	void enableTerminal() {
+		/* Enable the framebuffer console */
+		char c = '1';
+		int fd = open("/sys/devices/virtual/vtconsole/vtcon1/bind", O_WRONLY);
+		if (fd) {
+			write(fd, &c, 1);
+			close(fd);
+		}
+
+		fd = open("/dev/tty1", O_RDWR);
+		if (fd) {
+			ioctl(fd, VT_ACTIVATE, 1);
+			close(fd);
+		}
 	}
 
 	int16_t getBatteryLevel() {
@@ -91,87 +114,6 @@ public:
 		if (val > 30) return 2; // 30%
 		if (val > 15) return 1; // 15%
 		return 0; // 0% :(
-	}
-
-	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-		tickBattery++;
-		if (tickBattery > 30) { // update battery level every 30 hwChecks
-			tickBattery = 0;
-			batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-		}
-
-		if (tickBattery > 2) {
-			udcStatus = getUDCStatus();
-			if (udcPrev != udcStatus) {
-				udcPrev = udcStatus;
-				InputManager::pushEvent(udcStatus);
-				return 2000;
-			}
-
-			numJoy = getDevStatus();
-			if (numJoyPrev != numJoy) {
-				numJoyPrev = numJoy;
-				SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-				SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-				InputManager::pushEvent(JOYSTICK_CONNECT);
-				return 5000;
-			}
-
-			volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-			if (volumeModePrev != volumeMode) {
-				volumeModePrev = volumeMode;
-				InputManager::pushEvent(PHONES_CONNECT);
-				return 500;
-			}
-
-			mmcStatus = getMMCStatus();
-			if (mmcPrev != mmcStatus) {
-				mmcPrev = mmcStatus;
-				InputManager::pushEvent(mmcStatus);
-				if (mmcStatus == MMC_REMOVE) {
-					system("umount -fl /mnt &> /dev/null");
-				}
-				return 500;
-			}
-		}
-		return interval;
-	}
-
-	void setUDC(int udcStatus) {
-		if (udcStatus == UDC_REMOVE) {
-			INFO("USB Disconnected. Disabling devices...");
-			system("/usr/bin/retrofw stop");
-			return;
-		}
-
-		INFO("Enabling networking device");
-		system("/usr/bin/retrofw network on");
-		gmenu2x->inetIcon = "skin:imgs/inet.png";
-	}
-
-	int16_t getBacklight() {
-		int val = -1;
-		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "r")) {
-			fscanf(f, "%i", &val);
-			fclose(f);
-		}
-		return val * (100.0f / 255.0f);
-	}
-
-	void enableTerminal() {
-		/* Enable the framebuffer console */
-		char c = '1';
-		int fd = open("/sys/devices/virtual/vtconsole/vtcon1/bind", O_WRONLY);
-		if (fd) {
-			write(fd, &c, 1);
-			close(fd);
-		}
-
-		fd = open("/dev/tty1", O_RDWR);
-		if (fd) {
-			ioctl(fd, VT_ACTIVATE, 1);
-			close(fd);
-		}
 	}
 
 	void setScaleMode(unsigned int mode) {
@@ -196,6 +138,15 @@ public:
 			fprintf(f, "%d", val <= 0);
 			fclose(f);
 		}
+	}
+
+	int16_t getBacklight() {
+		int val = -1;
+		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "r")) {
+			fscanf(f, "%i", &val);
+			fclose(f);
+		}
+		return val * (100.0f / 255.0f);
 	}
 
 	void setVolume(int val) {
@@ -232,6 +183,53 @@ public:
 		}
 
 		return (pcm + hp) * (100.0f / 63.0f);
+	}
+
+	uint8_t getVolumeMode(uint8_t vol) {
+		if (!vol) return VOLUME_MODE_MUTE;
+		return VOLUME_MODE_NORMAL;
+	}
+
+	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
+		tickBattery++;
+		if (tickBattery > 30) { // update battery level every 30 hwChecks
+			tickBattery = 0;
+			batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
+		}
+
+		if (tickBattery > 2) {
+			numJoy = getDevStatus();
+			if (numJoyPrev != numJoy) {
+				numJoyPrev = numJoy;
+				InputManager::pushEvent(JOYSTICK_CONNECT);
+				return 5000;
+			}
+
+			udcStatus = getUDCStatus();
+			if (udcPrev != udcStatus) {
+				udcPrev = udcStatus;
+				InputManager::pushEvent(udcStatus);
+				return 2000;
+			}
+
+			volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
+			if (volumeModePrev != volumeMode) {
+				volumeModePrev = volumeMode;
+				InputManager::pushEvent(PHONES_CONNECT);
+				return 500;
+			}
+
+			mmcStatus = getMMCStatus();
+			if (mmcPrev != mmcStatus) {
+				mmcPrev = mmcStatus;
+				InputManager::pushEvent(mmcStatus);
+				if (mmcStatus == MMC_REMOVE) {
+					system("umount -fl /mnt &> /dev/null");
+				}
+				return 500;
+			}
+		}
+		return interval;
 	}
 };
 
