@@ -620,11 +620,6 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 		confInt["globalVolume"] = 60;
 		confStr["bgscale"] = "Crop";
 		confStr["skinFont"] = "Custom";
-
-		confInt["cpuMenu"] = platform->cpu_menu;
-		confInt["cpuMax"] = platform->cpu_max;
-		confInt["cpuMin"] = platform->cpu_min;
-		confInt["cpuLink"] = platform->cpu_link;
 	}
 
 	ifstream f(conffile, std::ios_base::in);
@@ -1415,7 +1410,7 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(this,		_("Icon"),			_("Select a custom icon for the link"), &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
 
 	if (platform->cpu_max > platform->cpu_min && platform->cpu_step > 0) {
-		sd.addSetting(new MenuSettingInt(this,		_("CPU Clock"),		_("CPU clock frequency when launching this link"), &linkClock, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"], platform->cpu_step));
+		sd.addSetting(new MenuSettingInt(this,		_("CPU Clock"),		_("CPU clock frequency when launching this link"), &linkClock, platform->cpu_menu, platform->cpu_min, platform->cpu_max, platform->cpu_step));
 	}
 	// sd.addSetting(new MenuSettingDir(			this, tr["Home Path"],		tr["Set directory as $HOME for this link"], &linkHomeDir, CARD_ROOT, dialogTitle, dialogIcon));
 

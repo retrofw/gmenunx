@@ -35,7 +35,7 @@ extern char** environ;
 
 LinkApp::LinkApp(GMenu2X *gmenu2x, const char* file):
 Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
-	setCPU(gmenu2x->confInt["cpuLink"]);
+	setCPU(gmenu2x->platform->cpu_link);
 	setGamma(0);
 
 	if (((float)(gmenu2x->platform->w)/gmenu2x->platform->h) != (4.0f/3.0f)) _scalemode = 3; // 4:3 by default
@@ -213,7 +213,7 @@ const string LinkApp::searchIcon() {
 
 void LinkApp::setCPU(int mhz) {
 	clock = mhz;
-	if (clock != 0) clock = constrain(clock, gmenu2x->confInt["cpuMin"], gmenu2x->confInt["cpuMax"]);
+	if (clock != 0) clock = constrain(clock, gmenu2x->platform->cpu_min, gmenu2x->platform->cpu_max);
 	edited = true;
 }
 
@@ -255,7 +255,7 @@ bool LinkApp::save() {
 	if (params != "")			f << "params="			<< params			<< std::endl;
 	if (homedir != "")			f << "home="			<< homedir			<< std::endl;
 	if (manual != "")			f << "manual="			<< manual			<< std::endl;
-	if (clock != 0 && clock != gmenu2x->confInt["cpuLink"]) f << "clock="	<< clock	<< std::endl;
+	if (clock != 0 && clock != gmenu2x->platform->cpu_link) f << "clock="	<< clock	<< std::endl;
 	if (gmenu2x->platform->gamma && gamma != 0)	f << "gamma="	<< gamma			<< std::endl;
 	if (selectordir != "")		f << "selectordir="		<< selectordir		<< std::endl;
 	if (!selectorbrowser)		f << "selectorbrowser=false"				<< std::endl; // selectorbrowser = true by default
@@ -384,7 +384,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
-	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->platform->setCPU(getCPU());
+	if (getCPU() != gmenu2x->platform->cpu_menu) gmenu2x->platform->setCPU(getCPU());
 
 	if (getGamma() != 0 && getGamma() != gmenu2x->confInt["gamma"]) {
 		gmenu2x->platform->setGamma(getGamma());

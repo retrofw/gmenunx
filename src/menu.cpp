@@ -789,7 +789,7 @@ void Menu::drawIconTray() {
 			}
 
 			if (gmenu2x->platform->cpu_max != gmenu2x->platform->cpu_min) {
-				if (getLinkApp()->getCPU() != gmenu2x->confInt["cpuMenu"] && iconTrayShift < 2) {
+				if (getLinkApp()->getCPU() != gmenu2x->platform->cpu_menu && iconTrayShift < 2) {
 					// CPU indicator
 					gmenu2x->sc["skin:imgs/cpu.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 					iconTrayShift++;
