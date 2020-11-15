@@ -163,8 +163,8 @@ static uint32_t oc_table[] = {
 
 class Miyoo : public Platform {
 private:
-	volatile uint32_t *mem;
-	volatile uint8_t memdev = 0;
+	static const uint32_t MBASE = 0x01c20000;
+	static const uint32_t MSIZE = 0x1000;
 
 	int16_t getBatteryLevel() {
 		int val = -1;
@@ -183,12 +183,6 @@ private:
 		return 5 - 5 * (max - val) / (max - min);
 	}
 
-	void hwDeinit() {
-		if (memdev > 0) {
-			close(memdev);
-		}
-	}
-
 	void hwInit() {
 		cpu_menu = 702;
 		cpu_link = 702;
@@ -199,16 +193,6 @@ private:
 
 		system("mount -o remount,async /mnt");
 
-		memdev = open("/dev/mem", O_RDWR);
-		if (memdev > 0) {
-			mem = (uint32_t*)mmap(0, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
-			if (mem == MAP_FAILED) {
-				ERROR("Could not mmap hardware registers!");
-				close(memdev);
-			}
-		} else {
-			WARNING("Could not open /dev/mem");
-		}
 		w = 320;
 		h = 240;
 	}
@@ -253,20 +237,31 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		uint32_t v;
-		uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
-
-		for (int x = 0; x < total; x++) {
-			if ((oc_table[x] >> 16) >= mhz) {
-				v = mem[0];
-				v &= 0xffff0000;
-				v |= (oc_table[x] &  0x0000ffff);
-				mem[0] = v;
-				break;
-			}
+		volatile uint8_t memdev = open("/dev/mem", O_RDWR);
+		if (memdev <= 0) {
+			WARNING("Could not open /dev/mem");
+			return;
 		}
 
-		INFO("Set CPU clock: %d(0x%08x)", mhz, v);
+		uint32_t *mem = (uint32_t*)mmap(0, MSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, MBASE);
+		if (mem != MAP_FAILED) {
+			mhz = constrain(mhz, cpu_min, cpu_max);
+
+			for (int x = 0; x < (sizeof(oc_table) / sizeof(oc_table[0])); x++) {
+				if ((oc_table[x] >> 16) >= mhz) {
+					// uint32_t v = mem[0];
+					// v &= 0xffff0000;
+					// v |= (oc_table[x] & 0x0000ffff);
+					// mem[0] = v;
+					// DEBUG("Setting CPU clock %d (0x%08x)", mhz, v);
+					DEBUG("Setting clock to %d", mhz);
+					mem[0] = (mem[0] & 0xffff0000) | (oc_table[x] & 0x0000ffff);
+					break;
+				}
+			}
+			munmap(mem, MSIZE);
+		}
+		close(memdev);
 	}
 
 	string hwPreLinkLaunch() {
