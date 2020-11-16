@@ -72,6 +72,7 @@ GMenu2X *GMenu2X::instance = NULL;
 
 static void quit_all(int err) {
 	delete GMenu2X::instance;
+	INFO("Quitting GMenuNX...");
 	exit(err);
 }
 
@@ -79,7 +80,7 @@ int main(int /*argc*/, char * /*argv*/[]) {
 	setlocale(LC_ALL, "");
 	bindtextdomain("gmenunx", "./locale");
 	textdomain("gmenunx");
-	INFO("%s", _("Starting GMenuNX..."));
+	INFO("%s", "Starting GMenuNX...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);

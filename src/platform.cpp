@@ -4,9 +4,7 @@
 #include "platform/miyoo.h"
 // #include "platform/gp2x.h"
 
-Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) {
-	WARNING("Linux");
-}
+Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) { }
 
 uint16_t Platform::getDevStatus() {
 	char buf[10000];
