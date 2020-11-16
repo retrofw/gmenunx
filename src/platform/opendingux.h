@@ -8,28 +8,15 @@ public:
 	OpenDingux(GMenu2X *gmenu2x): Platform(gmenu2x) {
 		WARNING("OpenDingux");
 
-	int32_t tickBattery = 0;
 		rtc = true;
 		tvout = false;
 		udc = false;
 		ext_sd = true;
 		hw_scaler = true;
-		gamma = false;
-		cpu_menu = 0;
-		cpu_link = 0;
-		cpu_max = 0;
-		cpu_min = 0;
-		cpu_step = 0;
 
 		w = 320;
 		h = 240;
 		bpp = 32;
-
-		batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-		udcStatus = getUDCStatus();
-		numJoyPrev = numJoy = getDevStatus();
-		volumeModePrev = volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-		mmcPrev = mmcStatus = getMMCStatus();
 
 		if (file_exists("/usr/bin/retrofw")) {
 			system("[ -d /home/retrofw ] && mount -o remount,async /home/retrofw");
@@ -164,10 +151,9 @@ public:
 
 		sprintf(cmd, "amixer set Headphone %d; amixer set PCM %d", hp, val);
 		system(cmd);
-
-		volumeMode = getVolumeMode(val);
 	}
 
+#if 0
 	int getVolume() {
 		int pcm = 0, hp = 0;
 		// if (FILE *f = popen("alsa-getvolume default PCM", "r")) {
@@ -183,7 +169,8 @@ public:
 
 		return (pcm + hp) * (100.0f / 63.0f);
 	}
-
+#endif
+	
 	uint8_t getVolumeMode(uint8_t vol) {
 		if (!vol) return VOLUME_MODE_MUTE;
 		return VOLUME_MODE_NORMAL;
@@ -192,48 +179,6 @@ public:
 	string hwPreLinkLaunch() {
 		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
 		return "";
-	}
-
-	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-		tickBattery++;
-		if (tickBattery > 30) { // update battery level every 30 hwChecks
-			tickBattery = 0;
-			batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-		}
-
-		if (tickBattery > 2) {
-			numJoy = getDevStatus();
-			if (numJoyPrev != numJoy) {
-				numJoyPrev = numJoy;
-				InputManager::pushEvent(JOYSTICK_CONNECT);
-				return 5000;
-			}
-
-			udcStatus = getUDCStatus();
-			if (udcPrev != udcStatus) {
-				udcPrev = udcStatus;
-				InputManager::pushEvent(udcStatus);
-				return 2000;
-			}
-
-			volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-			if (volumeModePrev != volumeMode) {
-				volumeModePrev = volumeMode;
-				InputManager::pushEvent(PHONES_CONNECT);
-				return 500;
-			}
-
-			mmcStatus = getMMCStatus();
-			if (mmcPrev != mmcStatus) {
-				mmcPrev = mmcStatus;
-				InputManager::pushEvent(mmcStatus);
-				if (mmcStatus == MMC_REMOVE) {
-					system("umount -fl /mnt &> /dev/null");
-				}
-				return 500;
-			}
-		}
-		return interval;
 	}
 };
 

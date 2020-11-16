@@ -41,6 +41,10 @@ public:
 	bool hw_scaler = false;
 	bool ipk = false;
 	bool gamma = false;
+	bool joystick = true;
+	bool battery = true;
+	bool volume = true;
+	bool backlight = true;
 	int cpu_menu = 0;
 	int cpu_link = 0;
 	int cpu_max = 0;
@@ -51,16 +55,7 @@ public:
 	string home_path;
 	uint32_t w = 480, h = 272, bpp = 16;
 
-	uint16_t batteryStatus = 3;
-	uint16_t mmcPrev, mmcStatus;
-	uint16_t udcPrev = UDC_REMOVE, udcStatus;
-	uint8_t numJoyPrev, numJoy; // number of connected joysticks
-	uint16_t volumeModePrev, volumeMode;
-	uint16_t tvOutPrev = TV_REMOVE, tvOutStatus;
-
-	// virtual uint16_t getBatteryLevel();
 	virtual uint16_t getDevStatus();
-	virtual uint32_t hwCheck(unsigned int interval = 0, void *param = NULL);
 	virtual uint8_t getMMCStatus() { return MMC_REMOVE; };
 	virtual uint8_t getUDCStatus() { return UDC_REMOVE; };
 	virtual uint8_t getTVOutStatus() { return TV_REMOVE; };

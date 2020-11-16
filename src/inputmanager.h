@@ -83,6 +83,14 @@ private:
 	GMenu2X *gmenu2x;
 
 public:
+	uint16_t batteryStatus = 3;
+	uint16_t mmcStatus_, mmcStatus;
+	uint16_t udcStatus_ = UDC_REMOVE, udcStatus;
+	uint8_t numJoy_, numJoy; // number of connected joysticks
+	uint16_t volumeMode_, volumeMode;
+	uint16_t tvOutStatus_ = TV_REMOVE, tvOutStatus;
+	int32_t tickMonitor = 0;
+
 	static uint32_t wakeUp(uint32_t interval, void *repeat);
 
 	InputManager(GMenu2X *gmenu2x, string conffile);
@@ -99,7 +107,7 @@ public:
 	bool scanAction(int action);
 	bool isActive(int action);
 	void setActive(int action);
-	uint32_t hwMonitor();
+	uint32_t hardwareMonitor();
 };
 
 #endif

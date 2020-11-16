@@ -170,7 +170,7 @@ public:
 	Miyoo(GMenu2X *gmenu2x) : Platform(gmenu2x) {
 		INFO("Miyoo");
 
-		battery = true;
+		joystick = false;
 		cpu_menu = 702;
 		cpu_link = 702;
 		cpu_max = 900;
@@ -211,6 +211,13 @@ public:
 		return val;
 	}
 
+	int setBacklight(int val, bool popup = false) {
+		val = gmenu2x->setBacklight(val, popup);
+		char buf[128] = {0};
+		sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
+		system(buf);
+		return val;
+	}
 
 	void setVolume(int val) {
 		uint32_t snd = open("/dev/miyoo_snd", O_RDWR);
@@ -221,15 +228,6 @@ public:
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
-		volumeMode = getVolumeMode(val);
-	}
-
-	int setBacklight(int val, bool popup = false) {
-		val = gmenu2x->setBacklight(val, popup);
-		char buf[128] = {0};
-		sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
-		system(buf);
-		return val;
 	}
 
 	void setCPU(uint32_t mhz) {

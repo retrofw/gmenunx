@@ -48,7 +48,6 @@ private:
 	static const uint32_t PFPIN = (0x10500 >> 2);
 	uint32_t *mem;
 	volatile uint8_t memdev = 0;
-	int32_t tickBattery = 0;
 
 public:
 	RetroFW(GMenu2X *gmenu2x) : Platform(gmenu2x) {
@@ -61,7 +60,6 @@ public:
 		hw_scaler = true;
 		opk = "retrofw";
 		ipk = true;
-		gamma = false;
 		cpu_menu = 528;
 		cpu_link = 600;
 		cpu_max = cpu_menu * 2;
@@ -71,13 +69,6 @@ public:
 		w = 320;
 		h = 240;
 		bpp = 16;
-
-		batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-		mmcPrev = mmcStatus = getMMCStatus();
-		udcStatus = getUDCStatus();
-		numJoyPrev = numJoy = getDevStatus();
-		volumeModePrev = volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-		tvOutStatus = getTVOutStatus();
 
 		system("[ -d /home/retrofw ] && mount -o remount,async /home/retrofw");
 #if defined(OPK_SUPPORT)
@@ -112,6 +103,8 @@ public:
 			if (!strncmp(buf, "480x272", 7)) {
 				fwtype = FW_RETROARCADE;
 				udc = false;
+			} else {
+				joystick = false;
 			}
 		}
 	};
@@ -247,6 +240,7 @@ public:
 		return VOLUME_MODE_NORMAL;
 	}
 
+#if 0
 	int getVolume() {
 		int vol = -1;
 		uint32_t soundDev = open("/dev/mixer", O_RDONLY);
@@ -261,7 +255,8 @@ public:
 		}
 		return vol;
 	}
-
+#endif
+	
 	void setVolume(int val) {
 		uint32_t soundDev = open("/dev/mixer", O_RDWR);
 		if (soundDev) {
@@ -270,7 +265,7 @@ public:
 			close(soundDev);
 
 		}
-		volumeMode = getVolumeMode(val);
+		// volumeMode = getVolumeMode(val);
 	}
 
 	int16_t getBacklight() {
@@ -325,57 +320,6 @@ public:
 	string hwPreLinkLaunch() {
 		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
 		return "";
-	}
-
-	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-		tickBattery++;
-		if (tickBattery > 30) { // update battery level every 30 hwChecks
-			tickBattery = 0;
-			batteryStatus = getBatteryStatus(getBatteryLevel(), 0, 0);
-		}
-
-		if (memdev > 0 && tickBattery > 2) {
-			if (fwtype == FW_RETROARCADE) {
-				numJoy = getDevStatus();
-				if (numJoyPrev != numJoy) {
-					numJoyPrev = numJoy;
-					InputManager::pushEvent(JOYSTICK_CONNECT);
-					return 500;
-				}
-			}
-
-			udcStatus = getUDCStatus();
-			if (udcPrev != udcStatus) {
-				udcPrev = udcStatus;
-				InputManager::pushEvent(udcStatus);
-				return 500;
-			}
-
-			volumeMode = getVolumeMode(gmenu2x->confInt["globalVolume"]);
-			if (volumeModePrev != volumeMode) {
-				volumeModePrev = volumeMode;
-				InputManager::pushEvent(PHONES_CONNECT);
-				return 500;
-			}
-
-			tvOutStatus = getTVOutStatus();
-			if (tvOutPrev != tvOutStatus) {
-				tvOutPrev = tvOutStatus;
-				InputManager::pushEvent(tvOutStatus);
-				return 500;
-			}
-
-			mmcStatus = getMMCStatus();
-			if (mmcPrev != mmcStatus) {
-				mmcPrev = mmcStatus;
-				InputManager::pushEvent(mmcStatus);
-				if (mmcStatus == MMC_REMOVE) {
-					system("umount -fl /mnt &> /dev/null");
-				}
-				return 500;
-			}
-		}
-		return interval;
 	}
 };
 

@@ -19,17 +19,6 @@ uint16_t Platform::getDevStatus() {
 	return 0;
 }
 
-uint32_t Platform::hwCheck(unsigned int interval, void *param) {
-	printf("%s:%d: %s\n", __FILE__, __LINE__, __func__);
-	numJoy = getDevStatus();
-	if (numJoyPrev != numJoy) {
-		numJoyPrev = numJoy;
-		InputManager::pushEvent(JOYSTICK_CONNECT);
-	}
-
-	return 0;
-}
-
 Platform* PlatformInit(GMenu2X *gmenu2x) { // Detect platform type and return base class pointer
 	if (file_exists("/proc/jz/gpio")) {
 		return new RetroFW(gmenu2x);

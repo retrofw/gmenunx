@@ -70,10 +70,6 @@ string prevDateTime = "", newDateTime = "";
 
 GMenu2X *GMenu2X::instance = NULL;
 
-static uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-	return GMenu2X::instance->platform->hwCheck(interval, (void*)param);
-}
-
 static void quit_all(int err) {
 	delete GMenu2X::instance;
 	exit(err);
@@ -116,6 +112,7 @@ void GMenu2X::quit(bool all) {
 
 	writeConfig();
 
+	delete input;
 	delete menu;
 	delete s;
 	delete font;
@@ -182,8 +179,6 @@ void GMenu2X::main() {
 		viewLog();
 	};
 
-
-	SDL_TimerID hwCheckTimer = SDL_AddTimer(1000, hwCheck, NULL);
 	input->dropEvents();
 
 	powerManager->resetSuspendTimer();
@@ -293,13 +288,13 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	} else if (input->isActive(UDC_CONNECT)) {
 		powerManager->setPowerTimeout(0);
-		platform->batteryStatus = 6;
+		input->batteryStatus = 6;
 		platform->setUDC(UDC_CONNECT);
 
 	} else if (input->isActive(UDC_REMOVE)) {
 		platform->setUDC(UDC_REMOVE);
 		inetIcon = "";
-		platform->batteryStatus = platform->getBatteryStatus(platform->getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
+		input->batteryStatus = platform->getBatteryStatus(platform->getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
 		powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
 	} else if (input->isActive(TV_CONNECT)) {
@@ -583,8 +578,8 @@ bool GMenu2X::readTmp() {
 		else if (name == "selectorelem") lastSelectorElement = atoi(value.c_str());
 		else if (name == "selectordir") lastSelectorDir = value;
 		// else if (name == "TVOut") TVOut = atoi(value.c_str());
-		else if (name == "tvOutPrev") platform->tvOutPrev = atoi(value.c_str());
-		else if (name == "udcPrev") platform->udcPrev = atoi(value.c_str());
+		else if (name == "tvOutStatus") input->tvOutStatus_ = atoi(value.c_str());
+		else if (name == "udcStatus") input->udcStatus_ = atoi(value.c_str());
 		else if (name == "currBackdrop") currBackdrop = value;
 		else if (name == "explorerLastDir") confStr["explorerLastDir"] = value;
 	}
@@ -602,8 +597,8 @@ void GMenu2X::writeTmp(int selelem, const string &selectordir) {
 	f << "link=" << menu->getLinkIndex() << std::endl;
 	if (selelem >- 1) f << "selectorelem=" << selelem << std::endl;
 	if (selectordir != "") f << "selectordir=" << selectordir << std::endl;
-	f << "udcPrev=" << platform->udcPrev << std::endl;
-	f << "tvOutPrev=" << platform->tvOutPrev << std::endl;
+	f << "udcStatus=" << input->udcStatus << std::endl;
+	f << "tvOutStatus=" << input->tvOutStatus << std::endl;
 	// f << "TVOut=" << TVOut << std::endl;
 	f << "currBackdrop=" << currBackdrop << std::endl;
 	if (!confStr["explorerLastDir"].empty()) f << "explorerLastDir=" << confStr["explorerLastDir"] << std::endl;

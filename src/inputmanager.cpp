@@ -32,9 +32,10 @@ enum InputManagerMappingTypes {
 };
 
 static SDL_TimerID timer = NULL;
-
+static SDL_TimerID hardwareMonitorTimer = NULL;
 uint8_t *keystate = SDL_GetKeyState(NULL);
-
+static uint32_t _hardwareMonitor(unsigned int interval = 0, void *param = NULL) {
+	return GMenu2X::instance->input->hardwareMonitor();
 }
 
 InputManager::InputManager(GMenu2X *gmenu2x, string conffile):
@@ -42,6 +43,8 @@ gmenu2x(gmenu2x) {
 	setActionsCount(NUM_ACTIONS);
 	initJoysticks(false);
 	SDL_EnableKeyRepeat(0, 0);
+
+	hardwareMonitorTimer = SDL_AddTimer(1000, _hardwareMonitor, NULL);
 
 	if (!file_exists(conffile)) {
 		INFO("File not found: %s. Using default values.", conffile.c_str());
@@ -134,6 +137,7 @@ gmenu2x(gmenu2x) {
 
 InputManager::~InputManager() {
 	SDL_RemoveTimer(timer); timer = NULL;
+	SDL_RemoveTimer(hardwareMonitorTimer); hardwareMonitorTimer = NULL;
 	for (uint32_t x = 0; x < joysticks.size(); x++)
 		if (SDL_JoystickOpened(x))
 			SDL_JoystickClose(joysticks[x]);
@@ -312,4 +316,52 @@ bool InputManager::scanAction(int action) {
 		}
 	}
 	return false;
+}
+
+// Monitor hardware and push virtual events when there's any change
+uint32_t InputManager::hardwareMonitor() {
+	tickMonitor++;
+	if (tickMonitor > 30) { // update battery level every 30 ticks
+		tickMonitor = 0;
+		batteryStatus = gmenu2x->platform->getBatteryStatus(gmenu2x->platform->getBatteryLevel(), 0, 0);
+	}
+
+	if (tickMonitor > 3) {
+		numJoy = gmenu2x->platform->getDevStatus();
+		if (numJoy_ != numJoy) {
+			numJoy_ = numJoy;
+			pushEvent(JOYSTICK_CONNECT);
+			return 2000;
+		}
+
+		udcStatus = gmenu2x->platform->getUDCStatus();
+		if (udcStatus_ != udcStatus) {
+			udcStatus_ = udcStatus;
+			pushEvent(udcStatus);
+			return 2000;
+		}
+
+		volumeMode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
+		if (volumeMode_ != volumeMode) {
+			volumeMode_ = volumeMode;
+			pushEvent(PHONES_CONNECT);
+			return 2000;
+		}
+
+		tvOutStatus = gmenu2x->platform->getTVOutStatus();
+		if (tvOutStatus_ != tvOutStatus) {
+			tvOutStatus_ = tvOutStatus;
+			pushEvent(tvOutStatus);
+			return 2000;
+		}
+
+		mmcStatus = gmenu2x->platform->getMMCStatus();
+		if (mmcStatus_ != mmcStatus) {
+			mmcStatus_ = mmcStatus;
+			pushEvent(mmcStatus);
+			return 2000;
+		}
+	}
+
+	return 1000;
 }
