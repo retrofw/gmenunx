@@ -62,7 +62,6 @@ public:
 	virtual int16_t getBatteryLevel() { return 6; };
 	virtual uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) { return 6; };
 	virtual uint8_t getVolumeMode(uint8_t vol) { return VOLUME_MODE_NORMAL; };
-	virtual int16_t getBacklight() { return -1; };
 	virtual void setVolume(int val) { };
 	virtual void setBacklight(int val) { };
 	virtual void setScaleMode(unsigned int mode) { };

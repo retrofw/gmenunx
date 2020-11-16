@@ -201,6 +201,7 @@ public:
 		return 5 - 5 * (max - val) / (max - min);
 	}
 
+#if 0
 	int16_t getBacklight() {
 		int val = -1;
 		FILE *f = fopen("/sys/devices/platform/backlight/backlight/backlight/brightness", "r");
@@ -210,6 +211,7 @@ public:
 		}
 		return val;
 	}
+#endif
 
 	int setBacklight(int val, bool popup = false) {
 		val = gmenu2x->setBacklight(val, popup);
