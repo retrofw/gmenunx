@@ -38,7 +38,10 @@ public:
 	}
 
 	uint8_t getMMCStatus() {
-		if (file_exists("/dev/mmcblk1p1")) return MMC_INSERT;
+		if (FILE *f = fopen("/dev/mmcblk1p1", "r")) {
+			fclose(f);
+			return MMC_INSERT;
+		}
 		return MMC_REMOVE;
 	}
 
