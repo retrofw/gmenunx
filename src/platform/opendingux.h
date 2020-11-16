@@ -34,6 +34,7 @@ public:
 		mmcPrev = mmcStatus = getMMCStatus();
 
 		if (file_exists("/usr/bin/retrofw")) {
+			system("[ -d /home/retrofw ] && mount -o remount,async /home/retrofw");
 			opk = "retrofw";
 			ipk = true;
 		} else {
@@ -188,6 +189,11 @@ public:
 	uint8_t getVolumeMode(uint8_t vol) {
 		if (!vol) return VOLUME_MODE_MUTE;
 		return VOLUME_MODE_NORMAL;
+	}
+
+	string hwPreLinkLaunch() {
+		system("[ -d /home/retrofw ] && mount -o remount,sync /home/retrofw");
+		return "";
 	}
 
 	uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
