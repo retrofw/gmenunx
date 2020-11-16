@@ -116,9 +116,9 @@ public:
 	bool f200 = true; //gp2x type // touchscreen
 	string currBackdrop = "", inetIcon = "";
 
+	GMenu2X();
 	~GMenu2X();
 	void quit(bool all = true);
-	void main();
 	void settings();
 	void poweroffDialog();
 	void resetSettings();

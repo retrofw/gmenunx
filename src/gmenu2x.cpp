@@ -95,8 +95,7 @@ int main(int /*argc*/, char * /*argv*/[]) {
 
 	usleep(1000);
 
-	GMenu2X::instance = new GMenu2X();
-	GMenu2X::instance->main();
+	new GMenu2X();
 
 	return 0;
 }
@@ -129,7 +128,9 @@ void GMenu2X::quit(bool all) {
 	}
 }
 
-void GMenu2X::main() {
+GMenu2X::GMenu2X() {
+	GMenu2X::instance = this;
+
 	platform = PlatformInit(this);
 
 	mkdir(home_path().c_str(), 0777);
