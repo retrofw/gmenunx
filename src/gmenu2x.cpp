@@ -1245,12 +1245,8 @@ bool GMenu2X::saveScreenshot(string path) {
 }
 
 void GMenu2X::poweroffDialog() {
-#if !defined(TARGET_BITTBOY)
 	MessageBox mb(this, _("Poweroff or reboot the device?"), "skin:icons/exit.png");
 	mb.setButton(SECTION_NEXT, _("Reboot"));
-#else
-	MessageBox mb(this, _("Poweroff the device?"), "skin:icons/exit.png");
-#endif
 	mb.setButton(CONFIRM, _("Poweroff"));
 	mb.setButton(CANCEL,  _("Cancel"));
 	int res = mb.exec();
