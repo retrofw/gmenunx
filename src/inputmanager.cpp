@@ -22,7 +22,6 @@
 #include "inputmanager.h"
 #include "utilities.h"
 #include "gmenu2x.h"
-
 #include <fstream>
 using std::ifstream;
 
@@ -36,35 +35,10 @@ static SDL_TimerID timer = NULL;
 
 uint8_t *keystate = SDL_GetKeyState(NULL);
 
-InputManager::InputManager() {}
-
-InputManager::~InputManager() {
-	SDL_RemoveTimer(timer); timer = NULL;
-	for (uint32_t x = 0; x < joysticks.size(); x++)
-		if (SDL_JoystickOpened(x))
-			SDL_JoystickClose(joysticks[x]);
 }
 
-void InputManager::initJoysticks(bool reinit) {
-	if (reinit) {
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-	}
-
-	joysticks.clear();
-	int nj = SDL_NumJoysticks();
-	INFO("%d joysticks found", nj);
-	for (int x = 0; x < nj; x++) {
-		SDL_Joystick *joy = SDL_JoystickOpen(x);
-		if (joy) {
-			INFO("Initialized joystick: '%s'", SDL_JoystickName(x));
-			joysticks.push_back(joy);
-		}
-		else WARNING("Failed to initialize joystick: %i", x);
-	}
-}
-
-void InputManager::init(string conffile) {
+InputManager::InputManager(GMenu2X *gmenu2x, string conffile):
+gmenu2x(gmenu2x) {
 	setActionsCount(NUM_ACTIONS);
 	initJoysticks(false);
 	SDL_EnableKeyRepeat(0, 0);
@@ -158,6 +132,32 @@ void InputManager::init(string conffile) {
 	f.close();
 }
 
+InputManager::~InputManager() {
+	SDL_RemoveTimer(timer); timer = NULL;
+	for (uint32_t x = 0; x < joysticks.size(); x++)
+		if (SDL_JoystickOpened(x))
+			SDL_JoystickClose(joysticks[x]);
+}
+
+void InputManager::initJoysticks(bool reinit) {
+	if (reinit) {
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	}
+
+	joysticks.clear();
+	int nj = SDL_NumJoysticks();
+	INFO("%d joysticks found", nj);
+	for (int x = 0; x < nj; x++) {
+		SDL_Joystick *joy = SDL_JoystickOpen(x);
+		if (joy) {
+			INFO("Initialized joystick: '%s'", SDL_JoystickName(x));
+			joysticks.push_back(joy);
+		}
+		else WARNING("Failed to initialize joystick: %i", x);
+	}
+}
+
 void InputManager::setActionsCount(int count) {
 	actions.clear();
 	for (int x = 0; x < count; x++) {
@@ -203,7 +203,7 @@ bool InputManager::update(bool wait) {
 
 	int active = -1;
 	for (x = 0; x < actions.size(); x++) {
-		actions[x].active = isActive(x);
+		actions[x].active = scanAction(x);
 		if (actions[x].active) {
 			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); input_combo[sizeof(input_combo) - 1] = x; // eegg
 			anyactions = true;
@@ -282,6 +282,14 @@ bool &InputManager::operator[](int action) {
 }
 
 bool InputManager::isActive(int action) {
+	return actions[action].active;
+}
+
+void InputManager::setActive(int action) {
+	actions[action].active = true;
+}
+
+bool InputManager::scanAction(int action) {
 	MappingList mapList = actions[action].maplist;
 	for (MappingList::const_iterator it = mapList.begin(); it != mapList.end(); ++it) {
 		InputMap map = *it;

@@ -67,19 +67,19 @@ bool SettingsDialog::exec() {
 		gmenu2x->s->flip();
 	
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 		
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 		action = SD_NO_ACTION;
 		if (!(action = voices[selected]->manageInput())) {
-			if (gmenu2x->input[UP]) 							action = SD_ACTION_UP;
-			else if (gmenu2x->input[DOWN]) 						action = SD_ACTION_DOWN;
-			else if (gmenu2x->input[PAGEUP]) 					action = SD_ACTION_PAGEUP;
-			else if (gmenu2x->input[PAGEDOWN]) 					action = SD_ACTION_PAGEDOWN;
-			else if (gmenu2x->input[SETTINGS]) 					action = SD_ACTION_SAVE;
-			else if (gmenu2x->input[CANCEL] && allowCancel)		action = SD_ACTION_CLOSE;
+			if (gmenu2x->input->isActive(UP)) 							action = SD_ACTION_UP;
+			else if (gmenu2x->input->isActive(DOWN)) 						action = SD_ACTION_DOWN;
+			else if (gmenu2x->input->isActive(PAGEUP)) 					action = SD_ACTION_PAGEUP;
+			else if (gmenu2x->input->isActive(PAGEDOWN)) 					action = SD_ACTION_PAGEDOWN;
+			else if (gmenu2x->input->isActive(SETTINGS)) 					action = SD_ACTION_SAVE;
+			else if (gmenu2x->input->isActive(CANCEL) && allowCancel)		action = SD_ACTION_CLOSE;
 		}
 
 		switch (action) {

@@ -144,34 +144,34 @@ bool BrowseDialog::exec(string _path) {
 		}
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 		SDL_RemoveTimer(alphanum_timer); alphanum_timer = NULL;
 
-		if (gmenu2x->input[UP]) {
+		if (gmenu2x->input->isActive(UP)) {
 			selected--;
-		} else if (gmenu2x->input[DOWN]) {
+		} else if (gmenu2x->input->isActive(DOWN)) {
 			selected++;
-		} else if (gmenu2x->input[LEFT]) {
+		} else if (gmenu2x->input->isActive(LEFT)) {
 			selected -= numRows;
 			if (selected < 0) selected = 0;
-		} else if (gmenu2x->input[RIGHT]) {
+		} else if (gmenu2x->input->isActive(RIGHT)) {
 			selected += numRows;
 			if (selected >= this->size()) selected = this->size() - 1;
-		} else if (gmenu2x->input[PAGEDOWN]) {
+		} else if (gmenu2x->input->isActive(PAGEDOWN)) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while ((selected < this->size() - 1) && ++selected && cur == toupper(getFileName(selected).at(0))) {
 			}
-		} else if (gmenu2x->input[PAGEUP]) {
+		} else if (gmenu2x->input->isActive(PAGEUP)) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while (selected > 0 && selected-- && cur == toupper(getFileName(selected).at(0))) {
 			}
-		} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
+		} else if (showDirectories && allowDirUp && (gmenu2x->input->isActive(MODIFIER) || (gmenu2x->input->isActive(CONFIRM) && getFile(selected) == ".."))) { /*Directory Up */
 			selected = 0;
 			preview = "";
 			if (browse_history.size() > 0) {
@@ -179,7 +179,7 @@ bool BrowseDialog::exec(string _path) {
 				browse_history.pop_back();
 			}
 			directoryEnter(path + "/..");
-		} else if (gmenu2x->input[CONFIRM]) {
+		} else if (gmenu2x->input->isActive(CONFIRM)) {
 			if (allowEnterDirectory && isDirectory(selected)) {
 				browse_history.push_back(selected);
 				directoryEnter(getPath(selected));
@@ -187,27 +187,27 @@ bool BrowseDialog::exec(string _path) {
 			} else {
 				return true;
 			}
-		} else if (gmenu2x->input[SETTINGS] && allowSelectDirectory) {
+		} else if (gmenu2x->input->isActive(SETTINGS) && allowSelectDirectory) {
 			return true;
-		} else if (gmenu2x->input[CANCEL] || gmenu2x->input[SETTINGS]) {
+		} else if (gmenu2x->input->isActive(CANCEL) || gmenu2x->input->isActive(SETTINGS)) {
 			if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#")))
 				return false; // close only if preview is empty.
 			preview = "";
-		} else if (gmenu2x->input[MANUAL]) {
+		} else if (gmenu2x->input->isActive(MANUAL)) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			selected = (rand() % fileCount()) + dirCount();
-		} else if (gmenu2x->input[MENU]) {
+		} else if (gmenu2x->input->isActive(MENU)) {
 			contextMenu();
 		}
 
-		if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN]) {
+		if (gmenu2x->input->isActive(UP) || gmenu2x->input->isActive(DOWN) || gmenu2x->input->isActive(LEFT) || gmenu2x->input->isActive(RIGHT) || gmenu2x->input->isActive(PAGEUP) || gmenu2x->input->isActive(PAGEDOWN)) {
 			preview = getPreview(selected);
 		}
 	}
 }
 
 void BrowseDialog::directoryEnter(string path) {
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
 
 	this->description = path;

@@ -815,8 +815,8 @@ void Menu::exec() {
 	icon_changed = SDL_GetTicks();
 	section_changed = icon_changed;
 
-	sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
-	iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
+	sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input->wakeUp, (void*)false);
+	iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input->wakeUp, (void*)false);
 
 	iconBGoff = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/iconbg_off.png", false)];
 	iconBGon = gmenu2x->sc[gmenu2x->sc.getSkinFilePath("imgs/iconbg_on.png", false)];
@@ -861,23 +861,23 @@ void Menu::exec() {
 		}
 		gmenu2x->s->clearClipRect();
 
-		if (!gmenu2x->powerManager->suspendActive && !gmenu2x->input.combo()) {
+		if (!gmenu2x->powerManager->suspendActive && !gmenu2x->input->combo()) {
 			gmenu2x->s->flip();
 		}
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 
-		if (gmenu2x->input.combo()) {
+		if (gmenu2x->input->combo()) {
 			gmenu2x->skinConfInt["sectionBar"] = ((gmenu2x->skinConfInt["sectionBar"]) % 5) + 1;
 			initLayout();
 			MessageBox mb(gmenu2x, _("CHEATER! ;)"));
 			mb.setBgAlpha(0);
 			mb.setAutoHide(200);
 			mb.exec();
-			gmenu2x->input.dropEvents();
-			SDL_AddTimer(350, gmenu2x->input.wakeUp, (void*)false);
+			gmenu2x->input->dropEvents();
+			SDL_AddTimer(350, gmenu2x->input->wakeUp, (void*)false);
 		} else if (!gmenu2x->powerManager->suspendActive) {
 			gmenu2x->s->flip();
 		}
@@ -886,13 +886,13 @@ void Menu::exec() {
 			continue;
 		}
 
-		if (gmenu2x->input[CANCEL] || gmenu2x->input[CONFIRM] || gmenu2x->input[SETTINGS] || gmenu2x->input[MENU]) {
+		if (gmenu2x->input->isActive(CANCEL) || gmenu2x->input->isActive(CONFIRM) || gmenu2x->input->isActive(SETTINGS) || gmenu2x->input->isActive(MENU)) {
 			SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 			icon_changed = section_changed = 0;
 		}
 
-		if (gmenu2x->input[CONFIRM] && getLink() != NULL) {
+		if (gmenu2x->input->isActive(CONFIRM) && getLink() != NULL) {
 			if (gmenu2x->confInt["skinBackdrops"] & BD_DIALOG) {
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->currBackdrop);
 			} else {
@@ -901,26 +901,26 @@ void Menu::exec() {
 
 			getLink()->run();
 		}
-		else if (gmenu2x->input[CANCEL])	continue;
-		else if (gmenu2x->input[SETTINGS])	gmenu2x->settings();
-		else if (gmenu2x->input[MENU])		gmenu2x->contextMenu();
+		else if (gmenu2x->input->isActive(CANCEL))	continue;
+		else if (gmenu2x->input->isActive(SETTINGS))	gmenu2x->settings();
+		else if (gmenu2x->input->isActive(MENU))		gmenu2x->contextMenu();
 
 		// LINK NAVIGATION
-		else if (gmenu2x->input[LEFT]  && linkCols == 1 && linkRows > 1) pageUp();
-		else if (gmenu2x->input[RIGHT] && linkCols == 1 && linkRows > 1) pageDown();
-		else if (gmenu2x->input[LEFT])	linkLeft();
-		else if (gmenu2x->input[RIGHT])	linkRight();
-		else if (gmenu2x->input[UP])	linkUp();
-		else if (gmenu2x->input[DOWN])	linkDown();
+		else if (gmenu2x->input->isActive(LEFT)  && linkCols == 1 && linkRows > 1) pageUp();
+		else if (gmenu2x->input->isActive(RIGHT) && linkCols == 1 && linkRows > 1) pageDown();
+		else if (gmenu2x->input->isActive(LEFT))	linkLeft();
+		else if (gmenu2x->input->isActive(RIGHT))	linkRight();
+		else if (gmenu2x->input->isActive(UP))	linkUp();
+		else if (gmenu2x->input->isActive(DOWN))	linkDown();
 
 		// SECTION
-		else if (gmenu2x->input[SECTION_PREV]) setSectionIndex(iSectionIndex - 1);
-		else if (gmenu2x->input[SECTION_NEXT]) setSectionIndex(iSectionIndex + 1);
+		else if (gmenu2x->input->isActive(SECTION_PREV)) setSectionIndex(iSectionIndex - 1);
+		else if (gmenu2x->input->isActive(SECTION_NEXT)) setSectionIndex(iSectionIndex + 1);
 
 		// SELLINKAPP SELECTED
-		else if (gmenu2x->input[MANUAL] && getLinkApp() != NULL && !getLinkApp()->getManualPath().empty()) gmenu2x->showManual();
+		else if (gmenu2x->input->isActive(MANUAL) && getLinkApp() != NULL && !getLinkApp()->getManualPath().empty()) gmenu2x->showManual();
 		// On Screen Help
-		// else if (gmenu2x->input[MANUAL]) {
+		// else if (gmenu2x->input->isActive(MANUAL)) {
 		// 	s->box(10,50,300,162, gmenu2x->skinConfColors[COLOR_MESSAGE_BOX_BG]);
 		// 	s->rectangle(12,52,296,158, gmenu2x->skinConfColors[COLOR_MESSAGE_BOX_BORDER]);
 		// 	int line = 60; s->write(gmenu2x->font, gmenu2x->tr["CONTROLS"], 20, line);
@@ -936,8 +936,8 @@ void Menu::exec() {
 		// 	s->flip();
 		// 	bool close = false;
 		// 	while (!close) {
-		// 		gmenu2x->input.update();
-		// 		if (gmenu2x->input[MODIFIER] || gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL]) close = true;
+		// 		gmenu2x->input->update();
+		// 		if (gmenu2x->input->isActive(MODIFIER) || gmenu2x->input->isActive(CONFIRM) || gmenu2x->input->isActive(CANCEL)) close = true;
 		// 	}
 		// }
 
@@ -950,17 +950,17 @@ void Menu::exec() {
 
 		if (
 			!iconDescription.empty() &&
-			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])
+			(gmenu2x->input->isActive(LEFT) || gmenu2x->input->isActive(RIGHT) || gmenu2x->input->isActive(LEFT) || gmenu2x->input->isActive(RIGHT) || gmenu2x->input->isActive(UP) || gmenu2x->input->isActive(DOWN) || gmenu2x->input->isActive(SECTION_PREV) || gmenu2x->input->isActive(SECTION_NEXT))
 		) {
 			icon_changed = SDL_GetTicks();
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
-			iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
+			iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input->wakeUp, (void*)false);
 		}
 
-		if (gmenu2x->skinConfInt["sectionLabel"] && (gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])) {
+		if (gmenu2x->skinConfInt["sectionLabel"] && (gmenu2x->input->isActive(SECTION_PREV) || gmenu2x->input->isActive(SECTION_NEXT))) {
 			section_changed = SDL_GetTicks();
 			SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
-			sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
+			sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input->wakeUp, (void*)false);
 		}
 	}
 }

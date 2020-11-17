@@ -51,6 +51,8 @@ enum actions {
 #include <vector>
 #include <string>
 
+class GMenu2X;
+
 using std::vector;
 using std::string;
 
@@ -78,13 +80,13 @@ private:
 
 	const char konami[10] = {UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, CANCEL, CONFIRM}; // eegg
 	char input_combo[10] = {POWER}; // eegg
+	GMenu2X *gmenu2x;
 
 public:
 	static uint32_t wakeUp(uint32_t interval, void *repeat);
 
-	InputManager();
+	InputManager(GMenu2X *gmenu2x, string conffile);
 	~InputManager();
-	void init(string conffile);
 	void initJoysticks(bool reinit = false);
 
 	bool update(bool wait = true);
@@ -94,7 +96,10 @@ public:
 	void setActionsCount(int count);
 	void setInterval(int ms, int action = -1);
 	bool &operator[](int action);
+	bool scanAction(int action);
 	bool isActive(int action);
+	void setActive(int action);
+	uint32_t hwMonitor();
 };
 
 #endif

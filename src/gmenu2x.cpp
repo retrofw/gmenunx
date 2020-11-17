@@ -156,7 +156,7 @@ void GMenu2X::main() {
 	SDL_WM_SetCaption("gmenunx", NULL);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	input.init(home_path("input.conf"));
+	input = new InputManager(this, home_path("input.conf"));
 
 	setInputSpeed();
 
@@ -183,9 +183,9 @@ void GMenu2X::main() {
 		viewLog();
 	};
 
-	input.dropEvents();
 
 	SDL_TimerID hwCheckTimer = SDL_AddTimer(1000, hwCheck, NULL);
+	input->dropEvents();
 
 	powerManager->resetSuspendTimer();
 
@@ -204,19 +204,19 @@ void GMenu2X::main() {
 bool GMenu2X::inputCommonActions(bool &inputAction) {
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
-		while (!(input[POWER] || input[SETTINGS] || input[UDC_CONNECT] || input[UDC_REMOVE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
-			input.update();
+		while (!(input->isActive(POWER) || input->isActive(SETTINGS) || input->isActive(UDC_CONNECT) || input->isActive(UDC_REMOVE) || input->isActive(MMC_INSERT) || input->isActive(MMC_REMOVE))) {
+			input->update();
 		}
 
 		powerManager->doSuspend(0);
 
-		while (input[POWER] || input[SETTINGS]) {
-			input.update();
+		while (input->isActive(POWER) || input->isActive(SETTINGS)) {
+			input->update();
 		}
 
-		input[WAKE_UP] = true;
+		input->setActive(WAKE_UP);
 
-		if (!(input[UDC_REMOVE] || input[UDC_CONNECT] || input[MMC_INSERT] || input[MMC_REMOVE])) {
+		if (!(input->isActive(UDC_REMOVE) || input->isActive(UDC_CONNECT) || input->isActive(MMC_INSERT) || input->isActive(MMC_REMOVE))) {
 			return true;
 		}
 	}
@@ -227,10 +227,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	int wasActive = 0;
 
-	while (input[POWER]) { // POWER HOLD
+	while (input->isActive(POWER)) { // POWER HOLD
 		wasActive = POWER;
 
-		input.update();
+		input->update();
 
 		if (SDL_GetTicks() - button_hold > 1000) {
 			wasActive = 0;
@@ -238,10 +238,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[SETTINGS]) { // SETTINGS HOLD
+	while (input->isActive(SETTINGS)) { // SETTINGS HOLD
 		wasActive = SETTINGS;
 
-		input.update();
+		input->update();
 
 		if (SDL_GetTicks() - button_hold > 1000) {
 			wasActive = SCREENSHOT;
@@ -249,20 +249,20 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[MENU]) { // MENU HOLD
+	while (input->isActive(MENU)) { // MENU HOLD
 		wasActive = MENU;
 
-		input.update();
+		input->update();
 
-		if (input[SETTINGS]) {
+		if (input->isActive(SETTINGS)) {
 			wasActive = POWER;
-		} else if (input[BACKLIGHT_HOTKEY]) {
+		} else if (input->isActive(BACKLIGHT_HOTKEY)) {
 			wasActive = BACKLIGHT;
-		} else if (input[VOLUME_HOTKEY]) {
+		} else if (input->isActive(VOLUME_HOTKEY)) {
 			wasActive = VOLUP;
-		} else if (input[POWER]) {
+		} else if (input->isActive(POWER)) {
 			wasActive = UDC_CONNECT;
-		} else if (input[CONFIRM] || input[CANCEL]) {
+		} else if (input->isActive(CONFIRM) || input->isActive(CANCEL)) {
 			wasActive = 0;
 			break;
 		} else {
@@ -271,13 +271,13 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		break;
 	}
 
-	input[wasActive] = true;
+	input->setActive(wasActive);
 
-	if (input[POWER]) {
+	if (input->isActive(POWER)) {
 		// powerManager->doSuspend(1);
 		poweroffDialog();
 
-	} else if (input[SCREENSHOT]) {
+	} else if (input->isActive(SCREENSHOT)) {
 		if (!saveScreenshot(confStr["homePath"])) {
 			ERROR("Can't save screenshot");
 			return true;
@@ -286,38 +286,38 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		mb.setAutoHide(1000);
 		mb.exec();
 
-	} else if (input[VOLUP] || input[VOLDOWN]) {
+	} else if (input->isActive(VOLUP) || input->isActive(VOLDOWN)) {
 		setVolume(confInt["globalVolume"], true);
 
-	} else if (input[BACKLIGHT]) {
+	} else if (input->isActive(BACKLIGHT)) {
 		setBacklight(confInt["backlight"], true);
 
-	} else if (input[UDC_CONNECT]) {
+	} else if (input->isActive(UDC_CONNECT)) {
 		powerManager->setPowerTimeout(0);
 		platform->batteryStatus = 6;
 		platform->setUDC(UDC_CONNECT);
 
-	} else if (input[UDC_REMOVE]) {
+	} else if (input->isActive(UDC_REMOVE)) {
 		platform->setUDC(UDC_REMOVE);
 		inetIcon = "";
 		platform->batteryStatus = platform->getBatteryStatus(platform->getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
 		powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
-	} else if (input[TV_CONNECT]) {
+	} else if (input->isActive(TV_CONNECT)) {
 		platform->setTVOut(-1);
 
-	} else if (input[TV_REMOVE]) {
+	} else if (input->isActive(TV_REMOVE)) {
 		platform->setTVOut(TV_OFF);
 
-	} else if (input[JOYSTICK_CONNECT]) {
-		input.initJoysticks(true);
+	} else if (input->isActive(JOYSTICK_CONNECT)) {
+		input->initJoysticks(true);
 
-	// } else if (input[PHONES_CONNECT]) {
+	// } else if (input->isActive(PHONES_CONNECT)) {
 	// 	// tvOutDialog(TV_OFF);
 	// 	WARNING("volume mode changed");
 	// 	return true;
 
-	} else if (input[MMC_INSERT] || input[MMC_REMOVE]) {
+	} else if (input->isActive(MMC_INSERT) || input->isActive(MMC_REMOVE)) {
 		confInt["section"] = menu->getSectionIndex();
 		confInt["link"] = menu->getLinkIndex();
 		initMenu();
@@ -808,8 +808,8 @@ void GMenu2X::writeSkinConfig() {
 }
 
 void GMenu2X::setSkin(string skin, bool clearSC) {
-	input.update(false);
-	if (input[SETTINGS]) skin = data_path("skins/Default");
+	input->update(false);
+	if (input->isActive(SETTINGS)) skin = data_path("skins/Default");
 
 	confStr["skin"] = skin;
 
@@ -1578,8 +1578,8 @@ void GMenu2X::pkgScanner() {
 }
 
 void GMenu2X::opkInstall(string path) {
-	input.update(false);
-	bool debug = input[MENU];
+	input->update(false);
+	bool debug = input->isActive(MENU);
 
 	PKGScannerDialog od(this, _("Package installer"), _F("Installing %s", base_name(path).c_str()), "skin:icons/configure.png");
 	od.opkpath = path;
@@ -1607,8 +1607,8 @@ string GMenu2X::ipkName(string cmd) {
 
 void GMenu2X::ipkInstall(string path) {
 	string cmd = "opkg install --force-reinstall --force-overwrite ";
-	input.update(false);
-	bool debug = input[MENU];
+	input->update(false);
+	bool debug = input->isActive(MENU);
 	if (debug) cmd += "--force-downgrade --force-depends --force-maintainer ";
 	TerminalDialog td(this, _("Package installer"), "opkg install " + base_name(path), "skin:icons/configure.png");
 	td.exec(cmd + cmdclean(path));
@@ -1617,23 +1617,15 @@ void GMenu2X::ipkInstall(string path) {
 }
 
 void GMenu2X::setInputSpeed() {
-	input.setInterval(150);
-	input.setInterval(300, SECTION_PREV);
-	input.setInterval(300, SECTION_NEXT);
-	input.setInterval(300, CONFIRM);
-	input.setInterval(300, CANCEL);
-	input.setInterval(300, MANUAL);
-	input.setInterval(300, MODIFIER);
-	input.setInterval(300, PAGEUP);
-	input.setInterval(300, PAGEDOWN);
-	// input.setInterval(1000, SETTINGS);
-	// input.setInterval(100, MENU);
-	// input.setInterval(1000, POWER);
-	// input.setInterval(30,  VOLDOWN);
-	// input.setInterval(30,  VOLUP);
-	// input.setInterval(100, INC);
-	// input.setInterval(100, DEC);
-	// input.setInterval(200, BACKLIGHT);
+	input->setInterval(150);
+	input->setInterval(300, SECTION_PREV);
+	input->setInterval(300, SECTION_NEXT);
+	input->setInterval(300, CONFIRM);
+	input->setInterval(300, CANCEL);
+	input->setInterval(300, MANUAL);
+	input->setInterval(300, MODIFIER);
+	input->setInterval(300, PAGEUP);
+	input->setInterval(300, PAGEDOWN);
 }
 
 int GMenu2X::setVolume(int val, bool popup) {
@@ -1648,13 +1640,13 @@ int GMenu2X::setVolume(int val, bool popup) {
 		while (true) {
 			drawSlider(val, 0, 100, menu->getVolumeIcon(platform->getVolumeMode(val)), bg);
 
-			input.update();
+			input->update();
 
-			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
+			if (input->isActive(SETTINGS) || input->isActive(CONFIRM) || input->isActive(CANCEL)) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
+			} else if (input->isActive(LEFT) || input->isActive(DEC) || input->isActive(VOLDOWN) || input->isActive(SECTION_PREV)) {
 				val = max(0, val - volumeStep);
-			} else if (input[RIGHT] || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
+			} else if (input->isActive(RIGHT) || input->isActive(INC) || input->isActive(VOLUP) || input->isActive(SECTION_NEXT)) {
 				val = min(100, val + volumeStep);
 			}
 
@@ -1685,15 +1677,15 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		while (true) {
 			drawSlider(val, 0, 100, menu->getBrightnessIcon(val), bg);
 
-			input.update();
+			input->update();
 
-			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
+			if (input->isActive(SETTINGS) || input->isActive(CONFIRM) || input->isActive(CANCEL)) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[SECTION_PREV]) {
+			} else if (input->isActive(LEFT) || input->isActive(DEC) || input->isActive(SECTION_PREV)) {
 				val = setBacklight(max(5, val - backlightStep), false);
-			} else if (input[RIGHT] || input[INC] || input[SECTION_NEXT]) {
+			} else if (input->isActive(RIGHT) || input->isActive(INC) || input->isActive(SECTION_NEXT)) {
 				val = setBacklight(min(100, val + backlightStep), false);
-			} else if (input[BACKLIGHT]) {
+			} else if (input->isActive(BACKLIGHT)) {
 				SDL_Delay(50);
 				val = platform->getBacklight();
 			}

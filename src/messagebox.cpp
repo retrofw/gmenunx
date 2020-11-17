@@ -30,7 +30,7 @@ gmenu2x(gmenu2x) {
 
 	Surface *bg = new Surface(gmenu2x->s);
 
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
 
 	box.h = h * options.size() + 8;
@@ -66,17 +66,17 @@ gmenu2x(gmenu2x) {
 		}
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-		if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) return;
-		else if (gmenu2x->input[UP]) selected--;
-		else if (gmenu2x->input[DOWN]) selected++;
-		else if (gmenu2x->input[LEFT] || gmenu2x->input[PAGEUP]) selected = 0;
-		else if (gmenu2x->input[RIGHT] || gmenu2x->input[PAGEDOWN]) selected = (int)options.size() - 1;
-		else if (gmenu2x->input[SETTINGS] || gmenu2x->input[CONFIRM]) {
+		if (gmenu2x->input->isActive(MENU) || gmenu2x->input->isActive(CANCEL)) return;
+		else if (gmenu2x->input->isActive(UP)) selected--;
+		else if (gmenu2x->input->isActive(DOWN)) selected++;
+		else if (gmenu2x->input->isActive(LEFT) || gmenu2x->input->isActive(PAGEUP)) selected = 0;
+		else if (gmenu2x->input->isActive(RIGHT) || gmenu2x->input->isActive(PAGEDOWN)) selected = (int)options.size() - 1;
+		else if (gmenu2x->input->isActive(SETTINGS) || gmenu2x->input->isActive(CONFIRM)) {
 			options[selected].action();
 			return;
 		}
@@ -123,7 +123,7 @@ gmenu2x(gmenu2x), text(text), icon(icon) {
 }
 
 MessageBox::~MessageBox() {
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->resetSuspendTimer();
 	clearTimer();
 }
@@ -147,7 +147,7 @@ int MessageBox::exec() {
 
 	Surface *bg = new Surface(gmenu2x->s);
 
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
 
 	Surface *icn = gmenu2x->sc.add(icon, icon + "mb");
@@ -239,11 +239,11 @@ int MessageBox::exec() {
 		// }
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 
 		for (uint32_t i = 0; i < buttonText.size(); i++) {
-			if (buttonText[i] != "" && gmenu2x->input[i]) {
+			if (buttonText[i] != "" && gmenu2x->input->isActive(i)) {
 				return i;
 				break;
 			}

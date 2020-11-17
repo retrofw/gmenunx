@@ -26,7 +26,7 @@ using namespace fastdelegate;
 
 InputDialog::InputDialog(GMenu2X *gmenu2x, const string &text, const string &startvalue, const string &title, const string &icon):
 gmenu2x(gmenu2x) {
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 
 	if (title == "") {
 		this->title = text;
@@ -120,7 +120,7 @@ bool InputDialog::exec() {
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
-		wakeUpTimer = SDL_AddTimer(500, gmenu2x->input.wakeUp, (void*)false);
+		wakeUpTimer = SDL_AddTimer(500, gmenu2x->input->wakeUp, (void*)false);
 
 		bg->blit(gmenu2x->s,0,0);
 
@@ -145,21 +145,21 @@ bool InputDialog::exec() {
 		gmenu2x->s->flip();
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
-		else if (gmenu2x->input[SETTINGS])		return true;
-		else if (gmenu2x->input[UP])			selRow--;
-		else if (gmenu2x->input[DOWN])			selRow++;
-		else if (gmenu2x->input[LEFT])			selCol--;
-		else if (gmenu2x->input[RIGHT])			selCol++;
-		else if (gmenu2x->input[CONFIRM])		confirm();
-		else if (gmenu2x->input[MANUAL])		changeKeys();
-		else if (gmenu2x->input[SECTION_PREV])	backspace();
-		else if (gmenu2x->input[SECTION_NEXT])	space();
+		if (gmenu2x->input->isActive(CANCEL) || gmenu2x->input->isActive(MENU)) return false;
+		else if (gmenu2x->input->isActive(SETTINGS))		return true;
+		else if (gmenu2x->input->isActive(UP))			selRow--;
+		else if (gmenu2x->input->isActive(DOWN))			selRow++;
+		else if (gmenu2x->input->isActive(LEFT))			selCol--;
+		else if (gmenu2x->input->isActive(RIGHT))			selCol++;
+		else if (gmenu2x->input->isActive(CONFIRM))		confirm();
+		else if (gmenu2x->input->isActive(MANUAL))		changeKeys();
+		else if (gmenu2x->input->isActive(SECTION_PREV))	backspace();
+		else if (gmenu2x->input->isActive(SECTION_NEXT))	space();
 	}
 }
 
@@ -238,5 +238,5 @@ int InputDialog::drawVirtualKeyboard() {
 
 InputDialog::~InputDialog() {
 	SDL_RemoveTimer(wakeUpTimer); wakeUpTimer = NULL;
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 }

@@ -110,7 +110,7 @@ public:
 	FontHelper *font = NULL, *titlefont = NULL;
 	PowerManager *powerManager;
 	Platform *platform;
-	InputManager input;
+	InputManager *input;
 	Touchscreen ts;
 	Menu *menu;
 	bool f200 = true; //gp2x type // touchscreen

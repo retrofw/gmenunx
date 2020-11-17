@@ -7,11 +7,11 @@ gmenu2x(gmenu2x), title(title), description(description), icon(icon) {
 	bg = new Surface(gmenu2x->bg);
 
 	buttons.clear();
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 }
 
 Dialog::~Dialog() {
-	gmenu2x->input.dropEvents(); // prevent passing input away
+	gmenu2x->input->dropEvents(); // prevent passing input away
 	delete bg;
 }
 

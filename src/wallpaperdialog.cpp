@@ -94,24 +94,24 @@ bool WallpaperDialog::exec() {
 		}
 
 		do {
-			inputAction = gmenu2x->input.update();
+			inputAction = gmenu2x->input->update();
 		} while (!inputAction);
 		
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-		if (gmenu2x->input[UP]) {
+		if (gmenu2x->input->isActive(UP)) {
 			selected--;
-		} else if (gmenu2x->input[DOWN]) {
+		} else if (gmenu2x->input->isActive(DOWN)) {
 			selected++;
-		} else if (gmenu2x->input[PAGEUP] || gmenu2x->input[LEFT]) {
+		} else if (gmenu2x->input->isActive(PAGEUP) || gmenu2x->input->isActive(LEFT)) {
 			selected -= numRows;
 			if (selected < 0) selected = 0;
-		} else if (gmenu2x->input[PAGEDOWN] || gmenu2x->input[RIGHT]) {
+		} else if (gmenu2x->input->isActive(PAGEDOWN) || gmenu2x->input->isActive(RIGHT)) {
 			selected += numRows;
 			if (selected >= wallpapers.size()) selected = wallpapers.size() - 1;
-		} else if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) {
+		} else if (gmenu2x->input->isActive(MENU) || gmenu2x->input->isActive(CANCEL)) {
 			return false;
-		} else if ((gmenu2x->input[SETTINGS] || gmenu2x->input[CONFIRM]) && wallpapers.size() > 0) {
+		} else if ((gmenu2x->input->isActive(SETTINGS) || gmenu2x->input->isActive(CONFIRM)) && wallpapers.size() > 0) {
 			wallpaper = wallpapers[selected];
 			return true;
 		}

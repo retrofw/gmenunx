@@ -70,12 +70,12 @@ void MenuSettingRGBA::drawSelected(int y) {
 
 uint32_t MenuSettingRGBA::manageInput() {
 	if (editing) {
-		if (gmenu2x->input[SETTINGS]) return 0;
-		if (gmenu2x->input[INC] || gmenu2x->input[UP]) inc();
-		else if (gmenu2x->input[DEC] || gmenu2x->input[DOWN]) dec();
-		else if (gmenu2x->input[LEFT]) leftComponent();
-		else if (gmenu2x->input[RIGHT]) rightComponent();
-		else if (gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL]) {
+		if (gmenu2x->input->isActive(SETTINGS)) return 0;
+		if (gmenu2x->input->isActive(INC) || gmenu2x->input->isActive(UP)) inc();
+		else if (gmenu2x->input->isActive(DEC) || gmenu2x->input->isActive(DOWN)) dec();
+		else if (gmenu2x->input->isActive(LEFT)) leftComponent();
+		else if (gmenu2x->input->isActive(RIGHT)) rightComponent();
+		else if (gmenu2x->input->isActive(CONFIRM) || gmenu2x->input->isActive(CANCEL)) {
 			editing = false;
 			buttonBox.remove(2);
 
@@ -83,7 +83,7 @@ uint32_t MenuSettingRGBA::manageInput() {
 			buttonBox.add(btn);
 		}
 		return -1;
-	} else if (gmenu2x->input[CONFIRM]) {
+	} else if (gmenu2x->input->isActive(CONFIRM)) {
 		editing = true;
 
 		buttonBox.remove(1);
@@ -173,8 +173,8 @@ uint16_t MenuSettingRGBA::getSelPart() {
 }
 
 void MenuSettingRGBA::adjustInput() {
-	gmenu2x->input.setInterval(30, INC );
-	gmenu2x->input.setInterval(30, DEC );
+	gmenu2x->input->setInterval(30, INC );
+	gmenu2x->input->setInterval(30, DEC );
 }
 
 bool MenuSettingRGBA::edited() {
