@@ -1262,7 +1262,7 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 			setVolume(0);
 			quit(false);
-			system("sync; mount -o remount,ro $HOME; poweroff");
+			execlp("/sbin/poweroff", "/sbin/poweroff", NULL);
 			break;
 		}
 		case SECTION_NEXT: {
@@ -1271,7 +1271,7 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 			setVolume(0);
 			quit(false);
-			system("sync; mount -o remount,ro $HOME; reboot");
+			execlp("/sbin/reboot", "/sbin/reboot", NULL);
 			break;
 		}
 	}
