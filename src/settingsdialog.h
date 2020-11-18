@@ -29,7 +29,7 @@
 using std::string;
 using std::vector;
 
-class Touchscreen;
+// class Touchscreen;
 
 class SettingsDialog : protected Dialog {
 private:
@@ -42,11 +42,11 @@ private:
 		SD_ACTION_PAGEUP,
 		SD_ACTION_PAGEDOWN,
 	};
-	Touchscreen &ts;
+	// Touchscreen &ts;
 	vector<MenuSetting *> voices;
 
 public:
-	SettingsDialog(GMenu2X *gmenu2x, Touchscreen &ts, const string &title, const string &icon = "skin:sections/settings.png");
+	SettingsDialog(GMenu2X *gmenu2x, /*Touchscreen &ts,*/ const string &title, const string &icon = "skin:sections/settings.png");
 	~SettingsDialog();
 	bool save = false, loop = true, allowCancel = true;
 	bool edited();

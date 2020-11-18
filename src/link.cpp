@@ -21,7 +21,7 @@
 #include "gmenu2x.h"
 
 Link::Link(GMenu2X *gmenu2x, LinkAction action):
-Button(gmenu2x->ts, true), gmenu2x(gmenu2x), action(action) {}
+Button(/*gmenu2x->ts,*/ true), gmenu2x(gmenu2x), action(action) {}
 
 void Link::run() {
 	this->action();

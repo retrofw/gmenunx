@@ -6,7 +6,7 @@
 using namespace fastdelegate;
 
 IconButton::IconButton(GMenu2X *gmenu2x, const string &icon, const string &label):
-Button(gmenu2x->ts), gmenu2x(gmenu2x), icon(icon), label(label) {
+Button(/*gmenu2x->ts*/), gmenu2x(gmenu2x), icon(icon), label(label) {
 	labelPosition = IconButton::DISP_RIGHT;
 	labelMargin = 2;
 	updateSurfaces();

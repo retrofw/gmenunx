@@ -36,7 +36,6 @@ protected:
 	virtual void onChangeDir() {};
 
 private:
-	bool ts_pressed;
 	virtual const std::string getPreview(uint32_t i = 0);
 	vector<int> browse_history;
 

@@ -25,6 +25,7 @@ class PowerManager;
 
 #include <sys/stat.h>
 #include <iostream>
+#include <fcntl.h>
 #include <string>
 #include <vector>
 #include <tr1/unordered_map>
@@ -34,7 +35,7 @@ class PowerManager;
 #include "translator.h"
 #include "FastDelegate.h"
 #include "utilities.h"
-#include "touchscreen.h"
+// #include "touchscreen.h"
 #include "inputmanager.h"
 #include "surface.h"
 #include "fonthelper.h"
@@ -111,9 +112,8 @@ public:
 	PowerManager *powerManager;
 	Platform *platform;
 	InputManager *input;
-	Touchscreen ts;
+	// Touchscreen ts;
 	Menu *menu;
-	bool f200 = true; //gp2x type // touchscreen
 	string currBackdrop = "", inetIcon = "";
 
 	GMenu2X();

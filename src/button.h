@@ -29,11 +29,11 @@ using std::string;
 using fastdelegate::FastDelegate0;
 
 typedef FastDelegate0<> ButtonAction;
-class Touchscreen;
+// class Touchscreen;
 
 class Button {
 private:
-	Touchscreen &ts;
+	// Touchscreen &ts;
 
 protected:
 	ButtonAction action;
@@ -42,7 +42,7 @@ protected:
 	int lastTick;
 
 public:
-	Button(Touchscreen &ts, bool doubleClick = false);
+	Button(/*Touchscreen &ts,*/ bool doubleClick = false);
 	virtual ~Button() {};
 
 	SDL_Rect getRect();

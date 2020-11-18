@@ -22,8 +22,8 @@
 #include "messagebox.h"
 #include "menu.h"
 
-SettingsDialog::SettingsDialog(GMenu2X *gmenu2x, Touchscreen &ts, const string &title, const string &icon):
-Dialog(gmenu2x, title, "", icon), ts(ts) {}
+SettingsDialog::SettingsDialog(GMenu2X *gmenu2x, /*Touchscreen &ts,*/ const string &title, const string &icon):
+Dialog(gmenu2x, title, "", icon) /*, ts(ts)*/ {}
 
 SettingsDialog::~SettingsDialog() {
 	for (uint32_t i = 0; i < voices.size(); i++)
@@ -31,7 +31,7 @@ SettingsDialog::~SettingsDialog() {
 }
 
 bool SettingsDialog::exec() {
-	bool ts_pressed = false, inputAction = false;
+	bool inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
 
 	while (loop) {

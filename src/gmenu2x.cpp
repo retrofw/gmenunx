@@ -419,7 +419,7 @@ void GMenu2X::settings() {
 	opFactory.push_back(">>");
 	string tmp = ">>";
 
-	SettingsDialog sd(this, ts, _("Settings"), "skin:icons/configure.png");
+	SettingsDialog sd(this, /*ts,*/ _("Settings"), "skin:icons/configure.png");
 	sd.allowCancel = false;
 
 	int prevgamma = confInt["gamma"];
@@ -498,7 +498,7 @@ void GMenu2X::resetSettings() {
 		reset_boxart = false,
 		reset_cpu = false;
 
-	SettingsDialog sd(this, ts, _("Reset settings"), "skin:icons/configure.png");
+	SettingsDialog sd(this, /*ts,*/ _("Reset settings"), "skin:icons/configure.png");
 	sd.addSetting(new MenuSettingBool(this, _("GMenuNX"), _("Reset GMenuNX settings"), &reset_gmenu));
 	sd.addSetting(new MenuSettingBool(this, _("Default skin"), _("Reset Default skin settings back to default"), &reset_skin));
 	sd.addSetting(new MenuSettingBool(this, _("Icons"), _("Reset link's icon back to default"), &reset_icon));
@@ -1000,7 +1000,7 @@ void GMenu2X::skinMenu() {
 		sc.del(confStr["wallpaper"]);
 		setBackground(bg, confStr["wallpaper"]);
 
-		SettingsDialog sd(this, ts, _("Skin"), "skin:icons/skin.png");
+		SettingsDialog sd(this, /*ts,*/ _("Skin"), "skin:icons/skin.png");
 		sd.selected = selected;
 		sd.allowCancel = false;
 		sd.addSetting(new MenuSettingMultiString(this, _("Skin"), _("Set the skin used by GMenuNX"), &confStr["skin"], skins, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeSkin), MakeDelegate(this, &GMenu2X::basenameFormatter)));
@@ -1055,7 +1055,7 @@ void GMenu2X::skinColors() {
 	do {
 		setSkin(confStr["skin"], false);
 
-		SettingsDialog sd(this, ts, _("Skin Colors"), "skin:icons/skin.png");
+		SettingsDialog sd(this, /*ts,*/ _("Skin Colors"), "skin:icons/skin.png");
 		sd.allowCancel = false;
 		sd.addSetting(new MenuSettingRGBA(this, _("Top/Section Bar"), _("Color of the top and section bar"), &skinConfColor["topBarBg"]));
 		sd.addSetting(new MenuSettingRGBA(this, _("List Body"), _("Color of the list body"), &skinConfColor["listBg"]));
@@ -1391,7 +1391,7 @@ void GMenu2X::editLink() {
 	else if (s != "/") confStr["tmp_selector"] = selStr[1];
 	else confStr["tmp_selector"] = selStr[2];
 
-	SettingsDialog sd(this, ts, dialogTitle, dialogIcon);
+	SettingsDialog sd(this, /*ts,*/ dialogTitle, dialogIcon);
 
 	// sd.addSetting(new MenuSettingFile(this,		_("Executable"),	_("Application this link points to"), &linkExec, ".dge,.gpu,.gpe,.sh,.bin,.opk,.elf,", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingString(this,		_("Title"),			_("Link title"), &linkTitle, dialogTitle, dialogIcon));

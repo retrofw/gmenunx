@@ -3,8 +3,8 @@
 
 using namespace fastdelegate;
 
-Button::Button(Touchscreen &ts, bool doubleClick):
-ts(ts), action(MakeDelegate(this, &Button::voidAction)), rect((SDL_Rect) { 0, 0, 0, 0 }), doubleClick(doubleClick), lastTick(0) {}
+Button::Button(/*Touchscreen &ts,*/ bool doubleClick):
+/*ts(ts),*/ action(MakeDelegate(this, &Button::voidAction)), rect((SDL_Rect) { 0, 0, 0, 0 }), doubleClick(doubleClick), lastTick(0) {}
 
 uint16_t Button::paint() {
 	return 0;
@@ -17,11 +17,11 @@ bool Button::paintHover() {
 }
 
 bool Button::isPressed() {
-	return ts.pressed() && ts.inRect(rect);
+	return false; //ts.pressed() && ts.inRect(rect);
 }
 
 bool Button::isReleased() {
-	return ts.released() && ts.inRect(rect);
+	return false; //ts.released() && ts.inRect(rect);
 }
 
 bool Button::handleTS() {
@@ -40,7 +40,7 @@ bool Button::handleTS() {
 }
 
 void Button::exec() {
-	ts.setHandled();
+	// ts.setHandled();
 	action();
 }
 
