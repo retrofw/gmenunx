@@ -707,12 +707,12 @@ void Menu::drawStatusBar() {
 	} else {
 		SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 
-		// TODO: use drawButton(gmenu2x->s, iconVolume[volumeMode], confInt["globalVolume"], x);
+		// TODO: use drawButton(gmenu2x->s, iconVolume[volume_mode], confInt["globalVolume"], x);
 
 		// Volume indicator
 		if (gmenu2x->platform->volume) {
 			x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
-			gmenu2x->sc[getVolumeIcon(gmenu2x->input->volumeMode)]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
+			gmenu2x->sc[getVolumeIcon(gmenu2x->input->volume_mode)]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 			x += iconWidth + iconPadding;
 			gmenu2x->s->write(gmenu2x->font, std::to_string(gmenu2x->confInt["globalVolume"]), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColor["fontAlt"], gmenu2x->skinConfColor["fontAltOutline"]);
 		}
@@ -730,12 +730,12 @@ void Menu::drawStatusBar() {
 
 		// Battery indicator
 		if (gmenu2x->platform->battery) {
-			gmenu2x->sc[getBatteryIcon(gmenu2x->input->batteryStatus)]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
+			gmenu2x->sc[getBatteryIcon(gmenu2x->input->battery)]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
 
 		// SD Card indicator
-		if (gmenu2x->input->mmcStatus == MMC_INSERT) {
+		if (gmenu2x->input->mmc == MMC_INSERT) {
 			gmenu2x->sc["skin:imgs/sd.png"]->blit(gmenu2x->s, gmenu2x->bottomBarRect.w - iconTrayShift * (iconWidth + iconPadding) - iconPadding, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, HAlignRight | VAlignMiddle);
 			iconTrayShift++;
 		}
@@ -777,17 +777,17 @@ void Menu::drawIconTray() {
 	// TRAY 0,0
 	// Volume indicator
 	if (gmenu2x->platform->volume) {
-		gmenu2x->sc[getVolumeIcon(gmenu2x->input->volumeMode)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+		gmenu2x->sc[getVolumeIcon(gmenu2x->input->volume_mode)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 	}
 
 	// Battery indicator
 	if (gmenu2x->platform->battery) {
 		// TRAY 1,0
-		gmenu2x->sc[getBatteryIcon(gmenu2x->input->batteryStatus)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
+		gmenu2x->sc[getBatteryIcon(gmenu2x->input->battery)]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 18, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 38);
 	}
 
 	// TRAY iconTrayShift,1
-	if (gmenu2x->input->mmcStatus == MMC_INSERT) {
+	if (gmenu2x->input->mmc == MMC_INSERT) {
 		gmenu2x->sc["skin:imgs/sd.png"]->blit(gmenu2x->s, gmenu2x->sectionBarRect.x + gmenu2x->sectionBarRect.w - 38 + iconTrayShift * 20, gmenu2x->sectionBarRect.y + gmenu2x->sectionBarRect.h - 18);
 		iconTrayShift++;
 	}

@@ -184,20 +184,17 @@ public:
 		h = 240;
 	};
 
-	int16_t getBatteryLevel() {
+	int16_t getBattery(bool raw) {
 		int val = -1;
 		if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
 			fscanf(f, "%i", &val);
 			fclose(f);
 		}
-		return val;
-	}
-
-	uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
+		if (raw) return val;
 		if (val = -1) return 6; // charging
-		if (max == min) {
-			return 3;
-		}
+		int max = gmenu2x->confInt["minBattery"];
+		int min = gmenu2x->confInt["maxBattery"];
+		if (max == min) return 3;
 		return 5 - 5 * (max - val) / (max - min);
 	}
 

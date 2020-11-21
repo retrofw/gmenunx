@@ -118,8 +118,8 @@ public:
 		}
 	}
 
-	void setUDC(int udcStatus) {
-		if (udcStatus == UDC_REMOVE) {
+	void setUDC(int mode) {
+		if (mode == UDC_REMOVE) {
 			INFO("USB Disconnected. Disabling devices...");
 			system("/usr/bin/retrofw stop");
 			return;
@@ -176,27 +176,22 @@ public:
 			}
 		}
 
-		if (mode != getTVOut()) {
-			if (FILE *f = fopen("/proc/jz/tvout", "w")) {
+		FILE *f = fopen("/proc/jz/tvout", "rw");
+		if (f) {
+			int val = 0;
+			fscanf(f, "%i", &val);
+
+			if (mode != val) {
 				fprintf(f, "%d", mode); // fputs(val, f);
 				fclose(f);
+				setBacklight(gmenu2x->confInt["backlight"]);
+				exit(0);
 			}
-
-			setBacklight(gmenu2x->confInt["backlight"]);
-			exit(0);
-		}
-	}
-
-	uint16_t getTVOut() {
-		int val = 0;
-		if (FILE *f = fopen("/proc/jz/tvout", "r")) {
-			fscanf(f, "%i", &val);
 			fclose(f);
 		}
-		return val;
 	}
 
-	uint8_t getTVOutStatus() {
+	uint8_t getTVOut() {
 		if (memdev > 0) {
 			if (fwtype == FW_RETROARCADE && !(mem[PDPIN] >> 6 & 1)) return TV_CONNECT;
 			if (!(mem[PDPIN] >> 25 & 1)) return TV_CONNECT;
@@ -204,27 +199,24 @@ public:
 		return TV_REMOVE;
 	}
 
-	uint8_t getMMCStatus() {
+	uint8_t getMMC() {
 		if (memdev > 0 && !(mem[PFPIN] >> 0 & 1)) return MMC_INSERT;
 		return MMC_REMOVE;
 	}
 
-	uint8_t getUDCStatus() {
+	uint8_t getUDC() {
 		// if (memdev > 0 && ((mem[PDPIN] >> 7 & 1) || (mem[PEPIN] >> 13 & 1))) return UDC_CONNECT;
 		if (memdev > 0 && (mem[PDPIN] >> 7 & 1)) return UDC_CONNECT;
 		return UDC_REMOVE;
 	}
 
-	int16_t getBatteryLevel() {
+	int16_t getBattery(bool raw) {
 		int val = -1;
 		if (FILE *f = fopen("/proc/jz/battery", "r")) {
 			fscanf(f, "%i", &val);
 			fclose(f);
 		}
-		return val;
-	}
-
-	uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
+		if (raw) return val;
 		if ((val > 10000) || (val < 0)) return 6;
 		if (val > 4000) return 5; // 100%
 		if (val > 3900) return 4; // 80%
@@ -279,7 +271,7 @@ public:
 #endif
 
 	void setBacklight(int val) {
-		if (val < 1 && getUDCStatus() != UDC_REMOVE /* && !getTVOut() */) {
+		if (val < 1 && getUDC() != UDC_REMOVE /* && !getTVOut() */) {
 			val = 0; // suspend only if not charging and TV out is not enabled
 		}
 

@@ -37,7 +37,7 @@ public:
 #endif
 	}
 
-	uint8_t getMMCStatus() {
+	uint8_t getMMC() {
 		if (FILE *f = fopen("/dev/mmcblk1p1", "r")) {
 			fclose(f);
 			return MMC_INSERT;
@@ -45,7 +45,7 @@ public:
 		return MMC_REMOVE;
 	}
 
-	uint8_t getUDCStatus() {
+	uint8_t getUDC() {
 		int val = -1;
 		if (FILE *f = fopen("/sys/class/power_supply/usb/online", "r")) {
 			fscanf(f, "%i", &val);
@@ -57,8 +57,8 @@ public:
 		return UDC_REMOVE;
 	}
 
-	void setUDC(int udcStatus) {
-		if (udcStatus == UDC_REMOVE) {
+	void setUDC(int udc) {
+		if (udc == UDC_REMOVE) {
 			INFO("USB Disconnected. Disabling devices...");
 			system("/usr/bin/retrofw stop");
 			return;
@@ -85,17 +85,14 @@ public:
 		}
 	}
 
-	int16_t getBatteryLevel() {
+	int16_t getBattery(bool raw) {
 		int val = -1;
 		FILE *f;
-		if (getUDCStatus() == UDC_REMOVE && (f = fopen("/sys/class/power_supply/battery/capacity", "r"))) {
+		if (getUDC() == UDC_REMOVE && (f = fopen("/sys/class/power_supply/battery/capacity", "r"))) {
 			fscanf(f, "%i", &val);
 			fclose(f);
 		}
-		return val;
-	};
-
-	uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
+		if (raw) return val;
 		if ((val > 10000) || (val < 0)) return 6;
 		if (val > 90) return 5; // 100%
 		if (val > 75) return 4; // 80%

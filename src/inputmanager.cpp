@@ -322,54 +322,54 @@ bool InputManager::scanAction(int action) {
 
 // Init hardware virtual events
 void InputManager::initHardwareInput() {
-	batteryStatus = gmenu2x->platform->getBatteryStatus(gmenu2x->platform->getBatteryLevel(), 0, 0);
-	numJoy_ = numJoy = gmenu2x->platform->getDevStatus();
-	volumeMode_ = volumeMode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
-	mmcStatus_ = mmcStatus = gmenu2x->platform->getMMCStatus();
+	battery = gmenu2x->platform->getBattery();
+	devices_ = devices = gmenu2x->platform->getDevices();
+	volume_mode_ = volume_mode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
+	mmc_ = mmc = gmenu2x->platform->getMMC();
 }
 
 // Monitor hardware and push virtual events when there's any change
 uint32_t InputManager::hardwareMonitor() {
-	tickMonitor++;
-	if (tickMonitor > 30) { // update battery level every 30 ticks
-		tickMonitor = 0;
-		batteryStatus = gmenu2x->platform->getBatteryStatus(gmenu2x->platform->getBatteryLevel(), 0, 0);
+	ticks++;
+	if (ticks > 30) { // update battery level every 30 ticks
+		ticks = 0;
+		battery = gmenu2x->platform->getBattery();
 	}
 
-	if (tickMonitor > 3) {
-		numJoy = gmenu2x->platform->getDevStatus();
-		if (numJoy_ != numJoy) {
-			numJoy_ = numJoy;
+	if (ticks > 3) {
+		devices = gmenu2x->platform->getDevices();
+		if (devices_ != devices) {
+			devices_ = devices;
 			pushEvent(JOYSTICK_CONNECT);
-			return 2000;
+			return 200;
 		}
 
-		udcStatus = gmenu2x->platform->getUDCStatus();
-		if (udcStatus_ != udcStatus) {
-			udcStatus_ = udcStatus;
-			pushEvent(udcStatus);
-			return 2000;
+		udc = gmenu2x->platform->getUDC();
+		if (udc_ != udc) {
+			udc_ = udc;
+			pushEvent(udc);
+			return 200;
 		}
 
-		volumeMode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
-		if (volumeMode_ != volumeMode) {
-			volumeMode_ = volumeMode;
+		volume_mode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
+		if (volume_mode_ != volume_mode) {
+			volume_mode_ = volume_mode;
 			pushEvent(PHONES_CONNECT);
-			return 2000;
+			return 200;
 		}
 
-		tvOutStatus = gmenu2x->platform->getTVOutStatus();
-		if (tvOutStatus_ != tvOutStatus) {
-			tvOutStatus_ = tvOutStatus;
-			pushEvent(tvOutStatus);
-			return 2000;
+		tvout = gmenu2x->platform->getTVOut();
+		if (tvout_ != tvout) {
+			tvout_ = tvout;
+			pushEvent(tvout);
+			return 200;
 		}
 
-		mmcStatus = gmenu2x->platform->getMMCStatus();
-		if (mmcStatus_ != mmcStatus) {
-			mmcStatus_ = mmcStatus;
-			pushEvent(mmcStatus);
-			return 2000;
+		mmc = gmenu2x->platform->getMMC();
+		if (mmc_ != mmc) {
+			mmc_ = mmc;
+			pushEvent(mmc);
+			return 200;
 		}
 	}
 

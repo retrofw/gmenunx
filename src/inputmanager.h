@@ -83,13 +83,13 @@ private:
 	GMenu2X *gmenu2x;
 
 public:
-	uint16_t batteryStatus = 3;
-	uint16_t mmcStatus_, mmcStatus;
-	uint16_t udcStatus_ = UDC_REMOVE, udcStatus;
-	uint8_t numJoy_, numJoy; // number of connected joysticks
-	uint16_t volumeMode_, volumeMode;
-	uint16_t tvOutStatus_ = TV_REMOVE, tvOutStatus;
-	int32_t tickMonitor = 0;
+	uint16_t battery = 3;
+	uint16_t mmc_, mmc;
+	uint16_t udc_ = UDC_REMOVE, udc;
+	uint8_t devices_, devices; // number of connected joysticks
+	uint16_t volume_mode_, volume_mode;
+	uint16_t tvout_ = TV_REMOVE, tvout;
+	int32_t ticks = 0;
 
 	static uint32_t wakeUp(uint32_t interval, void *repeat);
 
