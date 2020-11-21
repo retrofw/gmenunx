@@ -100,7 +100,7 @@ public:
 	bool update(bool wait = true);
 	bool combo();
 	void dropEvents(bool drop_timer = true);
-	static void pushEvent(int action);
+	static void pushEvent(size_t action);
 	void setActionsCount(int count);
 	void setInterval(int ms, int action = -1);
 	bool &operator[](int action);
