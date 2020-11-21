@@ -107,6 +107,7 @@ public:
 	bool scanAction(int action);
 	bool isActive(int action);
 	void setActive(int action);
+	void initHardwareInput();
 	uint32_t hardwareMonitor();
 };
 

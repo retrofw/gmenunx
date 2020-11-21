@@ -42,6 +42,7 @@ InputManager::InputManager(GMenu2X *gmenu2x, string conffile):
 gmenu2x(gmenu2x) {
 	setActionsCount(NUM_ACTIONS);
 	initJoysticks(false);
+	initHardwareInput();
 	SDL_EnableKeyRepeat(0, 0);
 
 	hardwareMonitorTimer = SDL_AddTimer(1000, _hardwareMonitor, NULL);
@@ -316,6 +317,15 @@ bool InputManager::scanAction(int action) {
 		}
 	}
 	return false;
+}
+
+
+// Init hardware virtual events
+void InputManager::initHardwareInput() {
+	batteryStatus = gmenu2x->platform->getBatteryStatus(gmenu2x->platform->getBatteryLevel(), 0, 0);
+	numJoy_ = numJoy = gmenu2x->platform->getDevStatus();
+	volumeMode_ = volumeMode = gmenu2x->platform->getVolumeMode(gmenu2x->confInt["globalVolume"]);
+	mmcStatus_ = mmcStatus = gmenu2x->platform->getMMCStatus();
 }
 
 // Monitor hardware and push virtual events when there's any change
