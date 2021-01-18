@@ -537,12 +537,10 @@ void GMenu2X::resetSettings() {
 			}
 		}
 		if (reset_skin) {
-			string tmppath = home_path("skins/Default/skin.conf");
-			unlink(tmppath.c_str());
+			unlink(home_path("skins/Default/skin.conf").c_str());
 		}
 		if (reset_gmenu) {
-			string tmppath = home_path("gmenunx.conf");
-			unlink(tmppath.c_str());
+			unlink(home_path("gmenunx.conf").c_str());
 		}
 		quit();
 	}
