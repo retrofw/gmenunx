@@ -413,17 +413,17 @@ const string Menu::getSectionIcon(int i) {
 
 	string::size_type pos = sections[i].rfind(".");
 	if (pos != string::npos) {
-		string subsectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(pos) + ".png", false);
-		if (!subsectionIcon.empty()) {
-			return subsectionIcon;
+		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(pos) + ".png", false);
+		if (!sectionIcon.empty()) {
+			return sectionIcon;
 		}
 	}
 
 	pos = sections[i].find(".");
 	if (pos != string::npos) {
-		string mainsectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(0, pos) + ".png", false);
-		if (!mainsectionIcon.empty()) {
-			return mainsectionIcon;
+		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(0, pos) + ".png", false);
+		if (!sectionIcon.empty()) {
+			return sectionIcon;
 		}
 	}
 
