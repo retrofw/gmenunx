@@ -298,7 +298,7 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		if (getTVOut()) {
+		if (getTVOut() != TV_REMOVE) {
 			WARNING("Can't overclock when TV out is enabled.");
 			return;
 		}
