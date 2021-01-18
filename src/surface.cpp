@@ -24,6 +24,10 @@
 #include "debug.h"
 #include <cassert>
 
+#ifndef SDL_TRIPLEBUF
+#define SDL_TRIPLEBUF SDL_DOUBLEBUF
+#endif
+
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define rmask 0xFF000000
 #define gmask 0x00FF0000
@@ -88,13 +92,7 @@ Surface::Surface(Surface *s) {
 }
 
 Surface::Surface(int w, int h, int bpp) {
-	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE |
-		#ifdef SDL_TRIPLEBUF
-			SDL_TRIPLEBUF
-		#else
-			SDL_DOUBLEBUF
-		#endif
-	);
+	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_TRIPLEBUF);
 	raw = SDL_DisplayFormat(screen);
 }
 
