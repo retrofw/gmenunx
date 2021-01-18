@@ -1075,7 +1075,7 @@ void GMenu2X::skinColors() {
 
 void GMenu2X::about() {
 	vector<string> text;
-	TextDialog td(this, "GMenuNX", _F("Build date: %s", __DATE__), "skin:icons/about.png");
+	TextDialog td(this, "GMenuNX", _F("Build: %s %s", __DATE__, __TIME__), "skin:icons/about.png");
 	td.appendFile(data_path("about.txt"));
 	td.exec();
 }
