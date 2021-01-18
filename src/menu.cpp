@@ -406,14 +406,16 @@ int Menu::getSectionIndexByName(const string &name) {
 const string Menu::getSectionIcon(int i) {
 	if (i < 0) i = iSectionIndex;
 
-	string sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i] + ".png", false);
+	bool fallback_to_default = gmenu2x->confStr["skin"] == home_path("skins/Default");
+
+	string sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i] + ".png", fallback_to_default);
 	if (!sectionIcon.empty()) {
 		return sectionIcon;
 	}
 
 	string::size_type pos = sections[i].rfind(".");
 	if (pos != string::npos) {
-		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(pos) + ".png", false);
+		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(pos) + ".png", fallback_to_default);
 		if (!sectionIcon.empty()) {
 			return sectionIcon;
 		}
@@ -421,7 +423,7 @@ const string Menu::getSectionIcon(int i) {
 
 	pos = sections[i].find(".");
 	if (pos != string::npos) {
-		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(0, pos) + ".png", false);
+		sectionIcon = gmenu2x->sc.getSkinFilePath("sections/" + sections[i].substr(0, pos) + ".png", fallback_to_default);
 		if (!sectionIcon.empty()) {
 			return sectionIcon;
 		}
