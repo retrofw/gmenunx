@@ -732,6 +732,12 @@ void GMenu2X::writeConfig() {
 }
 
 void GMenu2X::writeSkinConfig() {
+	if (confStr["skin"] == data_path("skins/Default")) {
+		mkdir(home_path("skins").c_str(), 0777);
+		mkdir(home_path("skins/Default").c_str(), 0777);
+		confStr["skin"] = home_path("skins/Default");
+	}
+
 	ofstream f(confStr["skin"] + "/skin.conf");
 	if (!f.is_open()) return;
 
