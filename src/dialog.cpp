@@ -88,7 +88,17 @@ void Dialog::drawDialog(Surface *s, bool top, bool bottom) {
 
 	this->bg->blit(s, 0, 0);
 
-	if (top) drawTopBar(s, title, description, icon);
-	if (bottom) drawBottomBar(s, buttons);
-	s->box(gmenu2x->linksRect, gmenu2x->skinConfColor["listBg"]);
+	SDL_Rect linksRect = {0, 0, gmenu2x->platform->w, gmenu2x->platform->h};
+
+	if (top) {
+		drawTopBar(s, title, description, icon);
+		linksRect.y = gmenu2x->skinConfInt["sectionBarSize"];
+		linksRect.h -= gmenu2x->skinConfInt["sectionBarSize"];
+	}
+
+	if (bottom) {
+		drawBottomBar(s, buttons);
+		linksRect.h -= gmenu2x->bottomBarRect.h;
+	}
+	s->box(linksRect, gmenu2x->skinConfColor["listBg"]);
 }
