@@ -402,24 +402,18 @@ void set_date_time(const char* timestamp) {
 }
 
 string home_path(string path) {
-	if (_home_path.empty()) {
-		_home_path = (string)getenv("HOME");
-	}
+	string home_path = (string)getenv("HOME");
 	if (path == "../") {
-		return _home_path;	
+		return home_path;	
 	}
-	return _home_path + "/" + ".gmenunx/" + path;
+	return home_path + "/.gmenunx/" + path;
 }
 
 string data_path(string path) {
-	if (_data_path.empty()) {
-		if (dir_exists("/usr/share/gmenunx")) {
-			_data_path = "/usr/share/gmenunx";
-		} else {
-			_data_path = "./";
-		}
+	if (dir_exists("/usr/share/gmenunx")) {
+		return "/usr/share/gmenunx/" + path;
 	}
-	return _data_path + "/" + path;
+	return "./";
 }
 
 

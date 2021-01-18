@@ -62,8 +62,6 @@ using namespace fastdelegate;
 
 #define sync() sync(); system("sync &");
 
-string _data_path, _home_path;
-
 string prevDateTime = "", newDateTime = "";
 
 #include "menu.h"
