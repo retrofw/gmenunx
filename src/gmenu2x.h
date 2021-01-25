@@ -112,6 +112,7 @@ public:
 	PowerManager *powerManager;
 	Platform *platform;
 	InputManager *input;
+	Translator tr;
 	// Touchscreen ts;
 	Menu *menu;
 	string currBackdrop = "", inetIcon = "";

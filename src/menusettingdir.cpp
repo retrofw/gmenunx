@@ -30,11 +30,11 @@ MenuSettingStringBase(gmenu2x, title, description, value), startPath(startPath),
 	if (dialogIcon.empty()) this->dialogIcon = "icons/explorer.png";
 	if (startPath.empty()) this->startPath = home_path("../");
 
-	btn = new IconButton(gmenu2x, "select", _("Reset"));
+	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingDir::clear));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "a", _("Select"));
+	btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Select"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingDir::edit));
 	buttonBox.add(btn);
 }

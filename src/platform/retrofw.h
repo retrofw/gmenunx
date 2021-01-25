@@ -129,9 +129,9 @@ public:
 		if (gmenu2x->confStr["usbMode"] == "Storage") option = CONFIRM;
 		else if (gmenu2x->confStr["usbMode"] == "Charger") option = CANCEL;
 		else {
-			MessageBox mb(gmenu2x, _("USB mode"), "skin:icons/usb.png");
-			mb.setButton(CANCEL,  _("Charger"));
-			mb.setButton(CONFIRM, _("Storage"));
+			MessageBox mb(gmenu2x, gmenu2x->tr["USB mode"], "skin:icons/usb.png");
+			mb.setButton(CANCEL,  gmenu2x->tr["Charger"]);
+			mb.setButton(CONFIRM, gmenu2x->tr["Storage"]);
 			option = mb.exec();
 		}
 
@@ -159,10 +159,10 @@ public:
 			else if (gmenu2x->confStr["tvMode"] == "PAL") option = MANUAL;
 			else if (gmenu2x->confStr["tvMode"] == "OFF") option = CANCEL;
 			else {
-				MessageBox mb(gmenu2x, _("TV-out connected. Enable?"), "skin:icons/tv.png");
-				mb.setButton(CONFIRM, _("NTSC"));
-				mb.setButton(MANUAL,  _("PAL"));
-				mb.setButton(CANCEL,  _("OFF"));
+				MessageBox mb(gmenu2x, gmenu2x->tr["TV-out connected. Enable?"], "skin:icons/tv.png");
+				mb.setButton(CONFIRM, gmenu2x->tr["NTSC"]);
+				mb.setButton(MANUAL,  gmenu2x->tr["PAL"]);
+				mb.setButton(CANCEL,  gmenu2x->tr["OFF"]);
 				option = mb.exec();
 			}
 

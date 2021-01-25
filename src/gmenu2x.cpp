@@ -75,10 +75,7 @@ static void quit_all(int err) {
 }
 
 int main(int /*argc*/, char * /*argv*/[]) {
-	setlocale(LC_ALL, "");
-	bindtextdomain("gmenunx", "./locale");
-	textdomain("gmenunx");
-	INFO("%s", "Starting GMenuNX...");
+	INFO("Starting GMenuNX...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);
@@ -167,7 +164,7 @@ GMenu2X::GMenu2X() {
 
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
-	MessageBox mb(this, _("Loading"));
+	MessageBox mb(this, tr["Loading"]);
 	mb.setAutoHide(1);
 	mb.setBgAlpha(0);
 	mb.exec();
@@ -275,7 +272,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			ERROR("Can't save screenshot");
 			return true;
 		}
-		MessageBox mb(this, _("Screenshot saved"));
+		MessageBox mb(this, tr["Screenshot saved"]);
 		mb.setAutoHide(1000);
 		mb.exec();
 
@@ -382,21 +379,21 @@ void GMenu2X::initMenu() {
 	for (uint32_t i = 0; i < menu->getSections().size(); i++) {
 		// Add virtual links in the applications section
 		if (menu->getSections()[i] == "applications") {
-			menu->addActionLink(i, _("Explorer"), MakeDelegate(this, &GMenu2X::explorer), _("Browse files and launch apps"), "explorer.png");
+			menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Browse files and launch apps"], "explorer.png");
 			if (platform->ext_sd) {
-				menu->addActionLink(i, _("Umount"), MakeDelegate(this, &GMenu2X::umountSdDialog), _("Umount external media device"), "eject.png");
+				menu->addActionLink(i, tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external media device"], "eject.png");
 			}
 		}
 		// Add virtual links in the setting section
 		else if (menu->getSections()[i] == "settings") {
-			menu->addActionLink(i, _("Settings"), MakeDelegate(this, &GMenu2X::settings), _("Configure system"), "configure.png");
-			menu->addActionLink(i, _("Skin"), MakeDelegate(this, &GMenu2X::skinMenu), _("Appearance & skin settings"), "skin.png");
+			menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure system"], "configure.png");
+			menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Appearance & skin settings"], "skin.png");
 			if (file_exists(home_path("log.txt"))) {
-				menu->addActionLink(i, _("Log Viewer"), MakeDelegate(this, &GMenu2X::viewLog), _("Displays last launched program's output"), "ebook.png");
+				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
 			}
 
-			menu->addActionLink(i, _("About"), MakeDelegate(this, &GMenu2X::about), _("Info about GMenuNX"), "about.png");
-			menu->addActionLink(i, _("Power"), MakeDelegate(this, &GMenu2X::poweroffDialog), _("Power menu"), "exit.png");
+			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenuNX"], "about.png");
+			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 		}
 	}
 	menu->setSectionIndex(confInt["section"]);
@@ -409,36 +406,34 @@ void GMenu2X::settings() {
 	FileLister fl;
 	fl.browse(data_path("translations"));
 	fl.insertFile("English");
-	// string lang = tr.lang();
-	// if (lang.empty()) lang = "English";
+	string lang = tr.lang();
+	if (lang.empty()) lang = "English";
 
 	vector<string> opFactory;
 	opFactory.push_back(">>");
 	string tmp = ">>";
 
-	SettingsDialog sd(this, /*ts,*/ _("Settings"), "skin:icons/configure.png");
+	SettingsDialog sd(this, /*ts,*/ tr["Settings"], "skin:icons/configure.png");
 	sd.allowCancel = false;
 
 	int prevgamma = confInt["gamma"];
 
-	// sd.addSetting(new MenuSettingMultiString(this, _("Language"), _("Set the language used by GMenuNX"), &lang, &fl.getFiles()));
-// https://www.man7.org/linux/man-pages/man3/setlocale.3.html
-
+	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenuNX"], &lang, fl.getFiles()));
 
 	if (platform->rtc) {
 		prevDateTime = get_date_time();
 		newDateTime = prevDateTime;
-		sd.addSetting(new MenuSettingDateTime(this, _("Date & Time"), _("Set system's date & time"), &newDateTime));
+		sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &newDateTime));
 	}
 
-	sd.addSetting(new MenuSettingDir(this, _("Home path"),	_("Set as home for launched links"), &confStr["homePath"]));
+	sd.addSetting(new MenuSettingDir(this, tr["Home path"],	tr["Set as home for launched links"], &confStr["homePath"]));
 
 	if (platform->udc) {
 		vector<string> usbMode;
 		usbMode.push_back("Ask");
 		usbMode.push_back("Storage");
 		usbMode.push_back("Charger");
-		sd.addSetting(new MenuSettingMultiString(this, _("USB mode"), _("Define default USB mode"), &confStr["usbMode"], usbMode));
+		sd.addSetting(new MenuSettingMultiString(this, tr["USB mode"], tr["Define default USB mode"], &confStr["usbMode"], usbMode));
 	}
 
 	if (platform->tvout) {
@@ -447,23 +442,23 @@ void GMenu2X::settings() {
 		tvMode.push_back("NTSC");
 		tvMode.push_back("PAL");
 		tvMode.push_back("OFF");
-		sd.addSetting(new MenuSettingMultiString(this, _("TV mode"), _("Define default TV mode"), &confStr["tvMode"], tvMode));
+		sd.addSetting(new MenuSettingMultiString(this, tr["TV mode"], tr["Define default TV mode"], &confStr["tvMode"], tvMode));
 	}
 
-	sd.addSetting(new MenuSettingInt(this, _("Suspend timeout"), _("Seconds until suspend the device when inactive"), &confInt["backlightTimeout"], 30, 10, 300));
-	sd.addSetting(new MenuSettingInt(this, _("Power timeout"), _("Minutes to poweroff system if inactive"), &confInt["powerTimeout"], 10, 1, 300));
-	sd.addSetting(new MenuSettingInt(this, _("Backlight"), _("Set LCD backlight"), &confInt["backlight"], 70, 1, 100));
-	sd.addSetting(new MenuSettingInt(this, _("Audio volume"), _("Set the default audio volume"), &confInt["globalVolume"], 60, 0, 100));
-	sd.addSetting(new MenuSettingBool(this, _("Remember selection"), _("Remember the last selected section, link and file"), &confInt["saveSelection"]));
-	sd.addSetting(new MenuSettingBool(this, _("Output logs"), _("Logs the link's output to read with Log Viewer"), &confInt["outputLogs"]));
-	sd.addSetting(new MenuSettingMultiString(this, _("Reset settings"), _("Choose settings to reset back to defaults"), &tmp, opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
+	sd.addSetting(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 10, 300));
+	sd.addSetting(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 1, 300));
+	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
+	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
+	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		// if (lang == "English") lang = "";
-		// if (confStr["lang"] != lang) {
-			// confStr["lang"] = lang;
-			// tr.setLang(lang);
-		// }
+		if (lang == "English") lang = "";
+		if (confStr["lang"] != lang) {
+			confStr["lang"] = lang;
+			tr.setLang(lang);
+		}
 
 		setBacklight(confInt["backlight"], false);
 		writeConfig();
@@ -495,26 +490,26 @@ void GMenu2X::resetSettings() {
 		reset_boxart = false,
 		reset_cpu = false;
 
-	SettingsDialog sd(this, /*ts,*/ _("Reset settings"), "skin:icons/configure.png");
-	sd.addSetting(new MenuSettingBool(this, _("GMenuNX"), _("Reset GMenuNX settings"), &reset_gmenu));
-	sd.addSetting(new MenuSettingBool(this, _("Default skin"), _("Reset Default skin settings back to default"), &reset_skin));
-	sd.addSetting(new MenuSettingBool(this, _("Icons"), _("Reset link's icon back to default"), &reset_icon));
-	sd.addSetting(new MenuSettingBool(this, _("Manuals"), _("Unset link's manual"), &reset_manual));
-	// sd.addSetting(new MenuSettingBool(this, _("Home directory"), _("Unset link's home directory"), &reset_homedir));
-	sd.addSetting(new MenuSettingBool(this, _("Parameters"), _("Unset link's additional parameters"), &reset_parameter));
-	sd.addSetting(new MenuSettingBool(this, _("Backdrops"), _("Unset link's backdrops"), &reset_backdrop));
-	sd.addSetting(new MenuSettingBool(this, _("Filters"), _("Unset link's selector file filters"), &reset_filter));
-	sd.addSetting(new MenuSettingBool(this, _("Directories"), _("Unset link's selector directory"), &reset_directory));
-	sd.addSetting(new MenuSettingBool(this, _("Box art"), _("Unset link's selector box art path"), &reset_boxart));
+	SettingsDialog sd(this, /*ts,*/ tr["Reset settings"], "skin:icons/configure.png");
+	sd.addSetting(new MenuSettingBool(this, tr["GMenuNX"], tr["Reset GMenuNX settings"], &reset_gmenu));
+	sd.addSetting(new MenuSettingBool(this, tr["Default skin"], tr["Reset Default skin settings back to default"], &reset_skin));
+	sd.addSetting(new MenuSettingBool(this, tr["Icons"], tr["Reset link's icon back to default"], &reset_icon));
+	sd.addSetting(new MenuSettingBool(this, tr["Manuals"], tr["Unset link's manual"], &reset_manual));
+	// sd.addSetting(new MenuSettingBool(this, tr["Home directory"], tr["Unset link's home directory"], &reset_homedir));
+	sd.addSetting(new MenuSettingBool(this, tr["Parameters"], tr["Unset link's additional parameters"], &reset_parameter));
+	sd.addSetting(new MenuSettingBool(this, tr["Backdrops"], tr["Unset link's backdrops"], &reset_backdrop));
+	sd.addSetting(new MenuSettingBool(this, tr["Filters"], tr["Unset link's selector file filters"], &reset_filter));
+	sd.addSetting(new MenuSettingBool(this, tr["Directories"], tr["Unset link's selector directory"], &reset_directory));
+	sd.addSetting(new MenuSettingBool(this, tr["Box art"], tr["Unset link's selector box art path"], &reset_boxart));
 
 	if (platform->cpu_max != platform->cpu_min) {
-		sd.addSetting(new MenuSettingBool(this, _("CPU speed"), _("Reset link's custom CPU speed back to default"), &reset_cpu));
+		sd.addSetting(new MenuSettingBool(this, tr["CPU speed"], tr["Reset link's custom CPU speed back to default"], &reset_cpu));
 	}
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		MessageBox mb(this, _("Changes will be applied to ALL\napps and GMenuNX. Are you sure?"), "skin:icons/exit.png");
-		mb.setButton(CANCEL, _("Cancel"));
-		mb.setButton(MANUAL,  _("Yes"));
+		MessageBox mb(this, tr["Changes will be applied to ALL\napps and GMenuNX. Are you sure?"], "skin:icons/exit.png");
+		mb.setButton(CANCEL, tr["Cancel"]);
+		mb.setButton(MANUAL,  tr["Yes"]);
 		if (mb.exec() != MANUAL) return;
 
 		for (uint32_t s = 0; s < menu->getSections().size(); s++) {
@@ -999,25 +994,25 @@ void GMenu2X::skinMenu() {
 		sc.del(confStr["wallpaper"]);
 		setBackground(bg, confStr["wallpaper"]);
 
-		SettingsDialog sd(this, /*ts,*/ _("Skin"), "skin:icons/skin.png");
+		SettingsDialog sd(this, /*ts,*/ tr["Skin"], "skin:icons/skin.png");
 		sd.selected = selected;
 		sd.allowCancel = false;
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin"), _("Set the skin used by GMenuNX"), &confStr["skin"], skins, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeSkin), MakeDelegate(this, &GMenu2X::basenameFormatter)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Wallpaper"), _("Select an image to use as a wallpaper"), &confStr["wallpaper"], wallpapers, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeWallpaper), MakeDelegate(this, &GMenu2X::basenameFormatter)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Background"), _("How to scale wallpaper, backdrops and game art"), &confStr["bgscale"], bgScale, MakeDelegate(this, &GMenu2X::updateSkin)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Preview mode"), _("How to show image preview and game art"), &confStr["previewMode"], previewMode));
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin colors"), _("Customize skin colors"), &tmp, wpLabel, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::skinColors)));
-		sd.addSetting(new MenuSettingMultiString(this, _("Skin backdrops"), _("Automatic load backdrops from skin pack"), &skinBackdrops, bdStr));
-		sd.addSetting(new MenuSettingMultiString(this, _("Font face"), _("Override the skin font face"), &confStr["skinFont"], skinFont, MakeDelegate(this, &GMenu2X::updateSkin)));
-		sd.addSetting(new MenuSettingInt(this, _("Font size"), _("Size of text font"), &skinConfInt["fontSize"], 12, 6, 60));
-		sd.addSetting(new MenuSettingInt(this, _("Title font size"), _("Size of title's text font"), &skinConfInt["fontSizeTitle"], 20, 6, 60));
-		sd.addSetting(new MenuSettingMultiString(this, _("Section bar layout"), _("Set the layout and position of the Section Bar"), &sectionBar, sbStr));
-		sd.addSetting(new MenuSettingInt(this, _("Section bar size"), _("Size of section and top bar"), &skinConfInt["sectionBarSize"], 40, 1, platform->w));
-		sd.addSetting(new MenuSettingInt(this, _("Bottom bar height"), _("Height of bottom bar"), &skinConfInt["bottomBarHeight"], 16, 1, platform->h));
-		sd.addSetting(new MenuSettingInt(this, _("Menu columns"), _("Number of columns of links in main menu"), &skinConfInt["linkCols"], 4, 1, 8));
-		sd.addSetting(new MenuSettingInt(this, _("Menu rows"), _("Number of rows of links in main menu"), &skinConfInt["linkRows"], 4, 1, 8));
-		sd.addSetting(new MenuSettingBool(this, _("Link label"), _("Show link labels in main menu"), &skinConfInt["linkLabel"]));
-		sd.addSetting(new MenuSettingBool(this, _("Section label"), _("Show the active section label in main menu"), &skinConfInt["sectionLabel"]));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenuNX"], &confStr["skin"], skins, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeSkin), MakeDelegate(this, &GMenu2X::basenameFormatter)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], &confStr["wallpaper"], wallpapers, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::changeWallpaper), MakeDelegate(this, &GMenu2X::basenameFormatter)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Background"], tr["How to scale wallpaper, backdrops and game art"], &confStr["bgscale"], bgScale, MakeDelegate(this, &GMenu2X::updateSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &confStr["previewMode"], previewMode));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin colors"], tr["Customize skin colors"], &tmp, wpLabel, MakeDelegate(this, &GMenu2X::updateSkin), MakeDelegate(this, &GMenu2X::skinColors)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &skinBackdrops, bdStr));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Font face"], tr["Override the skin font face"], &confStr["skinFont"], skinFont, MakeDelegate(this, &GMenu2X::updateSkin)));
+		sd.addSetting(new MenuSettingInt(this, tr["Font size"], tr["Size of text font"], &skinConfInt["fontSize"], 12, 6, 60));
+		sd.addSetting(new MenuSettingInt(this, tr["Title font size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 20, 6, 60));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Section bar layout"], tr["Set the layout and position of the Section Bar"], &sectionBar, sbStr));
+		sd.addSetting(new MenuSettingInt(this, tr["Section bar size"], tr["Size of section and top bar"], &skinConfInt["sectionBarSize"], 40, 1, platform->w));
+		sd.addSetting(new MenuSettingInt(this, tr["Bottom bar height"], tr["Height of bottom bar"], &skinConfInt["bottomBarHeight"], 16, 1, platform->h));
+		sd.addSetting(new MenuSettingInt(this, tr["Menu columns"], tr["Number of columns of links in main menu"], &skinConfInt["linkCols"], 4, 1, 8));
+		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
+		sd.addSetting(new MenuSettingBool(this, tr["Link label"], tr["Show link labels in main menu"], &skinConfInt["linkLabel"]));
+		sd.addSetting(new MenuSettingBool(this, tr["Section label"], tr["Show the active section label in main menu"], &skinConfInt["sectionLabel"]));
 		sd.exec();
 
 		selected = sd.selected;
@@ -1054,20 +1049,20 @@ void GMenu2X::skinColors() {
 	do {
 		setSkin(confStr["skin"], false);
 
-		SettingsDialog sd(this, /*ts,*/ _("Skin Colors"), "skin:icons/skin.png");
+		SettingsDialog sd(this, /*ts,*/ tr["Skin Colors"], "skin:icons/skin.png");
 		sd.allowCancel = false;
-		sd.addSetting(new MenuSettingRGBA(this, _("Top/Section Bar"), _("Color of the top and section bar"), &skinConfColor["topBarBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("List Body"), _("Color of the list body"), &skinConfColor["listBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Bottom Bar"), _("Color of the bottom bar"), &skinConfColor["bottomBarBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Selection"), _("Color of the selection and other interface details"), &skinConfColor["selectionBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Box Art"), _("Color of the box art background"), &skinConfColor["previewBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Message Box"), _("Background color of the message box"), &skinConfColor["messageBoxBg"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Border"), _("Border color of the message box"), &skinConfColor["messageBoxBorder"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Msg Box Selection"), _("Color of the selection of the message box"), &skinConfColor["messageBoxSelection"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Font"), _("Color of the font"), &skinConfColor["font"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Font Outline"), _("Color of the font's outline"), &skinConfColor["fontOutline"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font"), _("Color of the alternative font"), &skinConfColor["fontAlt"]));
-		sd.addSetting(new MenuSettingRGBA(this, _("Alt Font Outline"), _("Color of the alternative font outline"), &skinConfColor["fontAltOutline"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Top/Section Bar"], tr["Color of the top and section bar"], &skinConfColor["topBarBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["List Body"], tr["Color of the list body"], &skinConfColor["listBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Bottom Bar"], tr["Color of the bottom bar"], &skinConfColor["bottomBarBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Selection"], tr["Color of the selection and other interface details"], &skinConfColor["selectionBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Box Art"], tr["Color of the box art background"], &skinConfColor["previewBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Message Box"], tr["Background color of the message box"], &skinConfColor["messageBoxBg"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Msg Box Border"], tr["Border color of the message box"], &skinConfColor["messageBoxBorder"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Msg Box Selection"], tr["Color of the selection of the message box"], &skinConfColor["messageBoxSelection"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Font"], tr["Color of the font"], &skinConfColor["font"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Font Outline"], tr["Color of the font's outline"], &skinConfColor["fontOutline"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Alt Font"], tr["Color of the alternative font"], &skinConfColor["fontAlt"]));
+		sd.addSetting(new MenuSettingRGBA(this, tr["Alt Font Outline"], tr["Color of the alternative font outline"], &skinConfColor["fontAltOutline"]));
 		sd.exec();
 		save = sd.save;
 	} while (!save);
@@ -1076,7 +1071,7 @@ void GMenu2X::skinColors() {
 
 void GMenu2X::about() {
 	vector<string> text;
-	TextDialog td(this, "GMenuNX", _F("Build: %s %s", __DATE__, __TIME__), "skin:icons/about.png");
+	TextDialog td(this, "GMenuNX", tr.translate("Build: %s %s", __DATE__, __TIME__), "skin:icons/about.png");
 	td.appendFile(data_path("about.txt"));
 	td.exec();
 }
@@ -1085,14 +1080,14 @@ void GMenu2X::viewLog() {
 	string logfile = home_path("log.txt");
 	if (!file_exists(logfile)) return;
 
-	TextDialog td(this, _("Log Viewer"), _("Last launched program's output"), "skin:icons/ebook.png");
+	TextDialog td(this, tr["Log Viewer"], tr["Last launched program's output"], "skin:icons/ebook.png");
 	td.appendFile(logfile);
 	td.exec();
 
-	MessageBox mb(this, _("Delete the log file?"), "skin:icons/ebook.png");
-	mb.setButton(MANUAL, _("Delete and disable"));
-	mb.setButton(CONFIRM, _("Delete"));
-	mb.setButton(CANCEL,  _("No"));
+	MessageBox mb(this, tr["Delete the log file?"], "skin:icons/ebook.png");
+	mb.setButton(MANUAL, tr["Delete and disable"]);
+	mb.setButton(CONFIRM, tr["Delete"]);
+	mb.setButton(CANCEL,  tr["No"]);
 	int res = mb.exec();
 
 	switch (res) {
@@ -1109,14 +1104,14 @@ void GMenu2X::viewLog() {
 }
 
 void GMenu2X::changeWallpaper() {
-	WallpaperDialog wp(this, _("Wallpaper"), _("Select an image to use as a wallpaper"), "skin:icons/wallpaper.png");
+	WallpaperDialog wp(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], "skin:icons/wallpaper.png");
 	if (wp.exec() && confStr["wallpaper"] != wp.wallpaper) {
 		confStr["wallpaper"] = wp.wallpaper;
 	}
 }
 
 void GMenu2X::changeSkin() {
-	SkinDialog sd(this, _("skin"), _("Set the skin used by GMenuNX"), "skin:icons/skin.png");
+	SkinDialog sd(this, tr["skin"], tr["Set the skin used by GMenuNX"], "skin:icons/skin.png");
 	if (sd.exec() && confStr["skin"] != sd.skin) {
 		confStr["skin"] = sd.skin;
 	}
@@ -1171,7 +1166,7 @@ void GMenu2X::showManual() {
 }
 
 void GMenu2X::explorer() {
-	BrowseDialog bd(this, _("Explorer"), _("Select a file or application"));
+	BrowseDialog bd(this, tr["Explorer"], tr["Select a file or application"]);
 	bd.showDirectories = true;
 	bd.showFiles = true;
 
@@ -1180,10 +1175,10 @@ void GMenu2X::explorer() {
 
 		string ext = bd.getExt(bd.selected);
 		if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp") {
-			ImageViewerDialog im(this, _("Image viewer"), bd.getFile(bd.selected), "icons/explorer.png", bd.getPath(bd.selected));
+			ImageViewerDialog im(this, tr["Image viewer"], bd.getFile(bd.selected), "icons/explorer.png", bd.getPath(bd.selected));
 			im.exec();
 		} else if (ext == ".txt" || ext == ".conf" || ext == ".me" || ext == ".md" || ext == ".xml" || ext == ".log" || ext == ".ini") {
-			TextDialog td(this, _("Text viewer"), bd.getFile(bd.selected), "skin:icons/ebook.png");
+			TextDialog td(this, tr["Text viewer"], bd.getFile(bd.selected), "skin:icons/ebook.png");
 			td.appendFile(bd.getPath(bd.selected));
 			td.exec();
 		} else if (platform->ipk && ext == ".ipk" && file_exists("/usr/bin/opkg")) {
@@ -1191,19 +1186,19 @@ void GMenu2X::explorer() {
 		} else if (!platform->opk.empty() && ext == ".opk") {
 			opkInstall(bd.getPath(bd.selected));
 		} else if (ext == ".sh") {
-			TerminalDialog td(this, _("Terminal"), "sh " + cmdclean(bd.getFileName(bd.selected)), "skin:icons/terminal.png");
+			TerminalDialog td(this, tr["Terminal"], "sh " + cmdclean(bd.getFileName(bd.selected)), "skin:icons/terminal.png");
 			td.exec(bd.getPath(bd.selected));
 		} else if (ext == ".zip" && file_exists("/usr/bin/unzip") && (bd.getFile(bd.selected).rfind("gmenu2x-skin-", 0) == 0) || (bd.getFile(bd.selected).rfind("gmenunx-skin-", 0) == 0)) {
 			string path = bd.getPath(bd.selected);
 			string skinname = base_name(path, true).substr(13); // strip gmenu2x-skin- and .zip
 			if (skinname.size() > 1) {
-				TerminalDialog td(this, _("Skin installer"), _("Installing skin %s"), "skin:icons/skin.png");
+				TerminalDialog td(this, tr["Skin installer"], tr["Installing skin %s"], "skin:icons/skin.png");
 				string cmd = "rm -rf \"" + home_path("skins/") + skinname + "/\"; mkdir -p \"" + home_path("skins/") + skinname + "/\"; unzip \"" + path + "\" -d \"" + home_path("skins/") + skinname + "/\"; if [ `ls \"" + home_path("skins/") + skinname + "\" | wc -l` == 1 ]; then subdir=`ls \"" + home_path("skins/") + skinname + "\"`; mv \"" + home_path("skins/") + skinname + "\"/$subdir/* \"" + home_path("skins/") + skinname + "/\"; rmdir \"" + home_path("skins/") + skinname + "\"/$subdir; fi; sync";
 				td.exec(cmd);
 				setSkin(skinname, false);
 			}
 		} else if (ext == ".zip" && file_exists("/usr/bin/unzip")) {
-			TerminalDialog td(this, _("Zip content"), bd.getFileName(bd.selected), "skin:icons/terminal.png");
+			TerminalDialog td(this, tr["Zip content"], bd.getFileName(bd.selected), "skin:icons/terminal.png");
 			td.exec("unzip -l " + cmdclean(bd.getPath(bd.selected)));
 		} else {
 			if (confInt["saveSelection"] && (confInt["section"] != menu->getSectionIndex() || confInt["link"] != menu->getLinkIndex())) {
@@ -1244,15 +1239,15 @@ bool GMenu2X::saveScreenshot(string path) {
 }
 
 void GMenu2X::poweroffDialog() {
-	MessageBox mb(this, _("Poweroff or reboot the device?"), "skin:icons/exit.png");
-	mb.setButton(SECTION_NEXT, _("Reboot"));
-	mb.setButton(CONFIRM, _("Poweroff"));
-	mb.setButton(CANCEL,  _("Cancel"));
+	MessageBox mb(this, tr["Poweroff or reboot the device?"], "skin:icons/exit.png");
+	mb.setButton(SECTION_NEXT, tr["Reboot"]);
+	mb.setButton(CONFIRM, tr["Poweroff"]);
+	mb.setButton(CANCEL,  tr["Cancel"]);
 	int res = mb.exec();
 	writeConfig();
 	switch (res) {
 		case CONFIRM: {
-			MessageBox mb(this, _("Poweroff"));
+			MessageBox mb(this, tr["Poweroff"]);
 			mb.setAutoHide(1);
 			mb.exec();
 			setVolume(0);
@@ -1261,7 +1256,7 @@ void GMenu2X::poweroffDialog() {
 			break;
 		}
 		case SECTION_NEXT: {
-			MessageBox mb(this, _("Rebooting"));
+			MessageBox mb(this, tr["Rebooting"]);
 			mb.setAutoHide(1);
 			mb.exec();
 			setVolume(0);
@@ -1273,7 +1268,7 @@ void GMenu2X::poweroffDialog() {
 }
 
 void GMenu2X::umountSdDialog() {
-	BrowseDialog bd(this, _("Umount"), _("Umount external media device"), "skin:icons/eject.png");
+	BrowseDialog bd(this, tr["Umount"], tr["Umount external media device"], "skin:icons/eject.png");
 	bd.showDirectories = true;
 	bd.showFiles = false;
 	bd.allowDirUp = false;
@@ -1284,24 +1279,24 @@ void GMenu2X::umountSdDialog() {
 void GMenu2X::contextMenu() {
 	vector<MenuOption> options;
 	if (menu->getLinkApp() != NULL) {
-		options.push_back((MenuOption){_F("Edit %s",	menu->getLink()->getTitle().c_str()), MakeDelegate(this, &GMenu2X::editLink)});
-		options.push_back((MenuOption){_F("Delete %s",	menu->getLink()->getTitle().c_str()), MakeDelegate(this, &GMenu2X::deleteLink)});
+		options.push_back((MenuOption){tr["Edit"] + " " + menu->getLink()->getTitle(), MakeDelegate(this, &GMenu2X::editLink)});
+		options.push_back((MenuOption){tr["Delete"] + " " + menu->getLink()->getTitle(), MakeDelegate(this, &GMenu2X::deleteLink)});
 	}
 
-	options.push_back((MenuOption){_("Add link"), 			MakeDelegate(this, &GMenu2X::addLink)});
-	options.push_back((MenuOption){_("Add section"),		MakeDelegate(this, &GMenu2X::addSection)});
-	options.push_back((MenuOption){_("Rename section"),		MakeDelegate(this, &GMenu2X::renameSection)});
-	options.push_back((MenuOption){_("Delete section"),		MakeDelegate(this, &GMenu2X::deleteSection)});
+	options.push_back((MenuOption){tr["Add link"], 			MakeDelegate(this, &GMenu2X::addLink)});
+	options.push_back((MenuOption){tr["Add section"],		MakeDelegate(this, &GMenu2X::addSection)});
+	options.push_back((MenuOption){tr["Rename section"],		MakeDelegate(this, &GMenu2X::renameSection)});
+	options.push_back((MenuOption){tr["Delete section"],		MakeDelegate(this, &GMenu2X::deleteSection)});
 
 	if (!platform->opk.empty()) {
-		options.push_back((MenuOption){_("Update package links"),	MakeDelegate(this, &GMenu2X::pkgScanner)});
+		options.push_back((MenuOption){tr["Update package links"],	MakeDelegate(this, &GMenu2X::pkgScanner)});
 	}
 
 	MessageBox mb(this, options);
 }
 
 void GMenu2X::addLink() {
-	BrowseDialog bd(this, _("Add link"), _("Select an application"));
+	BrowseDialog bd(this, tr["Add link"], tr["Select an application"]);
 	bd.showDirectories = true;
 	bd.showFiles = true;
 	string filter = ".dge,.gpu,.gpe,.sh,.bin,.elf,";
@@ -1331,7 +1326,7 @@ void GMenu2X::addLink() {
 }
 
 void GMenu2X::changeSelectorDir() {
-	BrowseDialog bd(this, _("Selector Path"), _("Directory to start the selector"));
+	BrowseDialog bd(this, tr["Selector Path"], tr["Directory to start the selector"]);
 	bd.showDirectories = true;
 	bd.showFiles = false;
 	bd.allowSelectDirectory = true;
@@ -1363,7 +1358,7 @@ void GMenu2X::editLink() {
 	string linkSelAliases = menu->getLinkApp()->getAliasFile();
 	int linkClock = menu->getLinkApp()->getCPU();
 	string linkBackdrop = menu->getLinkApp()->getBackdrop();
-	string dialogTitle = _F("Edit %s", linkTitle.c_str());
+	string dialogTitle = tr["Edit"] + " " + linkTitle;
 	string dialogIcon = menu->getLinkApp()->getIconPath();
 	string linkDir = dir_name(linkExec);
 	int linkGamma = menu->getLinkApp()->getGamma();
@@ -1392,39 +1387,39 @@ void GMenu2X::editLink() {
 
 	SettingsDialog sd(this, /*ts,*/ dialogTitle, dialogIcon);
 
-	// sd.addSetting(new MenuSettingFile(this,		_("Executable"),	_("Application this link points to"), &linkExec, ".dge,.gpu,.gpe,.sh,.bin,.opk,.elf,", linkExec, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingString(this,		_("Title"),			_("Link title"), &linkTitle, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingString(this,		_("Description"),	_("Link description"), &linkDescription, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingMultiString(this,	_("Section"),		_("The section this link belongs to"), &newSection, menu->getSections()));
-	sd.addSetting(new MenuSettingString(this,		_("Parameters"),	_("Command line arguments to pass to the application"), &linkParams, dialogTitle, dialogIcon));
+	// sd.addSetting(new MenuSettingFile(this,		tr["Executable"],	tr["Application this link points to"], &linkExec, ".dge,.gpu,.gpe,.sh,.bin,.opk,.elf,", linkExec, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingString(this,		tr["Title"],			tr["Link title"], &linkTitle, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingString(this,		tr["Description"],	tr["Link description"], &linkDescription, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingMultiString(this,	tr["Section"],		tr["The section this link belongs to"], &newSection, menu->getSections()));
+	sd.addSetting(new MenuSettingString(this,		tr["Parameters"],	tr["Command line arguments to pass to the application"], &linkParams, dialogTitle, dialogIcon));
 
-	sd.addSetting(new MenuSettingImage(this,		_("Icon"),			_("Select a custom icon for the link"), &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingImage(this,		tr["Icon"],			tr["Select a custom icon for the link"], &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
 
 	if (platform->cpu_max > platform->cpu_min && platform->cpu_step > 0) {
-		sd.addSetting(new MenuSettingInt(this,		_("CPU Clock"),		_("CPU clock frequency when launching this link"), &linkClock, platform->cpu_menu, platform->cpu_min, platform->cpu_max, platform->cpu_step));
+		sd.addSetting(new MenuSettingInt(this,		tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, platform->cpu_menu, platform->cpu_min, platform->cpu_max, platform->cpu_step));
 	}
 	// sd.addSetting(new MenuSettingDir(			this, tr["Home Path"],		tr["Set directory as $HOME for this link"], &linkHomeDir, CARD_ROOT, dialogTitle, dialogIcon));
 
 	if (platform->hw_scaler) {
-		sd.addSetting(new MenuSettingMultiString(this,	_("Scale Mode"),	_("Hardware scaling mode"), &linkScaleMode, scaleMode));
+		sd.addSetting(new MenuSettingMultiString(this,	tr["Scale Mode"],	tr["Hardware scaling mode"], &linkScaleMode, scaleMode));
 	}
 
-	sd.addSetting(new MenuSettingMultiString(this,	_("File Selector"),	_("Use file browser selector"), &confStr["tmp_selector"], selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
-	sd.addSetting(new MenuSettingBool(this,			_("Show Folders"),	_("Allow the selector to change directory"), &linkSelBrowser));
-	sd.addSetting(new MenuSettingString(this,		_("File Filter"),	_("Filter by file extension (separate with commas)"), &linkSelFilter, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingDir(this,			_("Box Art"),		_("Directory of the box art for the selector"), &linkSelScreens, linkDir, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingFile(this,			_("Aliases"),		_("File containing a list of aliases for the selector"), &linkSelAliases, ".txt,.dat", linkExec, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingImage(this,		_("Backdrop"),		_("Select an image backdrop"), &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingFile(this,			_("Manual"),		_("Select a Manual or Readme file"), &linkManual, ".man.png,.txt,.me", linkExec, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingMultiString(this,	tr["File Selector"],	tr["Use file browser selector"], &confStr["tmp_selector"], selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
+	sd.addSetting(new MenuSettingBool(this,			tr["Show Folders"],	tr["Allow the selector to change directory"], &linkSelBrowser));
+	sd.addSetting(new MenuSettingString(this,		tr["File Filter"],	tr["Filter by file extension (separate with commas)"], &linkSelFilter, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingDir(this,			tr["Box Art"],		tr["Directory of the box art for the selector"], &linkSelScreens, linkDir, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingFile(this,			tr["Aliases"],		tr["File containing a list of aliases for the selector"], &linkSelAliases, ".txt,.dat", linkExec, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingImage(this,		tr["Backdrop"],		tr["Select an image backdrop"], &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
+	sd.addSetting(new MenuSettingFile(this,			tr["Manual"],		tr["Select a Manual or Readme file"], &linkManual, ".man.png,.txt,.me", linkExec, dialogTitle, dialogIcon));
 
 #if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	bool linkUseGinge = menu->getLinkApp()->getUseGinge();
 	string ginge_prep = data_path("ginge/ginge_prep");
 	if (file_exists(ginge_prep))
-		sd.addSetting(new MenuSettingBool(this,		_("Use Ginge"),		_("Compatibility layer for running GP2X applications"), &linkUseGinge ));
+		sd.addSetting(new MenuSettingBool(this,		tr["Use Ginge"],		tr["Compatibility layer for running GP2X applications"], &linkUseGinge ));
 #endif
 
-	sd.addSetting(new MenuSettingInt(this,		_("Gamma"),			_("Gamma value to set when launching this link"), &linkGamma, 50, 0, 100 ));
+	sd.addSetting(new MenuSettingInt(this,		tr["Gamma"],			tr["Gamma value to set when launching this link"], &linkGamma, 50, 0, 100 ));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		menu->getLinkApp()->setExec(linkExec);
@@ -1488,12 +1483,12 @@ void GMenu2X::editLink() {
 
 void GMenu2X::deleteLink() {
 	int package_type = 0;
-	MessageBox mb(this, (string)_F("Delete %s", menu->getLink()->getTitle().c_str()) + "\n" + _("THIS CAN'T BE UNDONE") + "\n" + _("Are you sure?"), menu->getLink()->getIconPath());
+	MessageBox mb(this, tr["Delete"] + menu->getLink()->getTitle() + "\n" + tr["THIS CAN'T BE UNDONE"] + "\n" + tr["Are you sure?"], menu->getLink()->getIconPath());
 	string package = menu->getLinkApp()->getExec();
 
 	if (!platform->opk.empty() && file_ext(package, true) == ".opk") {
 		package_type = 1;
-		mb.setButton(MODIFIER, _("Uninstall OPK"));
+		mb.setButton(MODIFIER, tr["Uninstall OPK"]);
 		goto dialog; // shameless use of goto
 	}
 
@@ -1501,14 +1496,14 @@ void GMenu2X::deleteLink() {
 		package = ipkName(menu->getLinkApp()->getFile());
 		if (!package.empty()) {
 			package_type = 2;
-			mb.setButton(MODIFIER, _("Uninstall IPK"));
+			mb.setButton(MODIFIER, tr["Uninstall IPK"]);
 			goto dialog; // shameless use of goto
 		}
 	}
 
 	dialog:
-	mb.setButton(MANUAL, _("Delete link"));
-	mb.setButton(CANCEL,  _("No"));
+	mb.setButton(MANUAL, tr["Delete link"]);
+	mb.setButton(CANCEL,  tr["No"]);
 
 	switch (mb.exec()) {
 		case MODIFIER:
@@ -1516,7 +1511,7 @@ void GMenu2X::deleteLink() {
 				unlink(package.c_str());
 				menu->deleteSelectedLink();
 			} else if (package_type == 2) {
-				TerminalDialog td(this, _("Uninstall package"), "opkg remove " + package, "skin:icons/configure.png");
+				TerminalDialog td(this, tr["Uninstall package"], "opkg remove " + package, "skin:icons/configure.png");
 				td.exec("opkg remove " + package);
 			}
 			initMenu();
@@ -1530,7 +1525,7 @@ void GMenu2X::deleteLink() {
 }
 
 void GMenu2X::addSection() {
-	InputDialog id(this, /*ts,*/ _("Insert a name for the new section"), "", _("Add section"), "skin:icons/section.png");
+	InputDialog id(this, /*ts,*/ tr["Insert a name for the new section"], "", tr["Add section"], "skin:icons/section.png");
 	if (id.exec()) {
 		// only if a section with the same name does not exist
 		if (find(menu->getSections().begin(), menu->getSections().end(), id.getInput()) == menu->getSections().end()) {
@@ -1544,7 +1539,7 @@ void GMenu2X::addSection() {
 }
 
 void GMenu2X::renameSection() {
-	InputDialog id(this, /*ts,*/ _("Insert a new name for this section"), menu->getSection(), _("Rename section"), menu->getSectionIcon());
+	InputDialog id(this, /*ts,*/ tr["Insert a new name for this section"], menu->getSection(), tr["Rename section"], menu->getSectionIcon());
 	if (id.exec()) {
 		menu->renameSection(menu->getSectionIndex(), id.getInput());
 		sync();
@@ -1552,9 +1547,9 @@ void GMenu2X::renameSection() {
 }
 
 void GMenu2X::deleteSection() {
-	MessageBox mb(this, (string)_F("Delete section '%s'", menu->getSectionName().c_str()) + "'\n" + _("THIS CAN'T BE UNDONE") + "\n" + _("Are you sure?"), menu->getSectionIcon());
-	mb.setButton(MANUAL, _("Yes"));
-	mb.setButton(CANCEL,  _("No"));
+	MessageBox mb(this, tr["Delete section"] + " '" + menu->getSectionName() + "'\n" + tr["THIS CAN'T BE UNDONE"] + "\n" + tr["Are you sure?"], menu->getSectionIcon());
+	mb.setButton(MANUAL, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
 	if (rmtree(home_path("sections/") + menu->getSection())) {
 		menu->deleteSelectedSection();
@@ -1563,7 +1558,7 @@ void GMenu2X::deleteSection() {
 }
 
 void GMenu2X::pkgScanner() {
-	PKGScannerDialog od(this, _("Update package links"), "Scanning packages", "skin:icons/configure.png");
+	PKGScannerDialog od(this, tr["Update package links"], "Scanning packages", "skin:icons/configure.png");
 	od.exec();
 	initMenu();
 }
@@ -1572,7 +1567,7 @@ void GMenu2X::opkInstall(string path) {
 	input->update(false);
 	bool debug = input->isActive(MENU);
 
-	PKGScannerDialog od(this, _("Package installer"), _F("Installing %s", base_name(path).c_str()), "skin:icons/configure.png");
+	PKGScannerDialog od(this, tr["Package installer"], tr["Installing"] + " " + base_name(path), "skin:icons/configure.png");
 	od.opkpath = path;
 	od.exec(debug);
 	initMenu();
@@ -1601,7 +1596,7 @@ void GMenu2X::ipkInstall(string path) {
 	input->update(false);
 	bool debug = input->isActive(MENU);
 	if (debug) cmd += "--force-downgrade --force-depends --force-maintainer ";
-	TerminalDialog td(this, _("Package installer"), "opkg install " + base_name(path), "skin:icons/configure.png");
+	TerminalDialog td(this, tr["Package installer"], "opkg install " + base_name(path), "skin:icons/configure.png");
 	td.exec(cmd + cmdclean(path));
 	system("if [ -d sections/systems ]; then mkdir -p sections/emulators.systems; cp -r sections/systems/* sections/emulators.systems/; rm -rf sections/systems; fi; sync;");
 	initMenu();

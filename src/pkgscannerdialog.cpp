@@ -20,7 +20,7 @@ void PKGScannerDialog::opkInstall(const string &path) {
 	struct OPK *opk = opk_open(path.c_str());
 
 	if (!opk) {
-		text.push_back(path + ": " + _("Unable to open OPK"));
+		text.push_back(path + ": " + gmenu2x->tr["Unable to open OPK"]);
 		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 
 		ERROR("%s: Unable to open OPK", path.c_str());
@@ -31,7 +31,7 @@ void PKGScannerDialog::opkInstall(const string &path) {
 		const char *name;
 		int ret = opk_open_metadata(opk, &name);
 		if (ret < 0) {
-			text.push_back(path + ": " + _("Error loading meta-data"));
+			text.push_back(path + ": " + gmenu2x->tr["Error loading meta-data"]);
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 			ERROR("Error loading meta-data");
 			goto close;
@@ -51,13 +51,13 @@ void PKGScannerDialog::opkInstall(const string &path) {
 		linkpath = pkgname + "." + linkname + ".lnk";
 
 		if (!(any_platform || platform == gmenu2x->platform->opk || platform == "all")) {
-			text.push_back(" - " + linkname + ": " + _("Unsupported platform"));
+			text.push_back(" - " + linkname + ": " + gmenu2x->tr["Unsupported platform"]);
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 
 			ERROR("%s: Unsupported platform '%s'", pkgname.c_str(), platform.c_str());
 			continue;
 		} else {
-			text.push_back(" + " + linkname + ": " + _("OK"));
+			text.push_back(" + " + linkname + ": " + gmenu2x->tr["OK"]);
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 		}
 
@@ -79,7 +79,7 @@ void PKGScannerDialog::opkInstall(const string &path) {
 
 		while (ret = opk_read_pair(opk, &key, &lkey, &val, &lval)) {
 			if (ret < 0) {
-				text.push_back(path + ": " + _("Error loading meta-data"));
+				text.push_back(path + ": " + gmenu2x->tr["Error loading meta-data"]);
 				lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 				ERROR("Error loading meta-data");
 				goto close;
@@ -163,7 +163,7 @@ void PKGScannerDialog::opkScan(string opkdir) {
 	fl.browse(opkdir);
 
 	for (uint32_t i = 0; i < fl.size(); i++) {
-		text.push_back(_F("Installing %s", fl.getPath(i).c_str()));
+		text.push_back(gmenu2x->tr["Installing"] + fl.getPath(i));
 		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 		opkInstall(fl.getPath(i));
 	}
@@ -179,14 +179,14 @@ void PKGScannerDialog::exec(bool _any_platform) {
 		this->icon = "skin:icons/terminal.png";
 	}
 
-	buttons.push_back({"skin:imgs/manual.png", _("Running.. Please wait..")});
+	buttons.push_back({"skin:imgs/manual.png", gmenu2x->tr["Running.. Please wait.."]});
 
 	drawDialog(gmenu2x->s);
 
 	gmenu2x->s->flip();
 
 	if (!opkpath.empty()) {
-		text.push_back(_F("Installing %s", base_name(opkpath).c_str()));
+		text.push_back(gmenu2x->tr["Installing"] + " " + base_name(opkpath));
 		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 		opkInstall(opkpath);
 	} else {
@@ -230,12 +230,12 @@ void PKGScannerDialog::exec(bool _any_platform) {
 		}
 
 		for (uint32_t i = 0; i < paths.size(); i++) {
-			text.push_back(_F("Scanning %s", paths[i].c_str()));
+			text.push_back(gmenu2x->tr["Scanning"] + " " + paths[i]);
 			lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 			opkScan(paths[i]);
 		}
 
-		text.push_back(_F("Scanning %s", "retroarch/cores"));
+		text.push_back(gmenu2x->tr["Scanning"] + " retroarch/cores");
 		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 		raScan(gmenu2x->confStr["homePath"] + "/.config/retroarch/cores");
 	}
@@ -243,7 +243,7 @@ void PKGScannerDialog::exec(bool _any_platform) {
 	system("sync &");
 
 	text.push_back("----");
-	text.push_back(_("Done"));
+	text.push_back(gmenu2x->tr["Done"]);
 
 	if (text.size() >= rowsPerPage) {
 		firstRow = text.size() - rowsPerPage;
@@ -262,7 +262,7 @@ void PKGScannerDialog::raScan(string radir) {
 	fl.browse(radir);
 
 	for (uint32_t i = 0; i < fl.size(); i++) {
-		text.push_back(_F("Installing %s", fl.getFile(i).c_str()));
+		text.push_back(gmenu2x->tr["Installing"] + " " + fl.getFile(i));
 		lineWidth = drawText(&text, firstCol, -1, rowsPerPage);
 		// opkInstall(fl.getPath(i));
 

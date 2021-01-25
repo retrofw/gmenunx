@@ -54,7 +54,6 @@ clean:
 	rm -rf /tmp/.gmenu-ipk/ dist/gmenunx-$(PLATFORM).zip dist/gmenunx-$(PLATFORM).ipk
 
 dist: dir shared
-	xgettext  --keyword=_ --from-code=UTF-8 -o /tmp/gmenunx.pot src/*.cpp
 	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	mkdir -p $(DISTDIR)/skins/Default

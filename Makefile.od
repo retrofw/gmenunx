@@ -3,6 +3,4 @@ PLATFORM = od
 CFLAGS += -Os
 CFLAGS += -mhard-float -mips32r2 -mno-mips16
 
-LDFLAGS = -lintl
-
 include gmenunx.mk

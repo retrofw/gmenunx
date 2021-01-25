@@ -148,10 +148,10 @@ const std::string Selector::getParams(uint32_t i) {
 
 void Selector::customOptions(vector<MenuOption> &options) {
 	if (isFavourite(getFile(selected))) {
-		options.push_back((MenuOption){_("Remove favourite"), MakeDelegate(this, &Selector::delFav)});
+		options.push_back((MenuOption){gmenu2x->tr["Remove favourite"], MakeDelegate(this, &Selector::delFav)});
 	} else if (isFile(selected)) {
-		options.push_back((MenuOption){_("Add favourite"), MakeDelegate(this, &Selector::addFav)});
-		options.push_back((MenuOption){_("Add to home screen"), MakeDelegate(this, &Selector::addToHome)});
+		options.push_back((MenuOption){gmenu2x->tr["Add favourite"], MakeDelegate(this, &Selector::addFav)});
+		options.push_back((MenuOption){gmenu2x->tr["Add to home screen"], MakeDelegate(this, &Selector::addToHome)});
 	}
 }
 
@@ -183,7 +183,7 @@ void Selector::addToHome() {
 
 	gmenu2x->initMenu();
 
-	MessageBox mb(gmenu2x, _("Link created"), favicon);
+	MessageBox mb(gmenu2x, gmenu2x->tr["Link created"], favicon);
 	mb.setAutoHide(1000);
 	mb.exec();
 }
