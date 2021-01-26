@@ -379,21 +379,21 @@ void GMenu2X::initMenu() {
 	for (uint32_t i = 0; i < menu->getSections().size(); i++) {
 		// Add virtual links in the applications section
 		if (menu->getSections()[i] == "applications") {
-			menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Browse files and launch apps"], "explorer.png");
+			menu->addActionLink(i, "Explorer", MakeDelegate(this, &GMenu2X::explorer), "Browse files and launch apps", "explorer.png");
 			if (platform->ext_sd) {
-				menu->addActionLink(i, tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external media device"], "eject.png");
+				menu->addActionLink(i, "Umount", MakeDelegate(this, &GMenu2X::umountSdDialog), "Umount external media device", "eject.png");
 			}
 		}
 		// Add virtual links in the setting section
 		else if (menu->getSections()[i] == "settings") {
-			menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure system"], "configure.png");
-			menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Appearance & skin settings"], "skin.png");
+			menu->addActionLink(i, "Settings", MakeDelegate(this, &GMenu2X::settings), "Configure system", "configure.png");
+			menu->addActionLink(i, "Skin", MakeDelegate(this, &GMenu2X::skinMenu), "Appearance & skin settings", "skin.png");
 			if (file_exists(home_path("log.txt"))) {
-				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
+				menu->addActionLink(i, "Log Viewer", MakeDelegate(this, &GMenu2X::viewLog), "Displays last launched program's output", "ebook.png");
 			}
 
-			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenuNX"], "about.png");
-			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
+			menu->addActionLink(i, "About", MakeDelegate(this, &GMenu2X::about), "Info about GMenuNX", "about.png");
+			menu->addActionLink(i, "Power", MakeDelegate(this, &GMenu2X::poweroffDialog), "Power menu", "exit.png");
 		}
 	}
 	menu->setSectionIndex(confInt["section"]);
@@ -418,7 +418,7 @@ void GMenu2X::settings() {
 
 	int prevgamma = confInt["gamma"];
 
-	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenuNX"], &lang, fl.getFiles()));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenuNX"], &lang, tr.getLanguages()));
 
 	if (platform->rtc) {
 		prevDateTime = get_date_time();
