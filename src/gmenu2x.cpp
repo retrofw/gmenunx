@@ -912,18 +912,16 @@ void GMenu2X::skinMenu() {
 	vector<string> skins;
 
 	FileLister fl;
-
 	fl.showFullPath = true;
 	fl.showDirectories = true;
 	fl.showFiles = false;
-
 	fl.addExclude("..");
-
+	fl.addExclude("Default");
 	fl.browse(data_path("skins"));
 	skins = fl.getDirectories();
-
 	fl.browse(home_path("skins"));
-	skins.insert(skins.end(), fl.getFiles().begin(), fl.getFiles().end());
+	skins.insert(skins.end(), fl.getDirectories().begin(), fl.getDirectories().end());
+	skins.insert(skins.begin(), data_path("skins/Default"));
 
 	vector<string> wpLabel;
 	wpLabel.push_back(">>");
