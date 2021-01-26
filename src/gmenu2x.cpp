@@ -403,11 +403,7 @@ void GMenu2X::initMenu() {
 void GMenu2X::settings() {
 	powerManager->clearTimer();
 
-	FileLister fl;
-	fl.browse(data_path("translations"));
-	fl.insertFile("English");
-	string lang = tr.lang();
-	if (lang.empty()) lang = "English";
+	string lang = tr.getLang();
 
 	vector<string> opFactory;
 	opFactory.push_back(">>");
@@ -454,7 +450,6 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
 			confStr["lang"] = lang;
 			tr.setLang(lang);
@@ -624,7 +619,7 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 		f.close();
 	}
 
-	// if (!confStr["lang"].empty()) tr.setLang(confStr["lang"]);
+	tr.setLang(confStr["lang"]);
 	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
 	if (confStr["skin"].empty() || !dir_exists(confStr["skin"])) confStr["skin"] = data_path("skins/Default");
 
@@ -671,7 +666,7 @@ void GMenu2X::writeConfig() {
 			(curr->first == "usbMode" && curr->second == "Ask") ||
 			(curr->first == "tvMode" && curr->second == "Ask") ||
 			(curr->first == "lang" && curr->second.empty()) ||
-			(curr->first == "lang" && curr->second.empty()) ||
+			(curr->first == "lang" && curr->second == "English") ||
 			(curr->first == "bgscale" && curr->second.empty()) ||
 			(curr->first == "bgscale" && curr->second == "Crop") ||
 
@@ -1071,7 +1066,7 @@ void GMenu2X::skinColors() {
 
 void GMenu2X::about() {
 	vector<string> text;
-	TextDialog td(this, "GMenuNX", tr.translate("Build: %s %s", __DATE__, __TIME__), "skin:icons/about.png");
+	TextDialog td(this, "GMenuNX", tr["Build:"] + " " + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 	td.appendFile(data_path("about.txt"));
 	td.exec();
 }

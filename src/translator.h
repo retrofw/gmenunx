@@ -29,18 +29,19 @@ Hash Map of translation strings.
 */
 class Translator {
 private:
-	string _lang;
+	string _lang = "English";
 	unordered_map<string, string> translations;
 
 public:
-	Translator(const string &lang="");
-	~Translator();
+	Translator() {};
+	~Translator() {};
 
-	string lang();
+	string getLang();
 	void setLang(const string &lang);
-	bool exists(const string &term);
-	string translate(const string &term,const char *replacestr=NULL,...);
+	// bool exists(const string &term);
+	string translate(const string &term, const char *replacestr = NULL, ...);
 	string operator[](const string &term);
+	vector<string> getLanguages();
 };
 
 #endif

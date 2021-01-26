@@ -886,7 +886,7 @@ void Menu::exec() {
 		if (gmenu2x->input->combo()) {
 			gmenu2x->skinConfInt["sectionBar"] = ((gmenu2x->skinConfInt["sectionBar"]) % 5) + 1;
 			initLayout();
-			MessageBox mb(gmenu2x, gmenu2x->tr["CHEATER! ;)"]);
+			MessageBox mb(gmenu2x, "CHEATER! ;)");
 			mb.setBgAlpha(0);
 			mb.setAutoHide(200);
 			mb.exec();

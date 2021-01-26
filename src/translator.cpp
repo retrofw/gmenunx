@@ -23,23 +23,15 @@
 
 #include "utilities.h"
 #include "translator.h"
+#include "filelister.h"
 #include "debug.h"
 
 using std::ifstream;
-
-Translator::Translator(const string &lang) {
-	_lang = "";
-	if (!lang.empty())
-		setLang(lang);
-}
-
-Translator::~Translator() {}
-
-bool Translator::exists(const string &term) {
-	return translations.find(term) != translations.end();
-}
+using std::to_string;
 
 void Translator::setLang(const string &lang) {
+	if (lang.empty()) return;
+
 	translations.clear();
 
 	string line = data_path("translations/" + lang);
@@ -47,21 +39,21 @@ void Translator::setLang(const string &lang) {
 	if (f.is_open()) {
 		while (getline(f, line, '\n')) {
 			line = trim(line);
-			if (line=="") continue;
-			if (line[0]=='#') continue;
+			if (line == "") continue;
+			if (line[0] == '#') continue;
 
 			string::size_type position = line.find("=");
 			translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
 		}
 		f.close();
-		_lang = lang;
 	}
+	_lang = lang;
 }
 
-string Translator::translate(const string &term,const char *replacestr,...) {
+string Translator::translate(const string &term, const char *replacestr, ...) {
 	string result = term;
 
-	if (!_lang.empty()) {
+	if (_lang != "English") {
 		unordered_map<string, string>::iterator i = translations.find(term);
 		if (i != translations.end()) {
 			result = i->second;
@@ -73,11 +65,8 @@ string Translator::translate(const string &term,const char *replacestr,...) {
 	va_start(arglist, replacestr);
 	const char *param = replacestr;
 	int argnum = 1;
-	while (param!=NULL) {
-		string id = "";
-		stringstream ss; ss << argnum; ss >> id;
-		result = strreplace(result, "$" + id, param);
-
+	while (param != NULL) {
+		result = strreplace(result, "$" + std::to_string(argnum), param);
 		param = va_arg(arglist, const char*);
 		argnum++;
 	}
@@ -90,6 +79,16 @@ string Translator::operator[](const string &term) {
 	return translate(term);
 }
 
-string Translator::lang() {
+string Translator::getLang() {
 	return _lang;
+}
+
+vector<string> Translator::getLanguages() {
+	FileLister fl;
+	fl.showDirectories = false;
+	fl.setFilter(",");
+	fl.addExclude("English");
+	fl.browse(data_path("translations"));
+	fl.insertFile("English");
+	return fl.getFiles();
 }
