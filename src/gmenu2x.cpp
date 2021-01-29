@@ -193,6 +193,8 @@ GMenu2X::GMenu2X() {
 }
 
 bool GMenu2X::inputCommonActions(bool &inputAction) {
+	if (inputAction) powerManager->resetSuspendTimer();
+
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
 		while (!(input->isActive(POWER) || input->isActive(SETTINGS) || input->isActive(UDC_CONNECT) || input->isActive(UDC_REMOVE) || input->isActive(MMC_INSERT) || input->isActive(MMC_REMOVE))) {
@@ -210,8 +212,6 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			return true;
 		}
 	}
-
-	if (inputAction) powerManager->resetSuspendTimer();
 
 	uint32_t button_hold = SDL_GetTicks();
 
