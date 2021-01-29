@@ -75,12 +75,12 @@ public:
 	}
 
 	void setBacklight(int val) {
-		if (FILE *f = fopen("/sys/devices/platform/jz-pwm-dev.0/jz-pwm/pwm0/dutyratio", "w")) {
+		if (FILE *f = fopen("/sys/devices/platform/jz-pwm-dev.0/jz-pwm/pwm0/dutyratio", "a")) {
 			fprintf(f, "%d", val);
 			fclose(f);
 		}
 
-		if (FILE *f = fopen("/sys/class/graphics/fb0/blank", "w")) {
+		if (FILE *f = fopen("/sys/class/graphics/fb0/blank", "a")) {
 			fprintf(f, "%d", val <= 0);
 			fclose(f);
 		}

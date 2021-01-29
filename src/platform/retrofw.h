@@ -176,7 +176,7 @@ public:
 			}
 		}
 
-		FILE *f = fopen("/proc/jz/tvout", "rw");
+		FILE *f = fopen("/proc/jz/tvout", "a+");
 		if (f) {
 			int val = 0;
 			fscanf(f, "%i", &val);
@@ -273,7 +273,7 @@ public:
 			val = 0; // suspend only if not charging and TV out is not enabled
 		}
 
-		if (FILE *f = fopen("/proc/jz/backlight", "w")) {
+		if (FILE *f = fopen("/proc/jz/backlight", "a")) {
 			if (val == 0) {
 				fprintf(f, "-"); // disable backlight button
 			}
@@ -289,7 +289,7 @@ public:
 			2: original (fallback to aspect when downscale is needed)
 			3: 4:3
 		*/
-		if (FILE *f = fopen("/proc/jz/ipu", "w")) {
+		if (FILE *f = fopen("/proc/jz/ipu", "a")) {
 			fprintf(f, "%d", mode); // fputs(val, f);
 			fclose(f);
 		}

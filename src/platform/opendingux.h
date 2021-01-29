@@ -27,7 +27,7 @@ public:
 			ipk = false;
 		}
 
-		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/allow_downscaling", "w")) {
+		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/allow_downscaling", "a")) {
 			fprintf(f, "1");
 			fclose(f);
 		}
@@ -103,24 +103,24 @@ public:
 	}
 
 	void setScaleMode(unsigned int mode) {
-		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio", "w")) {
+		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/keep_aspect_ratio", "a")) {
 			fprintf(f, "%d", (mode == 1));
 			fclose(f);
 		}
 
-		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/integer_scaling", "w")) {
+		if (FILE *f = fopen("/sys/devices/platform/jz-lcd.0/integer_scaling", "a")) {
 			fprintf(f, "%d", (mode == 2));
 			fclose(f);
 		}
 	}
 
 	void setBacklight(int val) {
-		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "w")) {
+		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "a")) {
 			fprintf(f, "%0.0f", val * (255.0f / 100.0f)); // fputs(val, f);
 			fclose(f);
 		}
 
-		if (FILE *f = fopen("/sys/class/graphics/fb0/blank", "w")) {
+		if (FILE *f = fopen("/sys/class/graphics/fb0/blank", "a")) {
 			fprintf(f, "%d", val <= 0);
 			fclose(f);
 		}
