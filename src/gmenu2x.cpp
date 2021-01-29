@@ -1593,7 +1593,7 @@ void GMenu2X::ipkInstall(string path) {
 	if (debug) cmd += "--force-downgrade --force-depends --force-maintainer ";
 	TerminalDialog td(this, tr["Package installer"], "opkg install " + base_name(path), "skin:icons/configure.png");
 	td.exec(cmd + cmdclean(path));
-	system("if [ -d sections/systems ]; then mkdir -p sections/emulators.systems; cp -r sections/systems/* sections/emulators.systems/; rm -rf sections/systems; fi; sync;");
+	system("if [ -d \"$HOME/apps/gmenu2x/sections\" ]; then mkdir -p \"$HOME/.gmenunx/sections\"; cp -r \"$HOME/apps/gmenu2x/sections/\"* \"$HOME/.gmenunx/sections/\"; /*rm -rf \"$HOME/apps/gmenu2x/sections\"*/; fi; sync;");
 	initMenu();
 }
 
