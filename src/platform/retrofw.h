@@ -259,7 +259,6 @@ public:
 		// volumeMode = getVolumeMode(val);
 	}
 
-#if 0
 	int16_t getBacklight() {
 		int val = -1;
 		if (FILE *f = fopen("/proc/jz/backlight", "r")) {
@@ -268,7 +267,6 @@ public:
 		}
 		return val;
 	}
-#endif
 
 	void setBacklight(int val) {
 		if (val < 1 && getUDC() != UDC_REMOVE /* && !getTVOut() */) {

@@ -126,7 +126,6 @@ public:
 		}
 	}
 
-#if 0
 	int16_t getBacklight() {
 		int val = -1;
 		if (FILE *f = fopen("/sys/class/backlight/pwm-backlight/brightness", "r")) {
@@ -135,7 +134,6 @@ public:
 		}
 		return val * (100.0f / 255.0f);
 	}
-#endif
 
 	void setVolume(int val) {
 		val = val * (63.0f / 100.0f);

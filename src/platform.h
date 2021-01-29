@@ -63,6 +63,7 @@ public:
 	virtual uint8_t getVolumeMode(uint8_t vol) { if (!vol) return VOLUME_MODE_MUTE; return VOLUME_MODE_NORMAL; };
 	virtual void setVolume(int val) { };
 	virtual void setBacklight(int val) { };
+	virtual int16_t getBacklight() { return -1; };
 	virtual void setScaleMode(unsigned int mode) { };
 	virtual void setCPU(uint32_t mhz) { };
 	virtual void enableTerminal() { };

@@ -1667,7 +1667,8 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			} else if (input->isActive(RIGHT) || input->isActive(INC) || input->isActive(SECTION_NEXT)) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input->isActive(BACKLIGHT)) {
-				val = confInt["backlight"];
+				SDL_Delay(50);
+				val = platform->getBacklight();
 			}
 
 			val = constrain(val, 5, 100);
