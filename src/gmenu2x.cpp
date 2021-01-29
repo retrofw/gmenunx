@@ -207,10 +207,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			input->update();
 		}
 
-		if (!(input->isActive(UDC_REMOVE) || input->isActive(UDC_CONNECT) || input->isActive(MMC_INSERT) || input->isActive(MMC_REMOVE))) {
-			input->setActive(WAKE_UP);
-			return true;
-		}
+		input->setActive(WAKE_UP);
+		return true;
 	}
 
 	uint32_t button_hold = SDL_GetTicks();
