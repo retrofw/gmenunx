@@ -137,7 +137,7 @@ public:
 
 		if (option == CONFIRM) { // storage
 			INFO("Enabling storage device");
-			gmenu2x->quit();
+			gmenu2x->quit(false);
 			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/retrofw storage on", NULL);
 			return;
 		}
