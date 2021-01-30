@@ -1405,13 +1405,6 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(this,		tr["Backdrop"],		tr["Select an image backdrop"], &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingFile(this,			tr["Manual"],		tr["Select a Manual or Readme file"], &linkManual, ".man.png,.txt,.me", linkExec, dialogTitle, dialogIcon));
 
-#if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
-	bool linkUseGinge = menu->getLinkApp()->getUseGinge();
-	string ginge_prep = data_path("ginge/ginge_prep");
-	if (file_exists(ginge_prep))
-		sd.addSetting(new MenuSettingBool(this,		tr["Use Ginge"],		tr["Compatibility layer for running GP2X applications"], &linkUseGinge ));
-#endif
-
 	sd.addSetting(new MenuSettingInt(this,		tr["Gamma"],			tr["Gamma value to set when launching this link"], &linkGamma, 50, 0, 100 ));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -1442,10 +1435,6 @@ void GMenu2X::editLink() {
 		menu->getLinkApp()->setBackdrop(linkBackdrop);
 		menu->getLinkApp()->setCPU(linkClock);
 		menu->getLinkApp()->setGamma(linkGamma);
-
-#if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
-		menu->getLinkApp()->setUseGinge(linkUseGinge);
-#endif
 
 		// if section changed move file and update link->file
 		if (oldSection != newSection) {
