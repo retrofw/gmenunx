@@ -1405,7 +1405,9 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(this,		tr["Backdrop"],		tr["Select an image backdrop"], &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingFile(this,			tr["Manual"],		tr["Select a Manual or Readme file"], &linkManual, ".man.png,.txt,.me", linkExec, dialogTitle, dialogIcon));
 
-	sd.addSetting(new MenuSettingInt(this,		tr["Gamma"],			tr["Gamma value to set when launching this link"], &linkGamma, 50, 0, 100 ));
+	if (platform->gamma) {
+		sd.addSetting(new MenuSettingInt(this,		tr["Gamma"],			tr["Gamma value to set when launching this link"], &linkGamma, 50, 0, 100 ));
+	}
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		menu->getLinkApp()->setExec(linkExec);
