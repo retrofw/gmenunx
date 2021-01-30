@@ -598,7 +598,7 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 		confStr["homePath"] = home_path("../");
 		confInt["globalVolume"] = 60;
 		confStr["bgscale"] = "Crop";
-		confStr["skinFont"] = "Custom";
+		confStr["skinFont"] = "Skin";
 	}
 
 	ifstream f(conffile, std::ios_base::in);
@@ -660,7 +660,7 @@ void GMenu2X::writeConfig() {
 			(curr->first == "homePath" && curr->second == home_path("../")) ||
 			(curr->first == "skin" && curr->second == "Default") ||
 			(curr->first == "previewMode" && curr->second == "Miniature") ||
-			(curr->first == "skinFont" && curr->second == "Custom") ||
+			(curr->first == "skinFont" && curr->second == "Skin") ||
 			(curr->first == "usbMode" && curr->second == "Ask") ||
 			(curr->first == "tvMode" && curr->second == "Ask") ||
 			(curr->first == "lang" && curr->second.empty()) ||
@@ -944,7 +944,7 @@ void GMenu2X::skinMenu() {
 	string skinBackdrops = bdStr[confInt["skinBackdrops"]];
 
 	vector<string> skinFont;
-	skinFont.push_back("Custom");
+	skinFont.push_back("Skin");
 	skinFont.push_back("Default");
 	string skinFontPrev = confStr["skinFont"];
 
