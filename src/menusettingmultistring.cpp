@@ -41,23 +41,12 @@ MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onC
 }
 
 uint32_t MenuSettingMultiString::manageInput() {
-	if (gmenu2x->input->isActive(LEFT)) {
-		decSel();
-		return this->onChange && this->onChange();
-	}
-	else if (gmenu2x->input->isActive(RIGHT)) {
-		incSel();
-		return this->onChange && this->onChange();
-	}
-	else if (gmenu2x->input->isActive(CONFIRM) && this->onSelect) {
-		this->onSelect();
-		return this->onChange && this->onChange();
-	}
-	else if (gmenu2x->input->isActive(MENU)) {
-		setSel(0);
-		return this->onChange && this->onChange();
-	}
-	return 0; // SD_NO_ACTION
+	string value = this->value();
+	if (gmenu2x->input->isActive(LEFT)) decSel();
+	else if (gmenu2x->input->isActive(RIGHT)) incSel();
+	else if (gmenu2x->input->isActive(CONFIRM) && this->onSelect) this->onSelect();
+	else if (gmenu2x->input->isActive(MENU)) setSel(0);
+	return (value != this->value()) && this->onChange && this->onChange(); // 0 = SD_NO_ACTION
 }
 
 void MenuSettingMultiString::incSel() {
