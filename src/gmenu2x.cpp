@@ -1604,7 +1604,7 @@ int GMenu2X::setVolume(int val, bool popup) {
 	val = constrain(val, 0, 100);
 
 	if (popup) {
-		bg = new Surface(s);
+		Surface *bg = new Surface(s);
 
 		powerManager->clearTimer();
 		while (true) {
@@ -1641,7 +1641,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		int backlightStep = 10;
 		val = constrain(val, 5, 100);
 
-		bg = new Surface(s);
+		Surface *bg = new Surface(s);
 
 		powerManager->clearTimer();
 		while (true) {
