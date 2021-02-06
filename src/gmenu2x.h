@@ -130,6 +130,7 @@ public:
 	void skinMenu();
 	void skinColors();
 	uint32_t updateSkin() { return 1; }
+	uint32_t updateBacklightSetting() { return setBacklight(confInt["backlight"], false); }
 	string basenameFormatter(string value) { return base_name(value); }
 
 	bool inputCommonActions(bool &inputAction);
