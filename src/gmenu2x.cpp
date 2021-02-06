@@ -181,12 +181,12 @@ GMenu2X::GMenu2X() {
 	powerManager->resetSuspendTimer();
 
 	// recover last session
-	if (lastSelectorElement >= 0 && menu->getLinkApp() != NULL && (!menu->getLinkApp()->getSelectorDir().empty() || !lastSelectorDir.empty())) {
+	if (confInt["selectorElement"] >= 0 && menu->getLinkApp() != NULL && (!menu->getLinkApp()->getSelectorDir().empty() || !confStr["selectorDir"].empty())) {
 		if (confInt["skinBackdrops"] & BD_DIALOG)
 			setBackground(bg, currBackdrop);
 		else
 			setBackground(bg, confStr["wallpaper"]);
-		menu->getLinkApp()->selector(lastSelectorElement, lastSelectorDir);
+		menu->getLinkApp()->selector(confInt["selectorElement"], confStr["selectorDir"]);
 	}
 
 	menu->exec();
@@ -547,7 +547,6 @@ void GMenu2X::resetSettings() {
 // }
 
 bool GMenu2X::readTmp() {
-	lastSelectorElement = -1;
 	ifstream f("/tmp/gmenunx.tmp", std::ios_base::in);
 	if (!f.is_open()) return false;
 
@@ -560,8 +559,8 @@ bool GMenu2X::readTmp() {
 
 		if (name == "section") menu->setSectionIndex(atoi(value.c_str()));
 		else if (name == "link") menu->setLinkIndex(atoi(value.c_str()));
-		else if (name == "selectorelem") lastSelectorElement = atoi(value.c_str());
-		else if (name == "selectordir") lastSelectorDir = value;
+		else if (name == "selectorElement") confInt["selectorElement"] = atoi(value.c_str());
+		else if (name == "selectorDir") confStr["selectorDir"] = value;
 		// else if (name == "TVOut") TVOut = atoi(value.c_str());
 		else if (name == "tvout") input->tvout_ = atoi(value.c_str());
 		else if (name == "udc") input->udc_ = atoi(value.c_str());
@@ -574,14 +573,14 @@ bool GMenu2X::readTmp() {
 	return true;
 }
 
-void GMenu2X::writeTmp(int selelem, const string &selectordir) {
+void GMenu2X::writeTmp() {
 	ofstream f("/tmp/gmenunx.tmp");
 	if (!f.is_open()) return;
 
 	f << "section=" << menu->getSectionIndex() << std::endl;
 	f << "link=" << menu->getLinkIndex() << std::endl;
-	if (selelem >- 1) f << "selectorelem=" << selelem << std::endl;
-	if (selectordir != "") f << "selectordir=" << selectordir << std::endl;
+	f << "selectorElement=" << confInt["selectorElement"] << std::endl;
+	f << "selectorDir=" << confStr["selectorDir"] << std::endl;
 	f << "udc=" << input->udc << std::endl;
 	f << "tvout=" << input->tvout << std::endl;
 	// f << "TVOut=" << TVOut << std::endl;
@@ -594,6 +593,8 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 	if (defaults) {
 		// Defaults *** Sync with default values in writeConfig
 		confInt["saveSelection"] = 1;
+		confInt["section"] = 0;
+		confInt["link"] = 0;
 		confInt["skinBackdrops"] = 0;
 		confStr["homePath"] = home_path("../");
 		confInt["globalVolume"] = 60;
@@ -631,17 +632,15 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 	evalIntConf(&confInt["backlight"], 70, 1, 100);
 	evalIntConf(&confInt["minBattery"], 3550, 1, 10000);
 	evalIntConf(&confInt["maxBattery"], 3720, 1, 10000);
-
-	if (!confInt["saveSelection"]) {
-		confInt["section"] = 0;
-		confInt["link"] = 0;
-	}
 }
 
 void GMenu2X::writeConfig() {
 	if (confInt["saveSelection"] && menu != NULL) {
 		confInt["section"] = menu->getSectionIndex();
 		confInt["link"] = menu->getLinkIndex();
+	} else {
+		confInt["selectorElement"] = -1;
+		confStr["selectorDir"] = "";
 	}
 
 	ofstream f(home_path("gmenunx.conf"));
@@ -709,6 +708,7 @@ void GMenu2X::writeConfig() {
 			(curr->first == "saveSelection" && curr->second == 1) ||
 			(curr->first == "section" && curr->second == 0) ||
 			(curr->first == "link" && curr->second == 0) ||
+			(curr->first == "selectorElement" && curr->second == -1) ||
 
 			curr->first.empty()
 		) continue;

@@ -277,6 +277,9 @@ bool LinkApp::save() {
 
 void LinkApp::run() {
 	uint32_t start = SDL_GetTicks();
+	gmenu2x->confInt["selectorElement"] = -1;
+	gmenu2x->confStr["selectorDir"] = "";
+
 	while (gmenu2x->input->isActive(CONFIRM)) {
 		gmenu2x->input->update();
 		if (SDL_GetTicks() - start > 1400) {
@@ -306,7 +309,10 @@ void LinkApp::selector(int startSelection, string selectorDir) {
 	else bd.selected = this->getSelectorElement();
 
 	if (bd.exec(selectorDir)) {
-		gmenu2x->writeTmp(bd.selected, bd.getDir());
+		gmenu2x->confInt["selectorElement"] = bd.selected;
+		gmenu2x->confStr["selectorDir"] = bd.getDir();
+
+		gmenu2x->writeTmp();
 
 		string s = "";
 		s += this->getSelectorDir().back();

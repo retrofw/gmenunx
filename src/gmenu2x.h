@@ -81,8 +81,6 @@ class Menu;
 
 class GMenu2X {
 private:
-	string lastSelectorDir;
-	int lastSelectorElement;
 	void explorer();
 	void readConfig(string conffile, bool defaults = false);
 	bool readTmp();
@@ -151,7 +149,7 @@ public:
 
 	void writeConfig();
 	void writeSkinConfig();
-	void writeTmp(int selelem = -1, const string &selectordir = "");
+	void writeTmp();
 
 	void initMenu();
 	void addLink();
