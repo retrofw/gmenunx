@@ -23,7 +23,7 @@
 #include <algorithm>
 using std::find;
 
-MenuSettingMultiString::MenuSettingMultiString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const vector<string> choices, msms_onchange_t onChange, msms_onselect_t onSelect, msms_formatter_t formatter):
+MenuSettingMultiString::MenuSettingMultiString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const vector<string> choices, ms_onchange_t onChange, ms_onselect_t onSelect, ms_formatter_t formatter):
 MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onChange(onChange), onSelect(onSelect), formatter(formatter) {
 	setSel(find(choices.begin(), choices.end(), *value) - choices.begin());
 

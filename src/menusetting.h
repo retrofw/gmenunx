@@ -23,6 +23,14 @@
 #include "buttonbox.h"
 #include "iconbutton.h"
 
+#include "FastDelegate.h"
+using namespace fastdelegate;
+using fastdelegate::MakeDelegate;
+
+typedef FastDelegate0<uint32_t> ms_onchange_t;
+typedef FastDelegate0<> ms_onselect_t;
+typedef FastDelegate1<std::string, std::string> ms_formatter_t;
+
 class MenuSetting {
 protected:
 	GMenu2X *gmenu2x;
