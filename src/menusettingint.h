@@ -29,11 +29,13 @@ private:
 	std::string strvalue;
 	int def, min, max, delta;
 
+	ms_onchange_t onChange;
+
 	void inc();
 	void dec();
 
 public:
-	MenuSettingInt(GMenu2X *gmenu2x, const std::string &title, const std::string &description, int *value, int def, int min, int max, int delta=1);
+	MenuSettingInt(GMenu2X *gmenu2x, const std::string &title, const std::string &description, int *value, int def, int min, int max, int delta=1, ms_onchange_t onChange = 0);
 	virtual ~MenuSettingInt() {};
 
 	virtual uint32_t manageInput();

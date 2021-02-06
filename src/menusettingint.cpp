@@ -27,8 +27,8 @@ using std::string;
 using std::stringstream;
 using fastdelegate::MakeDelegate;
 
-MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta):
-MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta) {
+MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta, ms_onchange_t onChange):
+MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta), onChange(onChange) {
 	originalValue = *value;
 	setValue(evalIntConf(value, def, min, max));
 
@@ -51,11 +51,15 @@ void MenuSettingInt::draw(int y) {
 }
 
 uint32_t MenuSettingInt::manageInput() {
-	if (gmenu2x->input->isActive(LEFT))		dec();
-	else if (gmenu2x->input->isActive(RIGHT))	inc();
-	else if (gmenu2x->input->isActive(DEC))	setValue(value() - 10 * delta);
-	else if (gmenu2x->input->isActive(INC))	setValue(value() + 10 * delta);
-	else if (gmenu2x->input->isActive(MENU))	setDefault();
+	int value = this->value();
+	if (gmenu2x->input->isActive(LEFT)) dec();
+	else if (gmenu2x->input->isActive(RIGHT)) inc();
+	else if (gmenu2x->input->isActive(DEC)) setValue(this->value() - 10 * delta);
+	else if (gmenu2x->input->isActive(INC)) setValue(this->value() + 10 * delta);
+	else if (gmenu2x->input->isActive(MENU)) setDefault();
+
+ 	if (value != this->value() && this->onChange) this->onChange();
+
 	return 0; // SD_NO_ACTION
 }
 
