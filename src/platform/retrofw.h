@@ -274,10 +274,7 @@ public:
 		}
 
 		if (FILE *f = fopen("/proc/jz/backlight", "a")) {
-			if (val == 0) {
-				fprintf(f, "-"); // disable backlight button
-			}
-			fprintf(f, "%d", val); // fputs(val, f);
+			fprintf(f, "%d\n", val); // fputs(val, f);
 			fclose(f);
 		}
 	}
