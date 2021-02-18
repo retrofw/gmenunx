@@ -1086,7 +1086,6 @@ void GMenu2X::viewLog() {
 	switch (res) {
 		case MANUAL:
 			confInt["outputLogs"] = false;
-			writeConfig();
 
 		case CONFIRM:
 			unlink(logfile.c_str());
@@ -1194,10 +1193,6 @@ void GMenu2X::explorer() {
 			TerminalDialog td(this, tr["Zip content"], bd.getFileName(bd.selected), "skin:icons/terminal.png");
 			td.exec("unzip -l " + cmdclean(bd.getPath(bd.selected)));
 		} else {
-			if (confInt["saveSelection"] && (confInt["section"] != menu->getSectionIndex() || confInt["link"] != menu->getLinkIndex())) {
-				writeConfig();
-			}
-
 			string command = cmdclean(bd.getPath(bd.selected));
 			string params = "";
 
@@ -1237,7 +1232,6 @@ void GMenu2X::poweroffDialog() {
 	mb.setButton(CONFIRM, tr["Poweroff"]);
 	mb.setButton(CANCEL,  tr["Cancel"]);
 	int res = mb.exec();
-	writeConfig();
 	switch (res) {
 		case CONFIRM: {
 			MessageBox mb(this, tr["Poweroff"]);
@@ -1628,7 +1622,6 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 		powerManager->resetSuspendTimer();
 		confInt["globalVolume"] = val;
-		writeConfig();
 	}
 
 	platform->setVolume(val);
@@ -1668,7 +1661,6 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 		powerManager->resetSuspendTimer();
 		confInt["backlight"] = val;
-		writeConfig();
 	}
 
 	platform->setBacklight(val);

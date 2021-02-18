@@ -294,7 +294,6 @@ void BrowseDialog::setWallpaper() {
 	string dst = home_path("Wallpaper") + file_ext(src, true);
 	if (file_copy(src, dst)) {
 		gmenu2x->confStr["wallpaper"] = dst;
-		gmenu2x->writeConfig();
 		gmenu2x->setBackground(gmenu2x->bg, dst);
 		this->exec();
 	}
