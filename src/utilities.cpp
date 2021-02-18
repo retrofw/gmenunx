@@ -411,7 +411,7 @@ string data_path(string path) {
 	if (dir_exists("/usr/share/gmenunx")) {
 		return "/usr/share/gmenunx/" + path;
 	}
-	return "./";
+	return "./" + path;
 }
 
 
