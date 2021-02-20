@@ -147,14 +147,16 @@ public:
 		gmenu2x->inetIcon = "skin:imgs/inet.png";
 	}
 
-	void setTVOut(int16_t mode) {
-		if (!file_exists("/proc/jz/tvout")) return;
+	void setTVOut(int mode) {
+		FILE *f = fopen("/proc/jz/tvout", "r");
+		if (!f) return;
+
+		int val;
+		fscanf(f, "%i", &val);
+		fclose(f);
 
 		if (mode < 0) {
 			int option;
-
-			mode = TV_OFF;
-
 			if (gmenu2x->confStr["tvMode"] == "NTSC") option = CONFIRM;
 			else if (gmenu2x->confStr["tvMode"] == "PAL") option = MANUAL;
 			else if (gmenu2x->confStr["tvMode"] == "OFF") option = CANCEL;
@@ -173,21 +175,19 @@ public:
 				case MANUAL:
 					mode = TV_PAL;
 					break;
+				default:
+					mode = TV_OFF;
 			}
 		}
 
-		FILE *f = fopen("/proc/jz/tvout", "a+");
-		if (f) {
-			int val = 0;
-			fscanf(f, "%i", &val);
-
-			if (mode != val) {
-				fprintf(f, "%d", mode); // fputs(val, f);
+		if (mode != val) {
+			if (FILE *f = fopen("/proc/jz/tvout", "a")) {
+				fprintf(f, "%d\n", mode); // fputs(val, f);
 				fclose(f);
-				setBacklight(gmenu2x->confInt["backlight"]);
-				exit(0);
 			}
-			fclose(f);
+			setBacklight(gmenu2x->confInt["backlight"]);
+			gmenu2x->quit();
+			return;
 		}
 	}
 

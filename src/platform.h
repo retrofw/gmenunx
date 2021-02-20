@@ -69,7 +69,7 @@ public:
 	virtual void enableTerminal() { };
 	virtual void setGamma(int value) { };
 	virtual void setUDC(int mode = -1) { };
-	virtual void setTVOut(int16_t mode = -1) { };
+	virtual void setTVOut(int mode = -1) { };
 	virtual string hwPreLinkLaunch() { return ""; };
 };
 
