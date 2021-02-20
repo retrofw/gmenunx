@@ -534,18 +534,6 @@ void GMenu2X::resetSettings() {
 	}
 }
 
-// void GMenu2X::cpuSettings() {
-// 	SettingsDialog sd(this, ts, tr["CPU settings"], "skin:icons/configure.png");
-// 	sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 528, 528, 600, 6));
-// 	sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 740, 600, 1200, 6));
-// 	// sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 342, 200, 528, 6));
-
-// 	if (sd.exec() && sd.edited() && sd.save) {
-// 		setCPU(confInt["cpuMenu"]);
-// 		writeConfig();
-// 	}
-// }
-
 bool GMenu2X::readTmp() {
 	ifstream f("/tmp/gmenunx.tmp", std::ios_base::in);
 	if (!f.is_open()) return false;
