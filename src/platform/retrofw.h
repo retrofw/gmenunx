@@ -53,18 +53,7 @@ private:
 public:
 	RetroFW(GMenu2X *gmenu2x) : Platform(gmenu2x) {
 		WARNING("RetroFW");
-	};
 
-	void hwDeinit() {
-		if (memdev > 0) {
-			close(memdev);
-			if (mem != MAP_FAILED) {
-				munmap(mem, MSIZE);
-			}
-		}
-	}
-
-	void hwInit() {
 		rtc = true;
 		tvout = true;
 		udc = true;
@@ -125,7 +114,15 @@ public:
 				udc = false;
 			}
 		}
+	};
 
+	~RetroFW() {
+		if (memdev > 0) {
+			close(memdev);
+			if (mem != MAP_FAILED) {
+				munmap(mem, MSIZE);
+			}
+		}
 	}
 
 	void setUDC(int udcStatus) {

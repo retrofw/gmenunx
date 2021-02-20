@@ -31,6 +31,7 @@ class Platform {
 public:
 	GMenu2X *gmenu2x;
 	Platform(GMenu2X *gmenu2x);
+	~Platform() { };
 
 	int fwtype = FW_GENERIC;
 	bool rtc = false;
@@ -69,8 +70,6 @@ public:
 	virtual int16_t getBacklight() { return -1; };
 	virtual void setVolume(int val) { };
 	virtual void setBacklight(int val) { };
-	virtual void hwInit();
-	virtual void hwDeinit() { };
 	virtual void setScaleMode(unsigned int mode) { };
 	virtual void setCPU(uint32_t mhz) { };
 	virtual void enableTerminal() { };

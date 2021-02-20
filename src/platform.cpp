@@ -5,6 +5,7 @@
 // #include "platform/gp2x.h"
 
 Platform::Platform(GMenu2X *gmenu2x) : gmenu2x(gmenu2x) {
+	WARNING("Linux");
 }
 
 uint16_t Platform::getDevStatus() {
@@ -27,10 +28,6 @@ uint32_t Platform::hwCheck(unsigned int interval, void *param) {
 	}
 
 	return 0;
-}
-
-void Platform::hwInit() {
-	WARNING("Linux");
 }
 
 Platform* PlatformInit(GMenu2X *gmenu2x) { // Detect platform type and return base class pointer

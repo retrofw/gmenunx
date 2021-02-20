@@ -125,7 +125,7 @@ void GMenu2X::quit(bool all) {
 
 	fflush(NULL);
 
-	platform->hwDeinit();
+	delete platform;
 
 	if (all) {
 		quit_all(0);
@@ -134,7 +134,6 @@ void GMenu2X::quit(bool all) {
 
 void GMenu2X::main() {
 	platform = PlatformInit(this);
-	platform->hwInit();
 
 	mkdir(home_path().c_str(), 0777);
 

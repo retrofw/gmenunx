@@ -7,10 +7,8 @@ private:
 public:
 	OpenDingux(GMenu2X *gmenu2x): Platform(gmenu2x) {
 		WARNING("OpenDingux");
-	};
 
 	int32_t tickBattery = 0;
-	void hwInit() {
 		rtc = true;
 		tvout = false;
 		udc = false;

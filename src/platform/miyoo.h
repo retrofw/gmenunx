@@ -166,6 +166,24 @@ private:
 	static const uint32_t MBASE = 0x01c20000;
 	static const uint32_t MSIZE = 0x1000;
 
+public:
+	Miyoo(GMenu2X *gmenu2x) : Platform(gmenu2x) {
+		INFO("Miyoo");
+
+		battery = true;
+		cpu_menu = 702;
+		cpu_link = 702;
+		cpu_max = 900;
+		cpu_min = 200;
+		cpu_step = 6;
+		opk = "miyoo";
+
+		system("mount -o remount,async /mnt");
+
+		w = 320;
+		h = 240;
+	};
+
 	int16_t getBatteryLevel() {
 		int val = -1;
 		if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
@@ -183,20 +201,6 @@ private:
 		return 5 - 5 * (max - val) / (max - min);
 	}
 
-	void hwInit() {
-		cpu_menu = 702;
-		cpu_link = 702;
-		cpu_max = 900;
-		cpu_min = 200;
-		cpu_step = 6;
-		opk = "miyoo";
-
-		system("mount -o remount,async /mnt");
-
-		w = 320;
-		h = 240;
-	}
-
 	int16_t getBacklight() {
 		int val = -1;
 		FILE *f = fopen("/sys/devices/platform/backlight/backlight/backlight/brightness", "r");
@@ -207,10 +211,6 @@ private:
 		return val;
 	}
 
-public:
-	Miyoo(GMenu2X *gmenu2x) : Platform(gmenu2x) {
-		INFO("Miyoo");
-	};
 
 	void setVolume(int val) {
 		uint32_t snd = open("/dev/miyoo_snd", O_RDWR);
