@@ -509,19 +509,16 @@ void GMenu2X::resetSettings() {
 			for (uint32_t l = 0; l < menu->sectionLinks(s)->size(); l++) {
 				menu->setSectionIndex(s);
 				menu->setLinkIndex(l);
-				bool islink = menu->getLinkApp() != NULL;
-				if (!islink) continue;
+				if (menu->getLinkApp() == NULL) continue;
 				if (reset_cpu)			menu->getLinkApp()->setCPU();
 				if (reset_icon)			menu->getLinkApp()->setIcon("");
-				// if (reset_homedir)		menu->getLinkApp()->setHomeDir("");
 				if (reset_manual)		menu->getLinkApp()->setManual("");
 				if (reset_parameter) 	menu->getLinkApp()->setParams("");
 				if (reset_filter) 		menu->getLinkApp()->setSelectorFilter("");
 				if (reset_directory) 	menu->getLinkApp()->setSelectorDir("");
 				if (reset_boxart) 		menu->getLinkApp()->setSelectorScreens("");
 				if (reset_backdrop) 	menu->getLinkApp()->setBackdrop("");
-				if (reset_icon || reset_manual || reset_parameter || reset_backdrop || reset_filter || reset_directory || reset_boxart )
-					menu->getLinkApp()->save();
+				menu->getLinkApp()->save();
 			}
 		}
 		if (reset_skin) {
