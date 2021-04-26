@@ -819,6 +819,8 @@ void GMenu2X::settings() {
 	string tmp = ">>";
 
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
+	sd.allowCancel = false;
+
 	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 
 	string prevDateTime = confStr["datetime"] = getDateTime();
