@@ -42,7 +42,7 @@ bool BrowseDialog::exec(string _path) {
 		bool inputAction = false;
 
 		buttons.clear();
-		if (alphanum_timer > 0) {
+		if (alphanum_timer != NULL) {
 			int c = toupper(getFileName(selected).at(0));
 			if (!isalpha(c)) c = '#';
 			string sel(1, c);
