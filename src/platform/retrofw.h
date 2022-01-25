@@ -206,6 +206,18 @@ public:
 
 	uint8_t getUDC() {
 		// if (memdev > 0 && ((mem[PDPIN] >> 7 & 1) || (mem[PEPIN] >> 13 & 1))) return UDC_CONNECT;
+		if (fwtype == FW_RETROARCADE) {
+			if (FILE *f = fopen("/proc/jz/udc", "r")) {
+				char buf[7];
+				fread(buf, sizeof(char), 7, f);
+				fclose(f);
+				if (!strncmp(buf, "REMOVE", 6)) {
+					return UDC_REMOVE;
+				} else if (!strncmp(buf, "CONNECT", 7)) {
+					return UDC_CONNECT;
+				}
+			}
+		}
 		if (memdev > 0 && (mem[PDPIN] >> 7 & 1)) return UDC_CONNECT;
 		return UDC_REMOVE;
 	}
