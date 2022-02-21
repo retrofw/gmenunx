@@ -358,7 +358,7 @@ uint32_t InputManager::hardwareMonitor() {
 			return 200;
 		}
 
-		tvout = gmenu2x->platform->getTVOut();
+		tvout = gmenu2x->platform->getTVOutStatus();
 		if (tvout_ != tvout) {
 			tvout_ = tvout;
 			pushEvent(tvout);

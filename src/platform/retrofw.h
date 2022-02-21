@@ -157,6 +157,7 @@ public:
 
 		if (mode < 0) {
 			int option;
+			mode = TV_OFF;
 			if (gmenu2x->confStr["tvMode"] == "NTSC") option = CONFIRM;
 			else if (gmenu2x->confStr["tvMode"] == "PAL") option = MANUAL;
 			else if (gmenu2x->confStr["tvMode"] == "OFF") option = CANCEL;
@@ -175,12 +176,10 @@ public:
 				case MANUAL:
 					mode = TV_PAL;
 					break;
-				default:
-					mode = TV_OFF;
 			}
 		}
 
-		if (mode != val) {
+		if (mode != getTVOut()) {
 			if (FILE *f = fopen("/proc/jz/tvout", "a")) {
 				fprintf(f, "%d\n", mode); // fputs(val, f);
 				fclose(f);
@@ -191,7 +190,17 @@ public:
 		}
 	}
 
-	uint8_t getTVOut() {
+
+	uint16_t getTVOut() {
+		int val = 0;
+		if (FILE *f = fopen("/proc/jz/tvout", "r")) {
+			fscanf(f, "%i", &val);
+			fclose(f);
+		}
+		return val;
+	}
+	
+	uint8_t getTVOutStatus() {
 		if (memdev > 0) {
 			if (fwtype == FW_RETROARCADE && !(mem[PDPIN] >> 6 & 1)) return TV_CONNECT;
 			if (!(mem[PDPIN] >> 25 & 1)) return TV_CONNECT;
@@ -305,7 +314,7 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		if (getTVOut() != TV_REMOVE) {
+		if (getTVOut()) {
 			WARNING("Can't overclock when TV out is enabled.");
 			return;
 		}
