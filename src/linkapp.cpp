@@ -311,6 +311,8 @@ void LinkApp::selector(int startSelection, string selectorDir) {
 	if (bd.exec(selectorDir)) {
 		gmenu2x->confInt["selectorElement"] = bd.selected;
 		gmenu2x->confStr["selectorDir"] = bd.getDir();
+		gmenu2x->confInt["lastSection"] = gmenu2x->menu->getSectionIndex();
+		gmenu2x->confInt["lastLink"] = gmenu2x->menu->getLinkIndex();
 
 		gmenu2x->writeTmp();
 

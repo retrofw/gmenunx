@@ -443,7 +443,13 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 1, 300));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100, 1, MakeDelegate(this, &GMenu2X::updateBacklightSetting)));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
-	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
+
+	vector<string> lastSelectionMode;
+	lastSelectionMode.push_back("OFF");
+	lastSelectionMode.push_back("File");
+	lastSelectionMode.push_back("Application");
+	sd.addSetting(new MenuSettingMultiString(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confStr["saveSelection"], lastSelectionMode));
+
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
@@ -542,8 +548,8 @@ bool GMenu2X::readTmp() {
 		string name = trim(line.substr(0, pos));
 		string value = trim(line.substr(pos + 1));
 
-		if (name == "section") menu->setSectionIndex(atoi(value.c_str()));
-		else if (name == "link") menu->setLinkIndex(atoi(value.c_str()));
+		if (name == "section") { menu->setSectionIndex(atoi(value.c_str())); confInt["lastSection"] = menu->getSectionIndex(); }
+		else if (name == "link") { menu->setLinkIndex(atoi(value.c_str())); confInt["lastLink"] = menu->getLinkIndex(); }
 		else if (name == "selectorElement") confInt["selectorElement"] = atoi(value.c_str());
 		else if (name == "selectorDir") confStr["selectorDir"] = value;
 		// else if (name == "TVOut") TVOut = atoi(value.c_str());
@@ -577,7 +583,7 @@ void GMenu2X::writeTmp() {
 void GMenu2X::readConfig(string conffile, bool defaults) {
 	if (defaults) {
 		// Defaults *** Sync with default values in writeConfig
-		confInt["saveSelection"] = 1;
+		confStr["saveSelection"] = "File";
 		confInt["section"] = 0;
 		confInt["link"] = 0;
 		confInt["skinBackdrops"] = 0;
@@ -599,8 +605,16 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 				confStr[name] = value.substr(1, value.length() - 2);
 			else
 				confInt[name] = atoi(value.c_str());
+
+			if (name == "section") confInt["lastSection"] = confInt["section"];
+			else if (name == "link") confInt["lastLink"] = confInt["link"];
 		}
 		f.close();
+	}
+	
+	if (confStr["saveSelection"] != "File") {
+		confInt["selectorElement"] = -1;
+		confStr["selectorDir"] = "";
 	}
 
 	tr.setLang(confStr["lang"]);
@@ -620,9 +634,16 @@ void GMenu2X::readConfig(string conffile, bool defaults) {
 }
 
 void GMenu2X::writeConfig() {
-	if (confInt["saveSelection"] && menu != NULL) {
-		confInt["section"] = menu->getSectionIndex();
-		confInt["link"] = menu->getLinkIndex();
+	if (confStr["saveSelection"] != "OFF" && menu != NULL) {
+		if (confStr["saveSelection"] == "File") {
+			confInt["section"] = confInt["lastSection"] ? confInt["lastSection"] : menu->getSectionIndex();
+			confInt["link"] = confInt["lastLink"] ? confInt["lastLink"] : menu->getLinkIndex();
+		} else {
+			confInt["section"] = menu->getSectionIndex();
+			confInt["link"] = menu->getLinkIndex();
+			confInt["selectorElement"] = -1;
+			confStr["selectorDir"] = "";
+		}
 	} else {
 		confInt["selectorElement"] = -1;
 		confStr["selectorDir"] = "";
@@ -651,6 +672,7 @@ void GMenu2X::writeConfig() {
 			(curr->first == "lang" && curr->second == "English") ||
 			(curr->first == "bgscale" && curr->second.empty()) ||
 			(curr->first == "bgscale" && curr->second == "Crop") ||
+			(curr->first == "saveSelection" && curr->second == "File") ||
 
 			curr->first.empty() || curr->second.empty()
 		) continue;
@@ -677,7 +699,11 @@ void GMenu2X::writeConfig() {
 			curr->first == "sectionBar" ||
 			curr->first == "sectionLabel" ||
 			curr->first == "linkLabel" ||
-
+			
+			//Temporals
+			curr->first == "lastSection" ||
+			curr->first == "lastLink" ||
+			
 			// defaults
 			(curr->first == "skinBackdrops" && curr->second == 0) ||
 			(curr->first == "backlightTimeout" && curr->second == 30) ||
@@ -690,9 +716,8 @@ void GMenu2X::writeConfig() {
 			(curr->first == "backlight" && curr->second == 70) ||
 			(curr->first == "minBattery" && curr->second == 3550) ||
 			(curr->first == "maxBattery" && curr->second == 3720) ||
-			(curr->first == "saveSelection" && curr->second == 1) ||
-			(curr->first == "section" && curr->second == 0) ||
-			(curr->first == "link" && curr->second == 0) ||
+			(curr->first == "section" && ( curr->second == 0 || confStr["saveSelection"] == "OFF" )) ||
+			(curr->first == "link" && ( curr->second == 0 || confStr["saveSelection"] == "OFF" )) ||
 			(curr->first == "selectorElement" && curr->second == -1) ||
 
 			curr->first.empty()
