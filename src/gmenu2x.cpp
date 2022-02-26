@@ -445,9 +445,9 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
 
 	vector<string> lastSelectionMode;
-	lastSelectionMode.push_back("OFF");
 	lastSelectionMode.push_back("File");
 	lastSelectionMode.push_back("Application");
+	lastSelectionMode.push_back("OFF");
 	sd.addSetting(new MenuSettingMultiString(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confStr["saveSelection"], lastSelectionMode));
 
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
