@@ -32,6 +32,8 @@ void PowerManager::resetSuspendTimer() {
 	clearTimer();
 	if (this->suspendTimeout > 0)
 		powerTimer = SDL_AddTimer(this->suspendTimeout * 1e3, doSuspend, NULL);
+	else
+		resetPowerTimer();
 };
 
 void PowerManager::resetPowerTimer() {
