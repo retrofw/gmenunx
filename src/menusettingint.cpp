@@ -28,7 +28,7 @@ using std::stringstream;
 using fastdelegate::MakeDelegate;
 
 MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta, ms_onchange_t onChange):
-MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta), onChange(onChange) {
+MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta), onChange(onChange), off(false) {
 	originalValue = *value;
 	setValue(evalIntConf(value, def, min, max));
 
@@ -47,7 +47,17 @@ MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max
 
 void MenuSettingInt::draw(int y) {
 	MenuSetting::draw(y);
-	gmenu2x->s->write(gmenu2x->font, strvalue, 155, y+gmenu2x->font->height() / 2, VAlignMiddle);
+	
+	int w = 0;
+	if (off && *_value <= offValue) {
+		strvalue = "OFF";
+		w = gmenu2x->font->height() / 2.5;
+		RGBAColor color = (RGBAColor){255, 0, 0, 255};
+		gmenu2x->s->box(155, y + 1, w, gmenu2x->font->height() - 2, color);
+		gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->height() - 2, 0, 0, 0, 255);
+		w += 2;
+	}
+	gmenu2x->s->write(gmenu2x->font, strvalue, 155 + w, y+gmenu2x->font->height() / 2, VAlignMiddle);
 }
 
 uint32_t MenuSettingInt::manageInput() {
@@ -72,7 +82,16 @@ void MenuSettingInt::dec() {
 }
 
 void MenuSettingInt::setValue(int value) {
-	*_value = constrain(value,min,max);
+	if (off && *_value < value && value <= offValue)
+		*_value = offValue + 1;
+	else if (off && *_value > value && value <= offValue)
+		*_value = min;
+	else {
+		*_value = constrain(value,min,max);
+		if (off && *_value <= offValue)
+			*_value = min;
+	}
+		
 	stringstream ss;
 	ss << *_value;
 	strvalue = "";
@@ -89,4 +108,10 @@ int MenuSettingInt::value() {
 
 bool MenuSettingInt::edited() {
 	return originalValue != value();
+}
+
+MenuSettingInt *MenuSettingInt::setOff(int value) {
+	off = true;
+	offValue = constrain(value,min,max);
+	return this;
 }
