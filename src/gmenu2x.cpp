@@ -477,8 +477,8 @@ void GMenu2X::settings() {
 
 void GMenu2X::resetSettings() {
 	bool
-		reset_gmenu = true,
-		reset_skin = true,
+		reset_gmenu = false,
+		reset_skin = false,
 		reset_icon = false,
 		/* reset_homedir = false, */
 		reset_manual = false,
@@ -532,6 +532,7 @@ void GMenu2X::resetSettings() {
 		}
 		if (reset_gmenu) {
 			unlink(home_path("gmenunx.conf").c_str());
+			readConfig(home_path("gmenunx.conf"), true);
 		}
 		quit();
 	}
